@@ -331,6 +331,7 @@ o	Instant booking form overlay
 o	Trust badges (15+ years, 10,000+ happy customers)
 2.	Quick Booking Cards:
 o	Popular routes with prices
+o	One-click Call Now Booking
 o	One-click WhatsApp booking
 o	Visual route cards with images
 3.	Why Choose Us:
@@ -346,12 +347,11 @@ o	Quick inquiry button
 5.	Testimonials:
 o	Customer reviews carousel
 o	Rating stars
-o	Real customer photos
 6.	Footer:
 o	Quick links
 o	Contact information
-o	Social media links
-o	Payment partners
+o	One-click Call Now Booking
+o	One-click WhatsApp booking
 Mobile-First Approach:
 /* Mobile-first responsive design */
 .booking-card {
