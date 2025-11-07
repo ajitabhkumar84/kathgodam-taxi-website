@@ -1,16 +1,145 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import PopularRoutes from '../components/PopularRoutes.astro';
+import TrustSection from '../components/TrustSection.astro';
 
+const pageTitle = "Kathgodam Taxi - Reliable Taxi Services to Nainital, Kainchi Dham & More";
+const pageDescription = "Book your taxi from Kathgodam Railway Station to Nainital, Kainchi Dham, Mukteshwar, Jim Corbett and all Kumaon destinations. Safe, affordable, and available 24/7 since 1991.";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <!-- Hero Section with CTA Buttons -->
+  <HeroSection />
+
+  <!-- Trust & Statistics Section -->
+  <TrustSection />
+
+  <!-- Popular Routes Section with Search -->
+  <PopularRoutes />
+
+  <!-- Tour Packages Preview Section (Coming Soon) -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Explore Our Tour Packages
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Curated multi-day packages to experience the best of Uttarakhand
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Kainchi Dham Package -->
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+          <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Kainchi Dham Package</h3>
+          <p class="text-gray-600 mb-4">Day tour with hotel accommodation</p>
+          <p class="text-3xl font-bold text-orange-600 mb-4">₹4,500</p>
+          <p class="text-sm text-gray-500">Per Couple</p>
+        </div>
+
+        <!-- Nainital Tour Package -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+          <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M4 18h16M6 15h12M8 12h8m-6-9l-6 9h12l-6-9z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Nainital Tour</h3>
+          <p class="text-gray-600 mb-4">Complete sightseeing package</p>
+          <p class="text-3xl font-bold text-blue-600 mb-4">Starting ₹3,500</p>
+          <p class="text-sm text-gray-500">Customizable</p>
+        </div>
+
+        <!-- Complete Tour Package -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+          <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Complete Kumaon Tour</h3>
+          <p class="text-gray-600 mb-4">Multi-day package with car rental</p>
+          <p class="text-3xl font-bold text-green-600 mb-4">Custom Quote</p>
+          <p class="text-sm text-gray-500">Flexible Duration</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-10">
+        <a
+          href="/packages"
+          class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+        >
+          <span>View All Packages</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section (Preview) -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          What Our Customers Say
+        </h2>
+        <p class="text-xl text-gray-600">
+          Trusted by thousands of travelers across India
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <!-- Testimonial 1 -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center gap-1 mb-4">
+            {[...Array(5)].map(() => (
+              <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            ))}
+          </div>
+          <p class="text-gray-600 mb-4 italic">"Excellent service! The driver was punctual and very courteous. Made our trip to Nainital very comfortable."</p>
+          <p class="font-semibold text-gray-900">Rajesh Kumar</p>
+          <p class="text-sm text-gray-500">Delhi</p>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center gap-1 mb-4">
+            {[...Array(5)].map(() => (
+              <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            ))}
+          </div>
+          <p class="text-gray-600 mb-4 italic">"Best taxi service in Kathgodam! Clean vehicle, reasonable prices, and very professional."</p>
+          <p class="font-semibold text-gray-900">Priya Sharma</p>
+          <p class="text-sm text-gray-500">Mumbai</p>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center gap-1 mb-4">
+            {[...Array(5)].map(() => (
+              <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            ))}
+          </div>
+          <p class="text-gray-600 mb-4 italic">"Highly recommend for Kainchi Dham visits. Driver knew all the routes and was very helpful."</p>
+          <p class="font-semibold text-gray-900">Amit Verma</p>
+          <p class="text-sm text-gray-500">Bangalore</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,204 @@
+{
+  "routes": [
+    {
+      "id": "kathgodam-nainital",
+      "from": "Kathgodam",
+      "to": "Nainital",
+      "slug": "kathgodam-nainital",
+      "distance": 35,
+      "duration": "1 hour",
+      "basePrice": 1200,
+      "offSeasonPrice": 1100,
+      "seasonPrice": 1300,
+      "image": "/images/destinations/nainital.jpg",
+      "featured": true,
+      "description": "Experience the beautiful lake city of Nainital with our comfortable taxi service from Kathgodam Railway Station.",
+      "highlights": [
+        "Naini Lake",
+        "Mall Road",
+        "Naina Devi Temple",
+        "Tiffin Top"
+      ]
+    },
+    {
+      "id": "kathgodam-kainchi-dham",
+      "from": "Kathgodam",
+      "to": "Kainchi Dham",
+      "slug": "kathgodam-kainchi-dham",
+      "distance": 25,
+      "duration": "45 minutes",
+      "basePrice": 1200,
+      "offSeasonPrice": 1100,
+      "seasonPrice": 1300,
+      "image": "/images/destinations/kainchi-dham.jpg",
+      "featured": true,
+      "description": "Visit the sacred Kainchi Dham temple, blessed by Neem Karoli Baba, with our reliable taxi service.",
+      "highlights": [
+        "Neem Karoli Baba Ashram",
+        "Peaceful Temple Environment",
+        "Spiritual Experience",
+        "Mountain Views"
+      ]
+    },
+    {
+      "id": "kathgodam-mukteshwar",
+      "from": "Kathgodam",
+      "to": "Mukteshwar",
+      "slug": "kathgodam-mukteshwar",
+      "distance": 75,
+      "duration": "2.5 hours",
+      "basePrice": 2500,
+      "offSeasonPrice": 2300,
+      "seasonPrice": 2700,
+      "image": "/images/destinations/mukteshwar.jpg",
+      "featured": true,
+      "description": "Discover the serene hill station of Mukteshwar, famous for its temples and breathtaking Himalayan views.",
+      "highlights": [
+        "Mukteshwar Temple",
+        "Chauli Ki Jali",
+        "Himalayan Views",
+        "Adventure Activities"
+      ]
+    },
+    {
+      "id": "kathgodam-almora",
+      "from": "Kathgodam",
+      "to": "Almora",
+      "slug": "kathgodam-almora",
+      "distance": 90,
+      "duration": "3 hours",
+      "basePrice": 2800,
+      "offSeasonPrice": 2600,
+      "seasonPrice": 3000,
+      "image": "/images/destinations/almora.jpg",
+      "featured": false,
+      "description": "Travel to the cultural capital of Kumaon, Almora, known for its rich heritage and panoramic mountain views.",
+      "highlights": [
+        "Bright End Corner",
+        "Kasar Devi Temple",
+        "Nanda Devi Temple",
+        "Local Markets"
+      ]
+    },
+    {
+      "id": "kathgodam-binsar",
+      "from": "Kathgodam",
+      "to": "Binsar",
+      "slug": "kathgodam-binsar",
+      "distance": 95,
+      "duration": "3.5 hours",
+      "basePrice": 3200,
+      "offSeasonPrice": 3000,
+      "seasonPrice": 3500,
+      "image": "/images/destinations/binsar.jpg",
+      "featured": false,
+      "description": "Explore the pristine Binsar Wildlife Sanctuary and enjoy 360-degree views of the Himalayan peaks.",
+      "highlights": [
+        "Binsar Wildlife Sanctuary",
+        "Zero Point",
+        "Himalayan Peaks View",
+        "Nature Trails"
+      ]
+    },
+    {
+      "id": "kathgodam-ranikhet",
+      "from": "Kathgodam",
+      "to": "Ranikhet",
+      "slug": "kathgodam-ranikhet",
+      "distance": 85,
+      "duration": "3 hours",
+      "basePrice": 2800,
+      "offSeasonPrice": 2600,
+      "seasonPrice": 3000,
+      "image": "/images/destinations/ranikhet.jpg",
+      "featured": false,
+      "description": "Visit the charming hill station of Ranikhet, home to golf courses and magnificent mountain views.",
+      "highlights": [
+        "Golf Course",
+        "Jhula Devi Temple",
+        "Chaubatia Gardens",
+        "Army Heritage Museum"
+      ]
+    },
+    {
+      "id": "kathgodam-kausani",
+      "from": "Kathgodam",
+      "to": "Kausani",
+      "slug": "kathgodam-kausani",
+      "distance": 120,
+      "duration": "4 hours",
+      "basePrice": 4000,
+      "offSeasonPrice": 3800,
+      "seasonPrice": 4300,
+      "image": "/images/destinations/kausani.jpg",
+      "featured": false,
+      "description": "Experience the 'Switzerland of India' with spectacular views of Trishul, Nanda Devi, and Panchachuli peaks.",
+      "highlights": [
+        "Sunrise/Sunset Views",
+        "Anasakti Ashram",
+        "Tea Gardens",
+        "Rudradhari Falls"
+      ]
+    },
+    {
+      "id": "kathgodam-jim-corbett",
+      "from": "Kathgodam",
+      "to": "Jim Corbett National Park",
+      "slug": "kathgodam-jim-corbett",
+      "distance": 70,
+      "duration": "2 hours",
+      "basePrice": 2400,
+      "offSeasonPrice": 2200,
+      "seasonPrice": 2600,
+      "image": "/images/destinations/jim-corbett.jpg",
+      "featured": true,
+      "description": "Visit India's oldest national park, famous for Bengal tigers and diverse wildlife.",
+      "highlights": [
+        "Wildlife Safari",
+        "Tiger Reserve",
+        "Corbett Falls",
+        "Bird Watching"
+      ]
+    },
+    {
+      "id": "pantnagar-kathgodam",
+      "from": "Pantnagar Airport",
+      "to": "Kathgodam",
+      "slug": "pantnagar-airport-to-kathgodam",
+      "distance": 40,
+      "duration": "1 hour",
+      "basePrice": 1200,
+      "offSeasonPrice": 1100,
+      "seasonPrice": 1300,
+      "image": "/images/destinations/pantnagar.jpg",
+      "featured": false,
+      "description": "Convenient airport pickup service from Pantnagar Airport to Kathgodam Railway Station.",
+      "highlights": [
+        "Airport Pickup",
+        "Professional Drivers",
+        "Clean Vehicles",
+        "On-time Service"
+      ]
+    },
+    {
+      "id": "pantnagar-nainital",
+      "from": "Pantnagar Airport",
+      "to": "Nainital",
+      "slug": "pantnagar-to-nainital",
+      "distance": 65,
+      "duration": "2 hours",
+      "basePrice": 2500,
+      "offSeasonPrice": 2300,
+      "seasonPrice": 2700,
+      "image": "/images/destinations/nainital.jpg",
+      "featured": false,
+      "description": "Direct taxi service from Pantnagar Airport to Nainital, making your journey hassle-free.",
+      "highlights": [
+        "Direct Transfer",
+        "Comfortable Journey",
+        "Experienced Drivers",
+        "Fixed Pricing"
+      ]
+    }
+  ]
+}
