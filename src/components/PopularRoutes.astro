@@ -1,0 +1,121 @@
+---
+import RouteCard from './RouteCard.astro';
+import routesData from '../data/routes.json';
+
+// Get featured routes and prioritize Nainital and Kainchi Dham
+const featuredRoutes = routesData.routes.filter(route => route.featured);
+
+// Sort to ensure Kainchi Dham and Nainital are first
+const priorityDestinations = ['Nainital', 'Kainchi Dham', 'Mukteshwar', 'Jim Corbett National Park'];
+const sortedRoutes = [...featuredRoutes].sort((a, b) => {
+  const aIndex = priorityDestinations.indexOf(a.to);
+  const bIndex = priorityDestinations.indexOf(b.to);
+
+  if (aIndex === -1 && bIndex === -1) return 0;
+  if (aIndex === -1) return 1;
+  if (bIndex === -1) return -1;
+  return aIndex - bIndex;
+});
+---
+
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        Popular Routes from Kathgodam
+      </h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Discover the most loved destinations in Uttarakhand with our reliable taxi services
+      </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="max-w-2xl mx-auto mb-10">
+      <div class="relative">
+        <input
+          type="text"
+          id="routeSearch"
+          placeholder="Search destinations (e.g., Nainital, Kainchi Dham...)"
+          class="w-full px-6 py-4 pr-12 rounded-full border-2 border-gray-300 focus:border-orange-500 focus:outline-none text-lg shadow-md"
+        />
+        <svg class="absolute right-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Social Proof Banner -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 bg-orange-100 text-orange-800 px-6 py-3 rounded-full font-semibold">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        </svg>
+        <span>Booked by 150+ travelers this month</span>
+      </div>
+    </div>
+
+    <!-- Routes Grid -->
+    <div id="routesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {sortedRoutes.map((route) => (
+        <RouteCard route={route} />
+      ))}
+    </div>
+
+    <!-- No Results Message (Hidden by default) -->
+    <div id="noResults" class="hidden text-center py-12">
+      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <p class="text-xl text-gray-600 mb-2">No routes found</p>
+      <p class="text-gray-500">Try searching for another destination</p>
+    </div>
+
+    <!-- View All Routes Button -->
+    <div class="text-center mt-12">
+      <a
+        href="/routes"
+        class="inline-flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+      >
+        <span>View All Routes</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Client-side search functionality
+  const searchInput = document.getElementById('routeSearch') as HTMLInputElement;
+  const routesGrid = document.getElementById('routesGrid') as HTMLElement;
+  const noResults = document.getElementById('noResults') as HTMLElement;
+
+  if (searchInput && routesGrid && noResults) {
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+      const routeCards = routesGrid.querySelectorAll('.route-card');
+      let visibleCount = 0;
+
+      routeCards.forEach((card) => {
+        const cardText = card.textContent?.toLowerCase() || '';
+        if (cardText.includes(searchTerm)) {
+          (card as HTMLElement).style.display = 'block';
+          visibleCount++;
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+        routesGrid.classList.add('hidden');
+      } else {
+        noResults.classList.add('hidden');
+        routesGrid.classList.remove('hidden');
+      }
+    });
+  }
+</script>

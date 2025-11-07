@@ -1,0 +1,81 @@
+---
+interface Props {
+  route: {
+    id: string;
+    from: string;
+    to: string;
+    slug: string;
+    distance: number;
+    duration: string;
+    basePrice: number;
+    image: string;
+    description?: string;
+  };
+}
+
+const { route } = Astro.props;
+---
+
+<a
+  href={`/routes/${route.slug}`}
+  class="route-card group block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+>
+  <!-- Image -->
+  <div class="relative h-48 overflow-hidden bg-gray-200">
+    <!-- Placeholder gradient until actual images are added -->
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 opacity-70"></div>
+    <div class="absolute inset-0 flex items-center justify-center">
+      <span class="text-white text-xl font-semibold">{route.to}</span>
+    </div>
+    <!-- Image will be added later -->
+    <!-- <img src={route.image} alt={`${route.from} to ${route.to}`} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" /> -->
+  </div>
+
+  <!-- Content -->
+  <div class="p-5">
+    <!-- Destination -->
+    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-500 transition-colors">
+      {route.to}
+    </h3>
+
+    <!-- From Location -->
+    <p class="text-sm text-gray-600 mb-3">
+      From {route.from}
+    </p>
+
+    <!-- Details -->
+    <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
+      <div class="flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+        </svg>
+        <span>{route.distance} km</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{route.duration}</span>
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+      <div>
+        <p class="text-sm text-gray-500">Starting from</p>
+        <p class="text-2xl font-bold text-orange-500">₹{route.basePrice.toLocaleString('en-IN')}</p>
+      </div>
+      <div class="text-blue-600 group-hover:text-orange-500 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</a>
+
+<style>
+  .route-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>

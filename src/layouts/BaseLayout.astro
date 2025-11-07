@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import FloatingButtons from '../components/FloatingButtons.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Kathgodam Taxi - Reliable Taxi Services in Uttarakhand Since 1991",
+  description = "Book affordable and safe taxi services from Kathgodam to Nainital, Kainchi Dham, Mukteshwar, Jim Corbett and all major destinations in Kumaon. 24/7 available with experienced drivers."
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="kathgodam taxi, nainital taxi, kainchi dham taxi, uttarakhand taxi, kumaon taxi, jim corbett taxi, mukteshwar taxi" />
+    <meta name="author" content="Kathgodam Taxi" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Kathgodam Taxi" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://wa.me" crossorigin />
+
+    <!-- Google Fonts - Optimized Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <title>{title}</title>
+
+    <!-- Performance optimization -->
+    <style>
+      /* Critical CSS for initial render - prevent flash */
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <slot />
+    <FloatingButtons />
+    <Footer />
+
+    <!-- Analytics placeholder - add Google Analytics or similar here -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"></script> -->
+  </body>
+</html>
