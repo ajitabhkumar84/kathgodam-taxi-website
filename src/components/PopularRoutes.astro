@@ -1,0 +1,128 @@
+---
+import RouteCard from './RouteCard.astro';
+
+const routes = [
+  {
+    from: 'Kathgodam',
+    to: 'Nainital',
+    distance: '35 KM',
+    duration: '1 hour',
+    price: '₹1,200',
+    image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=2071&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Kainchi Dham',
+    distance: '30 KM',
+    duration: '45 min',
+    price: '₹1,200',
+    image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Mukteshwar',
+    distance: '70 KM',
+    duration: '2 hours',
+    price: '₹2,500',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Jim Corbett',
+    distance: '75 KM',
+    duration: '2 hours',
+    price: '₹2,400',
+    image: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?q=80&w=2076&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Ranikhet',
+    distance: '80 KM',
+    duration: '2.5 hours',
+    price: '₹2,800',
+    image: 'https://images.unsplash.com/photo-1563979266-f7a97b3e2d05?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Binsar',
+    distance: '125 KM',
+    duration: '3.5 hours',
+    price: '₹3,200',
+    image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Kausani',
+    distance: '145 KM',
+    duration: '4 hours',
+    price: '₹4,000',
+    image: 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=2076&auto=format&fit=crop'
+  },
+  {
+    from: 'Pantnagar',
+    to: 'Nainital',
+    distance: '65 KM',
+    duration: '1.5 hours',
+    price: '₹2,500',
+    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Pantnagar',
+    to: 'Kathgodam',
+    distance: '30 KM',
+    duration: '45 min',
+    price: '₹1,200',
+    image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop'
+  }
+];
+---
+
+<section class="py-16 bg-gray-50" id="routes">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+        </svg>
+        Popular Routes
+      </div>
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">
+        Our Most Requested <span class="text-primary-600">Taxi Services</span>
+      </h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        Fixed prices, no hidden charges. All fares include tolls, state taxes, and driver allowances. Book now for a hassle-free journey!
+      </p>
+    </div>
+
+    <!-- Routes Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {routes.map((route) => (
+        <RouteCard
+          from={route.from}
+          to={route.to}
+          distance={route.distance}
+          duration={route.duration}
+          price={route.price}
+          image={route.image}
+        />
+      ))}
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="mt-12 text-center">
+      <p class="text-gray-600 mb-4">Don't see your destination? We cover all Kumaon region destinations!</p>
+      <a
+        href={`https://wa.me/917351721351?text=${encodeURIComponent('Hi, I need a custom quote for my destination.')}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center bg-secondary-900 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-secondary-800 transition-colors shadow-lg"
+      >
+        Get Custom Quote
+        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
