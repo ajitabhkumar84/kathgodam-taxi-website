@@ -1,0 +1,56 @@
+---
+import TourCard from './TourCard.astro';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  tours: Array<{
+    title: string;
+    price: string;
+    image: string;
+    href?: string;
+  }>;
+}
+
+const { title, subtitle, tours } = Astro.props;
+---
+
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="mb-8">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{title}</h2>
+      {subtitle && (
+        <p class="text-lg text-gray-600">{subtitle}</p>
+      )}
+    </div>
+
+    <!-- Horizontal Scrolling Shelf -->
+    <div class="relative">
+      <!-- Scroll Container -->
+      <div
+        class="flex gap-6 overflow-x-auto pb-4 horizontal-scroll snap-x snap-mandatory"
+        style="scroll-padding-left: 1rem;"
+      >
+        {tours.map((tour) => (
+          <div class="snap-start">
+            <TourCard
+              title={tour.title}
+              price={tour.price}
+              image={tour.image}
+              href={tour.href}
+            />
+          </div>
+        ))}
+      </div>
+
+      <!-- Scroll Hint (visible on desktop) -->
+      <div class="hidden lg:flex items-center justify-end mt-4 text-sm text-gray-500">
+        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+        <span>Scroll to see more</span>
+      </div>
+    </div>
+  </div>
+</section>

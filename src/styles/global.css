@@ -1,1 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-family-sans: Poppins, system-ui, -apple-system, sans-serif;
+
+  /* Premium Color Palette */
+  --color-primary-50: #fef8f3;
+  --color-primary-100: #fceee0;
+  --color-primary-200: #f8dbc1;
+  --color-primary-300: #f4c197;
+  --color-primary-400: #ef9d5d;
+  --color-primary-500: #e87d36;
+  --color-primary-600: #d4642a;
+  --color-primary-700: #b04d23;
+  --color-primary-800: #8e3f24;
+  --color-primary-900: #73351f;
+
+  --color-secondary-50: #f0f5ff;
+  --color-secondary-100: #e0eaff;
+  --color-secondary-200: #c7d9ff;
+  --color-secondary-300: #a3bfff;
+  --color-secondary-400: #7c9aff;
+  --color-secondary-500: #5b75ff;
+  --color-secondary-600: #3e4ef5;
+  --color-secondary-700: #2f3ad8;
+  --color-secondary-800: #2831ae;
+  --color-secondary-900: #262f89;
+
+  --color-accent: #25d366;
+  --color-whatsapp: #25d366;
+}
+
+* {
+  font-family: var(--font-family-sans);
+}
+
+body {
+  @apply antialiased text-gray-900;
+}
+
+/* Smooth scrolling for horizontal shelves */
+.horizontal-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}

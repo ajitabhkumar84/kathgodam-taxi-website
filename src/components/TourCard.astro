@@ -1,0 +1,45 @@
+---
+interface Props {
+  title: string;
+  price: string;
+  image: string;
+  href?: string;
+}
+
+const { title, price, image, href = '#' } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group block flex-shrink-0 w-72 sm:w-80 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+>
+  <!-- Image Container -->
+  <div class="relative h-48 overflow-hidden">
+    <img
+      src={image}
+      alt={title}
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+    />
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    <!-- Price Badge -->
+    <div class="absolute top-4 right-4 bg-white px-3 py-1.5 rounded-full shadow-lg">
+      <p class="text-primary-600 font-bold text-sm">{price}</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="bg-white p-5">
+    <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+      {title}
+    </h3>
+    <div class="flex items-center text-sm text-gray-600">
+      <svg class="w-4 h-4 mr-1.5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <span>View Details</span>
+    </div>
+  </div>
+</a>
