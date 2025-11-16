@@ -43,8 +43,7 @@ const carTypes = [
       'Extra luggage capacity',
       'Smooth ride on hills',
       'Professional chauffeur service'
-    ],
-    popular: true
+    ]
   },
   {
     name: 'SUV Deluxe',
@@ -267,6 +266,52 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
     <!-- Pricing Table -->
     <RoutePricingTable carTypes={carTypes} />
 
+    <!-- Ready to Book CTA Section -->
+    <section class="py-12 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-black mb-4">
+          Ready to Book Your Kathgodam to Nainital Taxi?
+        </h2>
+        <p class="text-lg text-black/80 mb-8 max-w-2xl mx-auto">
+          Choose your preferred way to book - Instant confirmation via WhatsApp, Call us directly, or Submit a detailed query for custom requirements.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center bg-whatsapp text-white px-8 py-4 rounded-lg font-bold hover:bg-green-600 transition-all shadow-lg text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            WhatsApp Booking
+          </a>
+          <a
+            href="tel:+917351721351"
+            class="inline-flex items-center justify-center bg-black text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-900 transition-all shadow-lg text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            Call: 7351721351
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center bg-white text-black px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-lg border-2 border-black text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Submit Query
+          </a>
+        </div>
+        <p class="mt-6 text-black/70 text-sm">
+          ✓ Fixed transparent pricing • ✓ No hidden charges • ✓ 24/7 customer support
+        </p>
+      </div>
+    </section>
+
     <!-- Attractions Grid -->
     <AttractionsGrid
       title="Places Worth Seeing in Nainital"
@@ -377,17 +422,22 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
           <!-- Weather Widget -->
           <div>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Current Weather in Nainital</h2>
-            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" style="height: 400px;">
-              <iframe
-                src="https://www.meteoblue.com/en/weather/widget/daily/nainital_india_1262551?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=0&pictoicon=1&maxtemperature=0&maxtemperature=1&mintemperature=0&mintemperature=1&windspeed=0&windspeed=1&windgust=0&winddirection=0&winddirection=1&uv=0&humidity=0&precipitation=0&precipitation=1&precipitationprobability=0&precipitationprobability=1&spot=0&spot=1&pressure=0&layout=light"
-                frameborder="0"
-                scrolling="NO"
-                allowtransparency="true"
-                sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
-                style="width: 100%; height: 100%"
-                title="Nainital Weather"
-              ></iframe>
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 p-4">
+              <a
+                class="weatherwidget-io"
+                href="https://forecast7.com/en/29d3879d46/nainital/"
+                data-label_1="NAINITAL"
+                data-label_2="WEATHER"
+                data-theme="pure"
+                data-basecolor="#f59e0b"
+                data-textcolor="#000000"
+              >
+                NAINITAL WEATHER
+              </a>
             </div>
+            <script>
+              !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+            </script>
           </div>
         </div>
       </div>
@@ -452,86 +502,186 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
     <!-- FAQ Section -->
     <RouteFAQ faqs={faqs} />
 
-    <!-- Related Routes -->
-    <section class="py-12 bg-white">
+    <!-- Taxi Packages from Nainital -->
+    <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-10">
           <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Other Popular Routes from Kathgodam
+            Taxi Packages from Nainital
           </h2>
           <p class="text-lg text-gray-600">
-            Explore more destinations in the beautiful Kumaon region
+            Explore Kumaon with our specially curated multi-day tour packages
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
-            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Mukteshwar</h3>
-            <p class="text-sm text-gray-600 mb-2">65 KM • 2 Hours</p>
-            <p class="text-xl font-bold text-primary-600">From ₹2,500</p>
-          </a>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Package 1: 2 Days 1 Night -->
+          <div class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl">
+            <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4 text-center">
+              <h3 class="text-xl font-bold text-black">2 Days & 1 Night</h3>
+              <p class="text-sm text-black/80">Nainital Local Tour</p>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-2 mb-4 text-sm text-gray-600">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Nainital Lake, Mall Road & Snow View</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Naina Devi Temple Visit</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Bhimtal & Sattal Lakes</span>
+                </li>
+              </ul>
+              <div class="border-t border-gray-200 pt-4 mb-4">
+                <p class="text-2xl font-bold text-primary-600 text-center">From ₹5,500</p>
+                <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
+              </div>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-secondary-900 text-white text-center py-3 rounded-lg font-semibold hover:bg-secondary-800 transition-colors">
+                Book Package
+              </a>
+            </div>
+          </div>
 
-          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
-            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Ranikhet</h3>
-            <p class="text-sm text-gray-600 mb-2">75 KM • 2.5 Hours</p>
-            <p class="text-xl font-bold text-primary-600">From ₹2,800</p>
-          </a>
+          <!-- Package 2: Kainchi Dham 4 Dham Tour -->
+          <div class="group bg-white border-2 border-primary-500 hover:border-primary-600 rounded-xl overflow-hidden transition-all hover:shadow-xl relative">
+            <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-3 py-1 rounded-bl-lg">
+              POPULAR
+            </div>
+            <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4 text-center">
+              <h3 class="text-xl font-bold text-black">Kainchi Dham</h3>
+              <p class="text-sm text-black/80">4 Dham Tour</p>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-2 mb-4 text-sm text-gray-600">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Kainchi Dham Ashram</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Neem Karoli Baba Temple</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Ghorakhal & Chitai Temples</span>
+                </li>
+              </ul>
+              <div class="border-t border-gray-200 pt-4 mb-4">
+                <p class="text-2xl font-bold text-primary-600 text-center">From ₹4,500</p>
+                <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
+              </div>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-semibold hover:bg-primary-400 transition-colors">
+                Book Package
+              </a>
+            </div>
+          </div>
 
-          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
-            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Jim Corbett</h3>
-            <p class="text-sm text-gray-600 mb-2">60 KM • 2 Hours</p>
-            <p class="text-xl font-bold text-primary-600">From ₹2,400</p>
-          </a>
+          <!-- Package 3: 3 Days 2 Nights -->
+          <div class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl">
+            <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4 text-center">
+              <h3 class="text-xl font-bold text-black">3 Days & 2 Nights</h3>
+              <p class="text-sm text-black/80">Nainital & Mukteshwar</p>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-2 mb-4 text-sm text-gray-600">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Nainital complete sightseeing</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Mukteshwar Temple & viewpoints</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Bhimtal, Sattal & Naukuchiatal</span>
+                </li>
+              </ul>
+              <div class="border-t border-gray-200 pt-4 mb-4">
+                <p class="text-2xl font-bold text-primary-600 text-center">From ₹9,500</p>
+                <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
+              </div>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-secondary-900 text-white text-center py-3 rounded-lg font-semibold hover:bg-secondary-800 transition-colors">
+                Book Package
+              </a>
+            </div>
+          </div>
 
-          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
-            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Kainchi Dham</h3>
-            <p class="text-sm text-gray-600 mb-2">24 KM • 45 Mins</p>
-            <p class="text-xl font-bold text-primary-600">From ₹1,200</p>
+          <!-- Package 4: 4 Days 3 Nights -->
+          <div class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl">
+            <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4 text-center">
+              <h3 class="text-xl font-bold text-black">4 Days & 3 Nights</h3>
+              <p class="text-sm text-black/80">Complete Kumaon Tour</p>
+            </div>
+            <div class="p-6">
+              <ul class="space-y-2 mb-4 text-sm text-gray-600">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Nainital, Mukteshwar, Ranikhet</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>All lakes & viewpoints</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Temples & cultural sites</span>
+                </li>
+              </ul>
+              <div class="border-t border-gray-200 pt-4 mb-4">
+                <p class="text-2xl font-bold text-primary-600 text-center">From ₹14,500</p>
+                <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
+              </div>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-secondary-900 text-white text-center py-3 rounded-lg font-semibold hover:bg-secondary-800 transition-colors">
+                Book Package
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Package CTA -->
+        <div class="mt-10 text-center">
+          <p class="text-gray-600 mb-4 text-lg">
+            Need a custom package? We can create personalized itineraries for your group!
+          </p>
+          <a
+            href="/contact"
+            class="inline-flex items-center bg-primary-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors shadow-lg"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Request Custom Package
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- Final CTA -->
-    <section class="py-16 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500 relative overflow-hidden">
-      <div class="absolute inset-0 opacity-20">
-        <div class="absolute top-0 left-0 w-64 h-64 bg-black rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 right-0 w-96 h-96 bg-black rounded-full blur-3xl"></div>
-      </div>
-
-      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">
-          Ready to Book Your Kathgodam to Nainital Taxi?
-        </h2>
-        <p class="text-xl text-black/80 mb-8">
-          Experience hassle-free travel with transparent pricing and professional service.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center bg-whatsapp text-white px-8 py-4 rounded-lg font-bold hover:bg-green-600 transition-colors shadow-xl text-lg"
-          >
-            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            Book on WhatsApp
-          </a>
-          <a
-            href="tel:+917351721351"
-            class="inline-flex items-center justify-center bg-black text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-900 transition-colors shadow-xl text-lg"
-          >
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-            </svg>
-            Call: 7351721351
-          </a>
-        </div>
-
-        <p class="mt-8 text-black/70 text-sm">
-          Trusted by 500+ happy customers • Fixed pricing • No hidden charges
-        </p>
       </div>
     </section>
   </main>
