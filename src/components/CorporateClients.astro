@@ -1,0 +1,71 @@
+---
+// Corporate clients and tour operators who work with Kathgodam Taxi
+const clients = [
+  {
+    name: 'Club Mahindra',
+    logo: 'https://via.placeholder.com/150x80/ffffff/1a1a1a?text=Club+Mahindra'
+  },
+  {
+    name: 'MakeMyTrip',
+    logo: 'https://via.placeholder.com/150x80/ffffff/e74c3c?text=MakeMyTrip'
+  },
+  {
+    name: 'Goibibo',
+    logo: 'https://via.placeholder.com/150x80/ffffff/f39c12?text=Goibibo'
+  },
+  {
+    name: 'Yatra',
+    logo: 'https://via.placeholder.com/150x80/ffffff/e74c3c?text=Yatra'
+  },
+  {
+    name: 'Thomas Cook',
+    logo: 'https://via.placeholder.com/150x80/ffffff/c0392b?text=Thomas+Cook'
+  },
+  {
+    name: 'SOTC Travel',
+    logo: 'https://via.placeholder.com/150x80/ffffff/27ae60?text=SOTC'
+  },
+  {
+    name: 'Cox & Kings',
+    logo: 'https://via.placeholder.com/150x80/ffffff/2980b9?text=Cox+%26+Kings'
+  },
+  {
+    name: 'Cleartrip',
+    logo: 'https://via.placeholder.com/150x80/ffffff/e67e22?text=Cleartrip'
+  }
+];
+---
+
+<section class="py-10 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        Kathgodam Taxi Corporate Clients & Tour Operators
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        We are the preferred taxi partner for the following corporate and tour operators
+      </p>
+    </div>
+
+    <!-- Clients Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      {clients.map((client) => (
+        <div class="flex items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-200 hover:border-primary-500 hover:shadow-md transition-all duration-300 group">
+          <img
+            src={client.logo}
+            alt={client.name}
+            class="max-w-full h-auto filter grayscale group-hover:grayscale-0 transition-all duration-300 opacity-70 group-hover:opacity-100"
+          />
+        </div>
+      ))}
+    </div>
+
+    <!-- Trust Message -->
+    <div class="mt-8 text-center">
+      <p class="text-gray-600 text-sm">
+        Trusted by leading travel companies and tour operators across India
+      </p>
+    </div>
+  </div>
+</section>

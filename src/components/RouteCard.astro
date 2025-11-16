@@ -15,7 +15,7 @@ const { from, to, distance, duration, price, image, description, href = '#' } = 
 
 <div class="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-primary-500">
   <!-- Image Section -->
-  <div class="relative h-48 overflow-hidden">
+  <a href={href} class="block relative h-48 overflow-hidden cursor-pointer">
     <img
       src={image}
       alt={`${from} to ${to}`}
@@ -28,7 +28,7 @@ const { from, to, distance, duration, price, image, description, href = '#' } = 
       <p class="text-sm font-semibold">Starting from</p>
       <p class="text-2xl font-bold">{price}</p>
     </div>
-  </div>
+  </a>
 
   <!-- Content Section -->
   <div class="p-6">
