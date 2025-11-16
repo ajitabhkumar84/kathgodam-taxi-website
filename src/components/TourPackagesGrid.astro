@@ -1,0 +1,96 @@
+---
+import RouteCard from './RouteCard.astro';
+
+const tourPackages = [
+  {
+    from: 'Kathgodam',
+    to: 'Nainital Tour',
+    distance: 'Multi-day',
+    duration: '2-3 days',
+    price: '₹4,500',
+    description: 'Explore Nainital\'s lakes, viewpoints, and colonial charm. Includes hotel stay, sightseeing, and scenic hill drives.',
+    image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=2071&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Kainchi Dham Package',
+    distance: 'Full Day',
+    duration: '1 day',
+    price: '₹4,500',
+    description: 'Spiritual day trip with hotel accommodation. Visit the sacred ashram and nearby temples with experienced local guides.',
+    image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Mukteshwar Package',
+    distance: 'Multi-day',
+    duration: '2-3 days',
+    price: '₹6,000',
+    description: 'Complete hill station experience with adventure activities, temple visits, and panoramic mountain views.',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Jim Corbett Safari',
+    distance: 'Multi-day',
+    duration: '2-3 days',
+    price: '₹8,000',
+    description: 'Thrilling wildlife safari package with jungle stay. Multiple safari drives and nature walks included.',
+    image: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?q=80&w=2076&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Ranikhet Retreat',
+    distance: 'Multi-day',
+    duration: '2-3 days',
+    price: '₹7,500',
+    description: 'Peaceful mountain retreat with heritage walks, golf course visits, and breathtaking sunset views.',
+    image: 'https://images.unsplash.com/photo-1563979266-f7a97b3e2d05?q=80&w=2070&auto=format&fit=crop'
+  },
+  {
+    from: 'Kathgodam',
+    to: 'Kausani Tour',
+    distance: 'Multi-day',
+    duration: '3-4 days',
+    price: '₹9,000',
+    description: 'Premium Himalayan experience with sunrise viewpoints, tea gardens, and cultural exploration.',
+    image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=2070&auto=format&fit=crop'
+  }
+];
+---
+
+<section class="py-10 bg-white" id="tours">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        Tour Packages
+      </div>
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">
+        Customized <span class="text-primary-600">Tour Packages</span>
+      </h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+        Multi-day tours designed for complete relaxation and exploration. All packages include accommodation, meals, and sightseeing.
+      </p>
+    </div>
+
+    <!-- Tour Packages Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tourPackages.map((tour) => (
+        <RouteCard
+          from={tour.from}
+          to={tour.to}
+          distance={tour.distance}
+          duration={tour.duration}
+          price={tour.price}
+          description={tour.description}
+          image={tour.image}
+        />
+      ))}
+    </div>
+  </div>
+</section>
