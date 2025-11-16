@@ -1,0 +1,120 @@
+---
+interface CarType {
+  name: string;
+  model: string;
+  capacity: string;
+  seasonPrice: string;
+  offSeasonPrice: string;
+  image: string;
+  features: string[];
+  popular?: boolean;
+}
+
+interface Props {
+  carTypes: CarType[];
+}
+
+const { carTypes } = Astro.props;
+---
+
+<section class="py-12 bg-gradient-to-br from-gray-50 to-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-10">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        Transparent Pricing
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Choose from our fleet of well-maintained vehicles. All prices include tolls, taxes, and driver allowance.
+      </p>
+    </div>
+
+    <!-- Pricing Cards Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {carTypes.map((car) => (
+        <div class={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${car.popular ? 'ring-4 ring-primary-500 transform scale-105' : ''}`}>
+          {car.popular && (
+            <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-4 py-1 rounded-bl-lg">
+              POPULAR
+            </div>
+          )}
+
+          <!-- Car Image -->
+          <div class="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+            <img
+              src={car.image}
+              alt={car.name}
+              class="w-full h-full object-contain p-4"
+            />
+          </div>
+
+          <!-- Card Content -->
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-1">{car.name}</h3>
+            <p class="text-sm text-gray-500 mb-1">{car.model}</p>
+            <p class="text-sm text-gray-600 mb-4 flex items-center">
+              <svg class="w-4 h-4 mr-1 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+              </svg>
+              {car.capacity}
+            </p>
+
+            <!-- Pricing -->
+            <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div class="mb-3">
+                <p class="text-xs text-gray-500 mb-1">Season Rate</p>
+                <p class="text-2xl font-bold text-gray-900">{car.seasonPrice}</p>
+                <p class="text-xs text-gray-500 mt-1">Apr-Jul, Sept-Oct, Dec-Jan</p>
+              </div>
+              <div class="border-t border-gray-200 pt-3">
+                <p class="text-xs text-gray-500 mb-1">Off-Season Rate</p>
+                <p class="text-xl font-bold text-primary-600">{car.offSeasonPrice}</p>
+                <p class="text-xs text-gray-500 mt-1">Other months</p>
+              </div>
+            </div>
+
+            <!-- Features -->
+            <ul class="space-y-2 mb-6">
+              {car.features.map((feature) => (
+                <li class="flex items-start text-sm text-gray-600">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <!-- CTA Button -->
+            <a
+              href={`https://wa.me/917351721351?text=${encodeURIComponent(`Hi, I'd like to book a ${car.name} from Kathgodam to Nainital`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={`block w-full text-center px-4 py-3 rounded-lg font-semibold transition-colors ${car.popular ? 'bg-primary-500 text-black hover:bg-primary-400' : 'bg-secondary-900 text-white hover:bg-secondary-800'}`}
+            >
+              Book Now
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Important Notes -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+      <div class="flex">
+        <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <div class="text-sm text-gray-700">
+          <p class="font-semibold text-gray-900 mb-2">What's Included:</p>
+          <ul class="list-disc list-inside space-y-1">
+            <li>All tolls, state taxes, and parking fees</li>
+            <li>Driver allowance and fuel charges</li>
+            <li>Pick up from Kathgodam Railway Station</li>
+            <li>Drop at Mall Road, Nainital (slight charges apply for Birla/Zoo Road or Ayarpatta areas)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,558 @@
+---
+import Navbar from '../components/Navbar.astro';
+import RouteHeroSlider from '../components/RouteHeroSlider.astro';
+import RoutePricingTable from '../components/RoutePricingTable.astro';
+import AttractionsGrid from '../components/AttractionsGrid.astro';
+import RouteFAQ from '../components/RouteFAQ.astro';
+import StickyBookingSidebar from '../components/StickyBookingSidebar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+const routeData = {
+  from: 'Kathgodam',
+  to: 'Nainital',
+  distance: '34 KM',
+  duration: '1 Hour',
+  startingPrice: '₹1,100'
+};
+
+const carTypes = [
+  {
+    name: 'Hatchback',
+    model: 'Alto / Alto K10',
+    capacity: 'Up to 4 passengers',
+    seasonPrice: '₹1,300',
+    offSeasonPrice: '₹1,100',
+    image: 'https://images.unsplash.com/photo-1583267746897-c2f908e3f293?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'AC car with comfortable seating',
+      'Perfect for couples & small families',
+      'Fuel efficient for mountain roads',
+      'Experienced local driver'
+    ]
+  },
+  {
+    name: 'Sedan',
+    model: 'Xcent / Amaze / Dzire',
+    capacity: 'Up to 4 passengers',
+    seasonPrice: '₹1,600',
+    offSeasonPrice: '₹1,300',
+    image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Premium comfort & space',
+      'Extra luggage capacity',
+      'Smooth ride on hills',
+      'Professional chauffeur service'
+    ],
+    popular: true
+  },
+  {
+    name: 'SUV Deluxe',
+    model: 'Tavera Car - 8 pax',
+    capacity: 'Up to 8 passengers',
+    seasonPrice: '₹2,200',
+    offSeasonPrice: '₹2,000',
+    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Spacious for large groups',
+      '8 seater with ample legroom',
+      'Perfect for family trips',
+      'Extra luggage space'
+    ]
+  },
+  {
+    name: 'SUV Luxury',
+    model: 'Innova Car - 7 pax',
+    capacity: 'Up to 7 passengers',
+    seasonPrice: '₹2,500',
+    offSeasonPrice: '₹2,000',
+    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Premium luxury experience',
+      'Most comfortable ride',
+      'Ideal for corporate travel',
+      'Top-of-the-line amenities'
+    ]
+  }
+];
+
+const attractions = [
+  {
+    name: 'Nainital Lake',
+    description: 'Amidst seven mountains touching the sky, the heart of the place is a ravishing lake showering its beauty with pristine and stagnant water. Naini Lake has earned respect since beginning and even the district is named after this enchanting lake.',
+    image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Boating facilities available',
+      'Surrounded by seven hills',
+      'Perfect for evening strolls',
+      'Photography paradise'
+    ]
+  },
+  {
+    name: 'Naina Devi Temple',
+    description: 'The deity of the temple is Maa Naina Devi represented by two eyes. The temple was destroyed by the drastic landslide of 1880, and was later rebuilt because the temple was of great importance amongst locals.',
+    image: 'https://images.unsplash.com/photo-1582721977844-fe0c47ac3d0a?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Ancient Hindu temple',
+      'Spiritual significance',
+      'Beautiful architecture',
+      'Peaceful atmosphere'
+    ]
+  },
+  {
+    name: 'The Mall Road',
+    description: 'Mall road nexuses Mallital with Tallital and thus is busiest road of the town. During peak season (May and June) vehicles are not allowed to enter mall road so that the trade keeps on strolling as this point is famous among tourists.',
+    image: 'https://images.unsplash.com/photo-1567225591450-5d6c0f0d5f8a?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Shopping & dining hub',
+      'Local handicrafts & souvenirs',
+      'Street food delights',
+      'Evening entertainment'
+    ]
+  },
+  {
+    name: 'Aerial Ropeway',
+    description: 'The Aerial Ropeway commences at Mallital and is connected with Snow view point situated at a breathtaking elevation of 2275 mts above sea level. Snow view point offers the majestic views of the Himalayan range.',
+    image: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Panoramic Himalayan views',
+      'Thrilling cable car ride',
+      '2275m elevation',
+      'Perfect for photography'
+    ]
+  },
+  {
+    name: 'Snow View Point',
+    description: 'Accessible by ropeway or trek, Snow View Point offers stunning 360-degree views of the snow-capped Himalayan peaks including Nanda Devi, Trisul, and Nanda Kot.',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Spectacular mountain views',
+      'Sunrise & sunset point',
+      'Telescope facilities',
+      'Refreshment stalls'
+    ]
+  }
+];
+
+const faqs = [
+  {
+    question: 'How long does the journey take from Kathgodam to Nainital?',
+    answer: 'The journey from Kathgodam to Nainital typically takes around <strong>1 hour</strong>, covering a distance of 34 KM. The actual time may vary depending on traffic conditions and weather.'
+  },
+  {
+    question: 'What is included in the taxi fare?',
+    answer: 'Our taxi fare is fully inclusive of:<br>• All tolls and state taxes<br>• Parking fees<br>• Driver allowance<br>• Fuel charges<br>• Pick up from Kathgodam Railway Station<br>There are absolutely no hidden charges!'
+  },
+  {
+    question: 'Is the car AC or non-AC?',
+    answer: 'All our cars are <strong>fully air-conditioned</strong> with working AC. We maintain our fleet to the highest standards to ensure your comfort during the mountain journey.'
+  },
+  {
+    question: 'What if my train is delayed?',
+    answer: 'Don\'t worry! We track train timings and our drivers wait for delayed trains at no extra cost. Just inform us about your train number when booking, and we\'ll monitor it for you.'
+  },
+  {
+    question: 'What is your cancellation policy?',
+    answer: 'We offer flexible cancellation:<br>• <strong>Free cancellation</strong> up to 24 hours before pickup<br>• 50% charge for cancellations within 24 hours<br>• No refund for no-shows<br>Please contact us on WhatsApp or call for any changes to your booking.'
+  },
+  {
+    question: 'Is the drop till our Hotel?',
+    answer: 'The prices mentioned are for drop at <strong>Mall Road, Nainital</strong>. If your hotel is located in <strong>Birla Road, Zoo Road, or Ayarpatta areas</strong>, there will be a slight additional charge due to the extra distance. Please inform us of your exact hotel location when booking.'
+  }
+];
+
+const whatsappNumber = '917351721351';
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book a taxi from Kathgodam to Nainital`)}`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kathgodam to Nainital Taxi - Starting ₹1,100 | Fixed Transparent Pricing</title>
+  <meta name="description" content="Book Kathgodam to Nainital taxi at fixed rates starting ₹1,100. 34 KM, 1 hour journey. Clean AC cars, experienced drivers, no hidden charges. Book now!" />
+  <meta name="keywords" content="Kathgodam to Nainital taxi, Nainital taxi fare, Kathgodam taxi, taxi booking Nainital, Kathgodam railway station taxi" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kathgodam to Nainital Taxi - Starting ₹1,100" />
+  <meta property="og:description" content="Fixed transparent pricing, clean AC cars, experienced drivers. Book your Kathgodam to Nainital taxi now!" />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+
+<body class="antialiased">
+  <!-- Navbar -->
+  <Navbar />
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Slider -->
+    <RouteHeroSlider
+      from={routeData.from}
+      to={routeData.to}
+      distance={routeData.distance}
+      duration={routeData.duration}
+      startingPrice={routeData.startingPrice}
+    />
+
+    <!-- Route Overview Section -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+          <!-- Main Content Column -->
+          <div class="lg:col-span-2 space-y-12">
+            <!-- Route Introduction -->
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Kathgodam to Nainital Taxi Service
+              </h1>
+              <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                Kathgodam to Nainital is at a distance of <strong>34 KM</strong> from Kathgodam railway station with a driving time of approximately <strong>1 hour</strong>. Nainital is the most frequently visited hill station from Kathgodam, and we provide reliable, comfortable taxi services to make your journey memorable.
+              </p>
+              <p class="text-lg text-gray-700 leading-relaxed">
+                Our taxi fare from Kathgodam to Nainital starts at <strong>₹1,100 for an Alto car</strong>, with transparent pricing that includes all tolls, taxes, and driver allowances. No hidden charges, no surprises!
+              </p>
+            </div>
+
+            <!-- Quick Info Cards -->
+            <div class="grid md:grid-cols-3 gap-4">
+              <div class="bg-gradient-to-br from-primary-50 to-yellow-50 p-6 rounded-xl border border-primary-200">
+                <div class="flex items-center mb-2">
+                  <svg class="w-8 h-8 text-primary-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <h3 class="text-2xl font-bold text-gray-900">34 KM</h3>
+                </div>
+                <p class="text-sm text-gray-600">Total Distance</p>
+              </div>
+
+              <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
+                <div class="flex items-center mb-2">
+                  <svg class="w-8 h-8 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <h3 class="text-2xl font-bold text-gray-900">1 Hour</h3>
+                </div>
+                <p class="text-sm text-gray-600">Journey Time</p>
+              </div>
+
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+                <div class="flex items-center mb-2">
+                  <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <h3 class="text-2xl font-bold text-gray-900">₹1,100+</h3>
+                </div>
+                <p class="text-sm text-gray-600">Starting Price</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky Sidebar Column -->
+          <div class="lg:col-span-1">
+            <StickyBookingSidebar
+              from={routeData.from}
+              to={routeData.to}
+              startingPrice={routeData.startingPrice}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Table -->
+    <RoutePricingTable carTypes={carTypes} />
+
+    <!-- Attractions Grid -->
+    <AttractionsGrid
+      title="Places Worth Seeing in Nainital"
+      attractions={attractions}
+    />
+
+    <!-- Kathgodam Stay + Next Day Drop Package -->
+    <section class="py-12 bg-gradient-to-br from-secondary-900 to-black text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">
+            Kathgodam Stay + Next Day Nainital Drop
+          </h2>
+          <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+            Arriving late in Kathgodam? We've got you covered with comfortable hotel stay and next-day drop to Nainital.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Package 1 -->
+          <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all">
+            <h3 class="text-xl font-bold mb-2">Hatchback + Stay</h3>
+            <p class="text-sm text-gray-300 mb-4">Alto/Alto K10 + 1 Room (Twin Sharing)</p>
+            <div class="space-y-2 mb-6">
+              <div>
+                <p class="text-xs text-gray-400">Season Rate</p>
+                <p class="text-2xl font-bold text-primary-400">₹2,200</p>
+              </div>
+              <div class="border-t border-white/20 pt-2">
+                <p class="text-xs text-gray-400">Off-Season</p>
+                <p class="text-xl font-bold">₹1,900</p>
+              </div>
+            </div>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-semibold hover:bg-primary-400 transition-colors">
+              Book Package
+            </a>
+          </div>
+
+          <!-- Package 2 -->
+          <div class="bg-white/10 backdrop-blur-sm border-2 border-primary-500 rounded-xl p-6 hover:bg-white/15 transition-all relative">
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary-500 text-black text-xs font-bold px-4 py-1 rounded-full">
+              POPULAR
+            </div>
+            <h3 class="text-xl font-bold mb-2">Sedan + Stay</h3>
+            <p class="text-sm text-gray-300 mb-4">Xcent/Amaze/Dzire + 1 Room</p>
+            <div class="space-y-2 mb-6">
+              <div>
+                <p class="text-xs text-gray-400">Season Rate</p>
+                <p class="text-2xl font-bold text-primary-400">₹2,500</p>
+              </div>
+              <div class="border-t border-white/20 pt-2">
+                <p class="text-xs text-gray-400">Off-Season</p>
+                <p class="text-xl font-bold">₹2,200</p>
+              </div>
+            </div>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-semibold hover:bg-primary-400 transition-colors">
+              Book Package
+            </a>
+          </div>
+
+          <!-- Package 3 -->
+          <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all">
+            <h3 class="text-xl font-bold mb-2">SUV + Stay</h3>
+            <p class="text-sm text-gray-300 mb-4">Tavera (8 pax) + 3 Rooms</p>
+            <div class="space-y-2 mb-6">
+              <div>
+                <p class="text-xs text-gray-400">Season Rate</p>
+                <p class="text-2xl font-bold text-primary-400">₹5,200</p>
+              </div>
+              <div class="border-t border-white/20 pt-2">
+                <p class="text-xs text-gray-400">Off-Season</p>
+                <p class="text-xl font-bold">₹4,900</p>
+              </div>
+            </div>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-semibold hover:bg-primary-400 transition-colors">
+              Book Package
+            </a>
+          </div>
+        </div>
+
+        <p class="text-center text-sm text-gray-400 mt-8">
+          All packages include comfortable twin-sharing rooms in quality hotels near Kathgodam railway station
+        </p>
+      </div>
+    </section>
+
+    <!-- Google Maps & Weather Widget -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+          <!-- Google Maps -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Route from Kathgodam to Nainital</h2>
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d55449.89534378469!2d79.41936284863281!3d29.32368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x39a09addbd0c86f1%3A0xbb3534201a6826a5!2sKathgodam%20Railway%20Station%2C%20Haldwani%2C%20Uttarakhand!3m2!1d29.2721774!2d79.53823699999999!4m5!1s0x39a0a0a2a7e0a7e7%3A0x2e9d0c0c0c0c0c0c!2sNainital%2C%20Uttarakhand!3m2!1d29.3803039!2d79.4636042!5e0!3m2!1sen!2sin!4v1234567890"
+                width="100%"
+                height="400"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Route from Kathgodam to Nainital"
+              ></iframe>
+            </div>
+          </div>
+
+          <!-- Weather Widget -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Current Weather in Nainital</h2>
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200" style="height: 400px;">
+              <iframe
+                src="https://www.meteoblue.com/en/weather/widget/daily/nainital_india_1262551?geoloc=fixed&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=0&pictoicon=1&maxtemperature=0&maxtemperature=1&mintemperature=0&mintemperature=1&windspeed=0&windspeed=1&windgust=0&winddirection=0&winddirection=1&uv=0&humidity=0&precipitation=0&precipitation=1&precipitationprobability=0&precipitationprobability=1&spot=0&spot=1&pressure=0&layout=light"
+                frameborder="0"
+                scrolling="NO"
+                allowtransparency="true"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+                style="width: 100%; height: 100%"
+                title="Nainital Weather"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Book With Us -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Why Book Kathgodam to Nainital Taxi With Us?
+          </h2>
+          <p class="text-lg text-gray-600">
+            Your comfort and safety are our top priorities
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200 text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Fixed Pricing</h3>
+            <p class="text-gray-600 text-sm">No bargaining, no hidden charges. What you see is what you pay.</p>
+          </div>
+
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Safe & Verified</h3>
+            <p class="text-gray-600 text-sm">All drivers are verified, licensed, and experienced in mountain driving.</p>
+          </div>
+
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200 text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Clean Cars</h3>
+            <p class="text-gray-600 text-sm">Well-maintained, sanitized AC vehicles for a comfortable journey.</p>
+          </div>
+
+          <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-200 text-center">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
+            <p class="text-gray-600 text-sm">Round-the-clock customer support for all your queries and bookings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <RouteFAQ faqs={faqs} />
+
+    <!-- Related Routes -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Other Popular Routes from Kathgodam
+          </h2>
+          <p class="text-lg text-gray-600">
+            Explore more destinations in the beautiful Kumaon region
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Mukteshwar</h3>
+            <p class="text-sm text-gray-600 mb-2">65 KM • 2 Hours</p>
+            <p class="text-xl font-bold text-primary-600">From ₹2,500</p>
+          </a>
+
+          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Ranikhet</h3>
+            <p class="text-sm text-gray-600 mb-2">75 KM • 2.5 Hours</p>
+            <p class="text-xl font-bold text-primary-600">From ₹2,800</p>
+          </a>
+
+          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Jim Corbett</h3>
+            <p class="text-sm text-gray-600 mb-2">60 KM • 2 Hours</p>
+            <p class="text-xl font-bold text-primary-600">From ₹2,400</p>
+          </a>
+
+          <a href="#" class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl p-6 transition-all hover:shadow-lg">
+            <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600">Kathgodam to Kainchi Dham</h3>
+            <p class="text-sm text-gray-600 mb-2">24 KM • 45 Mins</p>
+            <p class="text-xl font-bold text-primary-600">From ₹1,200</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-black rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-black rounded-full blur-3xl"></div>
+      </div>
+
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">
+          Ready to Book Your Kathgodam to Nainital Taxi?
+        </h2>
+        <p class="text-xl text-black/80 mb-8">
+          Experience hassle-free travel with transparent pricing and professional service.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center bg-whatsapp text-white px-8 py-4 rounded-lg font-bold hover:bg-green-600 transition-colors shadow-xl text-lg"
+          >
+            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Book on WhatsApp
+          </a>
+          <a
+            href="tel:+917351721351"
+            class="inline-flex items-center justify-center bg-black text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-900 transition-colors shadow-xl text-lg"
+          >
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            Call: 7351721351
+          </a>
+        </div>
+
+        <p class="mt-8 text-black/70 text-sm">
+          Trusted by 500+ happy customers • Fixed pricing • No hidden charges
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <Footer />
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    main {
+      margin-top: 64px;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        margin-top: 80px;
+      }
+    }
+  </style>
+</body>
+</html>
