@@ -1,0 +1,117 @@
+---
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { getAllRoutes } from '../../lib/sanity';
+import type { Route } from '../../types/route';
+import '../../styles/global.css';
+
+const routes: Route[] = await getAllRoutes();
+
+// Group routes by starting location
+const routesByFrom = routes.reduce((acc, route) => {
+  if (!acc[route.from]) {
+    acc[route.from] = [];
+  }
+  acc[route.from].push(route);
+  return acc;
+}, {} as Record<string, Route[]>);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Routes - Kathgodam Taxi Service</title>
+  <meta name="description" content="Browse all available taxi routes from Kathgodam to various destinations in Uttarakhand." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+
+<body class="antialiased">
+  <Navbar />
+
+  <main class="pt-24 pb-16 bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Available Routes
+        </h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Explore our comprehensive list of taxi routes across Uttarakhand. Click on any route to view detailed information and pricing.
+        </p>
+      </div>
+
+      <!-- Routes Grid -->
+      {Object.entries(routesByFrom).map(([fromLocation, locationRoutes]) => (
+        <div class="mb-12">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 border-b-2 border-primary-500 pb-2">
+            From {fromLocation}
+          </h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {locationRoutes.map((route) => (
+              <a
+                href={`/routes/${route.slug}`}
+                class="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-6 border-2 border-transparent hover:border-primary-500"
+              >
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
+                    {route.from} → {route.to}
+                  </h3>
+                  <svg class="w-6 h-6 text-primary-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </div>
+
+                <div class="space-y-2 text-sm text-gray-600">
+                  <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span><strong>Distance:</strong> {route.distance}</span>
+                  </div>
+
+                  <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Duration:</strong> {route.duration}</span>
+                  </div>
+
+                  <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Starting at:</strong> {route.startingPrice}</span>
+                  </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                  <span class="text-primary-600 font-semibold group-hover:underline">
+                    View Details →
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {routes.length === 0 && (
+        <div class="text-center py-16">
+          <svg class="w-24 h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h3 class="text-2xl font-bold text-gray-700 mb-2">No routes available yet</h3>
+          <p class="text-gray-600 mb-6">Routes will appear here once they are added to Sanity CMS.</p>
+          <a href="/studio" class="inline-flex items-center bg-primary-500 text-black px-6 py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors">
+            Go to Sanity Studio
+          </a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+</body>
+</html>

@@ -1,0 +1,88 @@
+---
+import RoutePageLayout from '../../layouts/RoutePageLayout.astro';
+import { getAllRouteSlugs, getRouteBySlug, urlFor } from '../../lib/sanity';
+import type { Route } from '../../types/route';
+
+export async function getStaticPaths() {
+  const slugs = await getAllRouteSlugs();
+
+  return slugs.map((slug: string) => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Fetch route data from Sanity
+const route: Route = await getRouteBySlug(slug!);
+
+if (!route) {
+  return Astro.redirect('/404');
+}
+
+// Transform Sanity data to match RoutePageLayout props
+const routeData = {
+  from: route.from,
+  to: route.to,
+  distance: route.distance,
+  duration: route.duration,
+  startingPrice: route.startingPrice,
+  slug: route.slug,
+  destinationLatitude: route.destinationLatitude,
+  destinationLongitude: route.destinationLongitude,
+  googleMapsEmbedUrl: route.googleMapsEmbedUrl,
+};
+
+// Transform hero slides with Sanity images
+const heroSlides = route.heroSlides?.map((slide) => ({
+  image: slide.image ? urlFor(slide.image).width(2070).height(1380).url() : '',
+  title: slide.title,
+  description: slide.description,
+})) || undefined;
+
+// Transform car types with Sanity images
+const carTypes = route.carTypes.map((car) => ({
+  name: car.name,
+  model: car.model,
+  capacity: car.capacity,
+  seasonPrice: car.seasonPrice,
+  offSeasonPrice: car.offSeasonPrice,
+  image: car.image ? urlFor(car.image).width(800).height(600).url() : '',
+  features: car.features,
+}));
+
+// Transform attractions with Sanity images
+const attractions = route.attractions?.map((attraction) => ({
+  name: attraction.name,
+  description: attraction.description,
+  image: attraction.image ? urlFor(attraction.image).width(800).height(600).url() : '',
+  highlights: attraction.highlights,
+})) || [];
+
+const faqs = route.faqs || [];
+
+const pageContent = {
+  title: route.pageTitle,
+  description: route.metaDescription,
+  metaDescription: route.metaDescription,
+  keywords: route.keywords || '',
+  introText1: route.introText1,
+  introText2: route.introText2,
+  attractionsTitle: route.attractionsTitle || `Places Worth Seeing in ${route.to}`,
+};
+
+const packages = {
+  stayPackages: route.stayPackages || [],
+  tourPackages: route.tourPackages || [],
+};
+---
+
+<RoutePageLayout
+  routeData={routeData}
+  heroSlides={heroSlides}
+  carTypes={carTypes}
+  attractions={attractions}
+  faqs={faqs}
+  pageContent={pageContent}
+  packages={packages}
+/>
