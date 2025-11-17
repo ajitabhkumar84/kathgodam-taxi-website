@@ -16,6 +16,9 @@ interface Props {
     duration: string;
     startingPrice: string;
     slug: string;
+    destinationLatitude?: number;
+    destinationLongitude?: number;
+    googleMapsEmbedUrl?: string;
   };
   heroSlides?: Array<{
     image: string;
@@ -72,6 +75,15 @@ const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, package
 
 const whatsappNumber = '917351721351';
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book a taxi from ${routeData.from} to ${routeData.to}`)}`;
+
+// Weather widget coordinates (format: lat/lon)
+const weatherCoords = routeData.destinationLatitude && routeData.destinationLongitude
+  ? `${routeData.destinationLatitude.toFixed(2)}/${routeData.destinationLongitude.toFixed(2)}`
+  : null;
+
+// Default Google Maps embed URL (fallback)
+const defaultMapsUrl = "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d55449.89534378469!2d79.41936284863281!3d29.32368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x39a09addbd0c86f1%3A0xbb3534201a6826a5!2sKathgodam%20Railway%20Station%2C%20Haldwani%2C%20Uttarakhand!3m2!1d29.2721774!2d79.53823699999999!4m5!1s0x39a0a0a2a7e0a7e7%3A0x2e9d0c0c0c0c0c0c!2sNainital%2C%20Uttarakhand!3m2!1d29.3803039!2d79.4636042!5e0!3m2!1sen!2sin!4v1234567890";
+const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
 ---
 
 <!DOCTYPE html>
@@ -287,7 +299,7 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Route from {routeData.from} to {routeData.to}</h2>
             <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d55449.89534378469!2d79.41936284863281!3d29.32368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x39a09addbd0c86f1%3A0xbb3534201a6826a5!2sKathgodam%20Railway%20Station%2C%20Haldwani%2C%20Uttarakhand!3m2!1d29.2721774!2d79.53823699999999!4m5!1s0x39a0a0a2a7e0a7e7%3A0x2e9d0c0c0c0c0c0c!2sNainital%2C%20Uttarakhand!3m2!1d29.3803039!2d79.4636042!5e0!3m2!1sen!2sin!4v1234567890"
+                src={mapsEmbedUrl}
                 width="100%"
                 height="400"
                 style="border:0;"
@@ -303,21 +315,33 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
           <div>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Current Weather in {routeData.to}</h2>
             <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 p-4">
-              <a
-                class="weatherwidget-io"
-                href={`https://forecast7.com/en/${routeData.to.toLowerCase()}/`}
-                data-label_1={routeData.to.toUpperCase()}
-                data-label_2="WEATHER"
-                data-theme="pure"
-                data-basecolor="#f59e0b"
-                data-textcolor="#000000"
-              >
-                {routeData.to.toUpperCase()} WEATHER
-              </a>
+              {weatherCoords ? (
+                <>
+                  <a
+                    class="weatherwidget-io"
+                    href={`https://forecast7.com/en/${weatherCoords}/${routeData.to.toLowerCase()}/`}
+                    data-label_1={routeData.to.toUpperCase()}
+                    data-label_2="WEATHER"
+                    data-theme="pure"
+                    data-basecolor="#f59e0b"
+                    data-textcolor="#000000"
+                  >
+                    {routeData.to.toUpperCase()} WEATHER
+                  </a>
+                  <script>
+                    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+                  </script>
+                </>
+              ) : (
+                <div class="text-center py-8 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                  </svg>
+                  <p class="text-sm">Weather information unavailable</p>
+                  <p class="text-xs mt-1">Add destination coordinates in Sanity Studio to enable weather widget</p>
+                </div>
+              )}
             </div>
-            <script>
-              !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-            </script>
           </div>
         </div>
       </div>

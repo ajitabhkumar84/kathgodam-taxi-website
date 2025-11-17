@@ -51,6 +51,9 @@ export interface Route {
   duration: string;
   startingPrice: string;
   heroSlides?: HeroSlide[];
+  destinationLatitude?: number;
+  destinationLongitude?: number;
+  googleMapsEmbedUrl?: string;
   pageTitle: string;
   metaDescription: string;
   keywords?: string;

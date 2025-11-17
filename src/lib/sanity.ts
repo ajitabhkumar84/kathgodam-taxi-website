@@ -32,6 +32,9 @@ export async function getAllRoutes() {
       title,
       description
     },
+    destinationLatitude,
+    destinationLongitude,
+    googleMapsEmbedUrl,
     pageTitle,
     metaDescription,
     keywords,
@@ -91,6 +94,9 @@ export async function getRouteBySlug(slug: string) {
       title,
       description
     },
+    destinationLatitude,
+    destinationLongitude,
+    googleMapsEmbedUrl,
     pageTitle,
     metaDescription,
     keywords,

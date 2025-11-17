@@ -61,6 +61,28 @@ export default defineType({
       validation: (Rule) => Rule.min(1).max(5),
     }),
 
+    // Location Coordinates (for Weather & Maps)
+    defineField({
+      name: 'destinationLatitude',
+      title: 'Destination Latitude',
+      type: 'number',
+      description: 'Latitude for weather widget and maps (e.g., 29.3803 for Nainital). Find on Google Maps.',
+      validation: (Rule) => Rule.min(-90).max(90),
+    }),
+    defineField({
+      name: 'destinationLongitude',
+      title: 'Destination Longitude',
+      type: 'number',
+      description: 'Longitude for weather widget and maps (e.g., 79.4636 for Nainital). Find on Google Maps.',
+      validation: (Rule) => Rule.min(-180).max(180),
+    }),
+    defineField({
+      name: 'googleMapsEmbedUrl',
+      title: 'Google Maps Embed URL (Optional)',
+      type: 'url',
+      description: 'Optional: Custom Google Maps embed URL. If not provided, will auto-generate from locations.',
+    }),
+
     // Page Content
     defineField({
       name: 'pageTitle',
