@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "mcp__chrome-devtools__list_pages"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
