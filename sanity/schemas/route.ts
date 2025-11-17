@@ -51,6 +51,16 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // Hero Slider
+    defineField({
+      name: 'heroSlides',
+      title: 'Hero Slider Images',
+      type: 'array',
+      of: [{type: 'heroSlide'}],
+      description: 'Add 2-5 images for the hero slider (recommended: 3 images)',
+      validation: (Rule) => Rule.min(1).max(5),
+    }),
+
     // Page Content
     defineField({
       name: 'pageTitle',

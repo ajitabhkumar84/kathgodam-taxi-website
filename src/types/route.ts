@@ -1,3 +1,9 @@
+export interface HeroSlide {
+  image: any; // Sanity image object
+  title: string;
+  description: string;
+}
+
 export interface CarType {
   name: string;
   model: string;
@@ -44,6 +50,7 @@ export interface Route {
   distance: string;
   duration: string;
   startingPrice: string;
+  heroSlides?: HeroSlide[];
   pageTitle: string;
   metaDescription: string;
   keywords?: string;

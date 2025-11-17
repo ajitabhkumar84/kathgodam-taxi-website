@@ -27,6 +27,11 @@ export async function getAllRoutes() {
     distance,
     duration,
     startingPrice,
+    heroSlides[] {
+      image,
+      title,
+      description
+    },
     pageTitle,
     metaDescription,
     keywords,
@@ -81,6 +86,11 @@ export async function getRouteBySlug(slug: string) {
     distance,
     duration,
     startingPrice,
+    heroSlides[] {
+      image,
+      title,
+      description
+    },
     pageTitle,
     metaDescription,
     keywords,

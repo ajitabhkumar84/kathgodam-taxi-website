@@ -1,15 +1,23 @@
 ---
+interface Slide {
+  image: string;
+  title: string;
+  description: string;
+}
+
 interface Props {
   from: string;
   to: string;
   distance: string;
   duration: string;
   startingPrice: string;
+  slides?: Slide[];
 }
 
-const { from, to, distance, duration, startingPrice } = Astro.props;
+const { from, to, distance, duration, startingPrice, slides: customSlides } = Astro.props;
 
-const slides = [
+// Use custom slides if provided, otherwise use default slides
+const slides = customSlides && customSlides.length > 0 ? customSlides : [
   {
     image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=2070&auto=format&fit=crop',
     title: `Scenic Drive from ${from} to ${to}`,

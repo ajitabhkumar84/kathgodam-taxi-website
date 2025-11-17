@@ -17,6 +17,11 @@ interface Props {
     startingPrice: string;
     slug: string;
   };
+  heroSlides?: Array<{
+    image: string;
+    title: string;
+    description: string;
+  }>;
   carTypes: Array<{
     name: string;
     model: string;
@@ -63,7 +68,7 @@ interface Props {
   };
 }
 
-const { routeData, carTypes, attractions, faqs, pageContent, packages } = Astro.props;
+const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, packages } = Astro.props;
 
 const whatsappNumber = '917351721351';
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book a taxi from ${routeData.from} to ${routeData.to}`)}`;
@@ -101,6 +106,7 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`
       distance={routeData.distance}
       duration={routeData.duration}
       startingPrice={routeData.startingPrice}
+      slides={heroSlides}
     />
 
     <!-- Route Overview Section -->

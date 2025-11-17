@@ -30,6 +30,13 @@ const routeData = {
   slug: route.slug,
 };
 
+// Transform hero slides with Sanity images
+const heroSlides = route.heroSlides?.map((slide) => ({
+  image: slide.image ? urlFor(slide.image).width(2070).height(1380).url() : '',
+  title: slide.title,
+  description: slide.description,
+})) || undefined;
+
 // Transform car types with Sanity images
 const carTypes = route.carTypes.map((car) => ({
   name: car.name,
@@ -69,6 +76,7 @@ const packages = {
 
 <RoutePageLayout
   routeData={routeData}
+  heroSlides={heroSlides}
   carTypes={carTypes}
   attractions={attractions}
   faqs={faqs}
