@@ -71,16 +71,30 @@ const testimonials = [
       </p>
     </div>
 
-    <!-- Testimonials Grid -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {testimonials.map((testimonial) => (
-        <TestimonialCard
-          name={testimonial.name}
-          location={testimonial.location}
-          rating={testimonial.rating}
-          quote={testimonial.quote}
-        />
-      ))}
+    <!-- Horizontal Scrollable Testimonials -->
+    <div class="relative">
+      <div class="overflow-x-auto horizontal-scroll pb-4" style="scroll-snap-type: x mandatory;">
+        <div class="flex gap-6" style="width: max-content;">
+          {testimonials.map((testimonial) => (
+            <div style="scroll-snap-align: start; min-width: 340px; max-width: 340px;">
+              <TestimonialCard
+                name={testimonial.name}
+                location={testimonial.location}
+                rating={testimonial.rating}
+                quote={testimonial.quote}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div class="mt-4 text-center text-sm text-gray-500">
+        <svg class="w-5 h-5 inline-block mr-1 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+        Swipe to see more reviews
+      </div>
     </div>
 
     <!-- Trust Badge -->
