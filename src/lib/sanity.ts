@@ -154,3 +154,155 @@ export async function getAllRouteSlugs() {
   const routes = await client.fetch(query);
   return routes.map((route: { slug: string }) => route.slug);
 }
+
+// ==================== SIGHTSEEING TOURS ====================
+
+// Helper function to get all published sightseeing tours
+export async function getAllSightseeingTours() {
+  const query = `*[_type == "sightseeingTour" && published == true] | order(name asc) {
+    _id,
+    name,
+    "slug": slug.current,
+    tourType,
+    duration,
+    distance,
+    difficulty,
+    price,
+    bestTime,
+    pickupLocation,
+    dropLocation,
+    heroSlides[] {
+      image,
+      caption
+    },
+    overviewDescription,
+    highlights,
+    itinerary[] {
+      time,
+      title,
+      description,
+      duration,
+      image
+    },
+    placesIncluded[] {
+      name,
+      description,
+      timeSpent,
+      image,
+      highlights
+    },
+    pricing[] {
+      vehicleType,
+      model,
+      capacity,
+      price,
+      features,
+      image
+    },
+    inclusions,
+    exclusions,
+    thingsToCarry,
+    importantInfo,
+    faqs[] {
+      question,
+      answer
+    },
+    relatedTours[]-> {
+      name,
+      "slug": slug.current,
+      duration,
+      price,
+      heroSlides[0] {
+        image
+      }
+    },
+    mapEmbedUrl,
+    weatherLatitude,
+    weatherLongitude,
+    pageTitle,
+    metaDescription,
+    keywords
+  }`;
+
+  return await client.fetch(query);
+}
+
+// Helper function to get a single sightseeing tour by slug
+export async function getSightseeingTourBySlug(slug: string) {
+  const query = `*[_type == "sightseeingTour" && slug.current == $slug && published == true][0] {
+    _id,
+    name,
+    "slug": slug.current,
+    tourType,
+    duration,
+    distance,
+    difficulty,
+    price,
+    bestTime,
+    pickupLocation,
+    dropLocation,
+    heroSlides[] {
+      image,
+      caption
+    },
+    overviewDescription,
+    highlights,
+    itinerary[] {
+      time,
+      title,
+      description,
+      duration,
+      image
+    },
+    placesIncluded[] {
+      name,
+      description,
+      timeSpent,
+      image,
+      highlights
+    },
+    pricing[] {
+      vehicleType,
+      model,
+      capacity,
+      price,
+      features,
+      image
+    },
+    inclusions,
+    exclusions,
+    thingsToCarry,
+    importantInfo,
+    faqs[] {
+      question,
+      answer
+    },
+    relatedTours[]-> {
+      name,
+      "slug": slug.current,
+      duration,
+      price,
+      heroSlides[0] {
+        image
+      }
+    },
+    mapEmbedUrl,
+    weatherLatitude,
+    weatherLongitude,
+    pageTitle,
+    metaDescription,
+    keywords
+  }`;
+
+  return await client.fetch(query, { slug });
+}
+
+// Helper function to get all sightseeing tour slugs (for static site generation)
+export async function getAllSightseeingTourSlugs() {
+  const query = `*[_type == "sightseeingTour" && published == true] {
+    "slug": slug.current
+  }`;
+
+  const tours = await client.fetch(query);
+  return tours.map((tour: { slug: string }) => tour.slug);
+}

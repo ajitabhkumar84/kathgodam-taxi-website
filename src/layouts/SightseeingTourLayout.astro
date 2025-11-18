@@ -1,0 +1,774 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  tourData: {
+    name: string;
+    slug: string;
+    duration: string;
+    distance: string;
+    difficulty: string;
+    price: string;
+    bestTime: string;
+    pickupLocation: string;
+    dropLocation: string;
+    tourType: string; // "Full Day" | "Half Day"
+  };
+  heroSlides?: Array<{
+    image: string;
+    caption: string;
+  }>;
+  overview: {
+    description: string;
+    highlights: string[];
+  };
+  itinerary: Array<{
+    time: string;
+    title: string;
+    description: string;
+    duration: string;
+    image?: string;
+  }>;
+  placesIncluded: Array<{
+    name: string;
+    description: string;
+    timeSpent: string;
+    image: string;
+    highlights?: string[];
+  }>;
+  pricing: Array<{
+    vehicleType: string;
+    model: string;
+    capacity: string;
+    price: string;
+    features: string[];
+    image: string;
+  }>;
+  inclusions: string[];
+  exclusions: string[];
+  thingsToCarry?: string[];
+  importantInfo?: string[];
+  faqs: Array<{
+    question: string;
+    answer: string;
+  }>;
+  relatedTours?: Array<{
+    name: string;
+    duration: string;
+    price: string;
+    image: string;
+    slug: string;
+  }>;
+  pageContent: {
+    title: string;
+    metaDescription: string;
+    keywords: string;
+  };
+  mapEmbedUrl?: string;
+  weatherCoords?: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+const {
+  tourData,
+  heroSlides,
+  overview,
+  itinerary,
+  placesIncluded,
+  pricing,
+  inclusions,
+  exclusions,
+  thingsToCarry,
+  importantInfo,
+  faqs,
+  relatedTours,
+  pageContent,
+  mapEmbedUrl,
+  weatherCoords,
+} = Astro.props;
+
+const whatsappNumber = '917351721351';
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book the ${tourData.name} tour`)}`;
+
+// Weather widget coordinates
+const weatherWidget = weatherCoords
+  ? `${weatherCoords.latitude.toFixed(2)}/${weatherCoords.longitude.toFixed(2)}`
+  : null;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageContent.title}</title>
+  <meta name="description" content={pageContent.metaDescription} />
+  <meta name="keywords" content={pageContent.keywords} />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={pageContent.title} />
+  <meta property="og:description" content={pageContent.metaDescription} />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+
+<body class="antialiased">
+  <Navbar />
+
+  <main>
+    <!-- Hero Section with Image Slider -->
+    <section class="relative h-[70vh] min-h-[500px] overflow-hidden">
+      {heroSlides && heroSlides.length > 0 ? (
+        <div class="hero-slider relative h-full">
+          {heroSlides.map((slide, index) => (
+            <div class={`hero-slide absolute inset-0 transition-opacity duration-1000 ${index === 0 ? 'opacity-100' : 'opacity-0'}`}>
+              <img
+                src={slide.image}
+                alt={slide.caption}
+                class="w-full h-full object-cover"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-yellow-500"></div>
+      )}
+
+      <!-- Hero Content -->
+      <div class="absolute inset-0 flex items-end">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
+          <div class="max-w-3xl">
+            <!-- Tour Type Badge -->
+            <div class="inline-flex items-center gap-2 bg-primary-500 text-black px-4 py-2 rounded-full font-bold mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+              {tourData.tourType} Tour
+            </div>
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+              {tourData.name}
+            </h1>
+
+            <!-- Quick Stats -->
+            <div class="flex flex-wrap gap-4 mb-6 text-white">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="font-semibold">{tourData.duration}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="font-semibold">{tourData.distance}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span class="font-semibold">{tourData.difficulty}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <div class="bg-white text-black px-6 py-3 rounded-lg">
+                <div class="text-sm font-semibold text-gray-600">Starting From</div>
+                <div class="text-2xl font-bold text-primary-600">{tourData.price}</div>
+              </div>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 bg-whatsapp text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600 transition-all shadow-lg"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Book Now
+              </a>
+              <a
+                href="#pricing"
+                class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-bold hover:bg-white/30 transition-all border-2 border-white/50"
+              >
+                View Pricing
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tour Overview Section -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+          <!-- Main Overview -->
+          <div class="lg:col-span-2">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Tour Overview</h2>
+            <p class="text-lg text-gray-700 leading-relaxed mb-6">
+              {overview.description}
+            </p>
+
+            <!-- Highlights -->
+            {overview.highlights && overview.highlights.length > 0 && (
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Tour Highlights</h3>
+                <div class="grid md:grid-cols-2 gap-3">
+                  {overview.highlights.map((highlight) => (
+                    <div class="flex items-start gap-2">
+                      <svg class="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-gray-700">{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <!-- Quick Info Sidebar -->
+          <div class="lg:col-span-1">
+            <div class="bg-gradient-to-br from-primary-50 to-yellow-50 rounded-xl p-6 border-2 border-primary-200 sticky top-24">
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Quick Information</h3>
+              <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-600">Duration</div>
+                    <div class="font-semibold text-gray-900">{tourData.duration}</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-600">Best Time</div>
+                    <div class="font-semibold text-gray-900">{tourData.bestTime}</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-600">Pickup</div>
+                    <div class="font-semibold text-gray-900">{tourData.pickupLocation}</div>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-600">Drop-off</div>
+                    <div class="font-semibold text-gray-900">{tourData.dropLocation}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 pt-6 border-t border-primary-300">
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors"
+                >
+                  Quick Booking
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Itinerary Section -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Tour <span class="text-primary-600">Itinerary</span>
+          </h2>
+          <p class="text-lg text-gray-600">
+            Hour-by-hour breakdown of your day
+          </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+          {itinerary.map((item, index) => (
+            <div class="relative pb-8 last:pb-0">
+              {index < itinerary.length - 1 && (
+                <div class="absolute left-6 top-12 bottom-0 w-0.5 bg-primary-300"></div>
+              )}
+
+              <div class="relative flex gap-4">
+                <!-- Time Badge -->
+                <div class="flex-shrink-0">
+                  <div class="w-12 h-12 bg-primary-500 text-black rounded-full flex items-center justify-center font-bold shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Content Card -->
+                <div class="flex-1 bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                  <div class="flex flex-wrap justify-between items-start mb-2">
+                    <div>
+                      <div class="text-primary-600 font-bold text-sm mb-1">{item.time}</div>
+                      <h3 class="text-xl font-bold text-gray-900">{item.title}</h3>
+                    </div>
+                    <div class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
+                      {item.duration}
+                    </div>
+                  </div>
+                  <p class="text-gray-700">{item.description}</p>
+
+                  {item.image && (
+                    <div class="mt-4 rounded-lg overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        class="w-full h-48 object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Places Covered Section -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Places <span class="text-primary-600">Covered</span>
+          </h2>
+          <p class="text-lg text-gray-600">
+            Explore these amazing destinations on this tour
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {placesIncluded.map((place) => (
+            <div class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl">
+              <div class="relative h-48 overflow-hidden">
+                <img
+                  src={place.image}
+                  alt={place.name}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+                <div class="absolute top-3 right-3 bg-primary-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                  {place.timeSpent}
+                </div>
+              </div>
+
+              <div class="p-5">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{place.name}</h3>
+                <p class="text-gray-600 text-sm mb-3">{place.description}</p>
+
+                {place.highlights && place.highlights.length > 0 && (
+                  <ul class="space-y-1">
+                    {place.highlights.map((highlight) => (
+                      <li class="flex items-start gap-2 text-sm text-gray-700">
+                        <svg class="w-4 h-4 text-primary-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-12 bg-gradient-to-br from-gray-50 to-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Choose Your <span class="text-primary-600">Vehicle</span>
+          </h2>
+          <p class="text-lg text-gray-600">
+            Comfortable vehicles for every group size
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pricing.map((vehicle) => (
+            <div class="bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl">
+              <div class="relative h-48 overflow-hidden">
+                <img
+                  src={vehicle.image}
+                  alt={vehicle.vehicleType}
+                  class="w-full h-full object-cover"
+                />
+              </div>
+
+              <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-900">{vehicle.vehicleType}</h3>
+                <p class="text-gray-600 mb-1">{vehicle.model}</p>
+                <p class="text-sm text-gray-500 mb-4">Up to {vehicle.capacity}</p>
+
+                <ul class="space-y-2 mb-4">
+                  {vehicle.features.map((feature) => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="border-t border-gray-200 pt-4 mb-4">
+                  <div class="text-3xl font-bold text-primary-600 text-center">{vehicle.price}</div>
+                  <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (complete tour)</p>
+                </div>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors"
+                >
+                  Book This Vehicle
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- What's Included/Excluded Section -->
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Inclusions -->
+          <div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900">What's Included</h3>
+            </div>
+            <ul class="space-y-3">
+              {inclusions.map((item) => (
+                <li class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span class="text-gray-700">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Exclusions -->
+          <div>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900">What's Not Included</h3>
+            </div>
+            <ul class="space-y-3">
+              {exclusions.map((item) => (
+                <li class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                  <span class="text-gray-700">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Important Information Section -->
+    {(thingsToCarry || importantInfo) && (
+      <section class="py-12 bg-gradient-to-br from-primary-50 to-yellow-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Things to Carry -->
+            {thingsToCarry && thingsToCarry.length > 0 && (
+              <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                  </svg>
+                  <h3 class="text-xl font-bold text-gray-900">Things to Carry</h3>
+                </div>
+                <ul class="space-y-2">
+                  {thingsToCarry.map((item) => (
+                    <li class="flex items-start gap-2 text-gray-700">
+                      <svg class="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <!-- Important Info -->
+            {importantInfo && importantInfo.length > 0 && (
+              <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="flex items-center gap-2 mb-4">
+                  <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <h3 class="text-xl font-bold text-gray-900">Important Information</h3>
+                </div>
+                <ul class="space-y-2">
+                  {importantInfo.map((item) => (
+                    <li class="flex items-start gap-2 text-gray-700">
+                      <svg class="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                      </svg>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Related Tours Section -->
+    {relatedTours && relatedTours.length > 0 && (
+      <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              You May Also <span class="text-primary-600">Like</span>
+            </h2>
+            <p class="text-lg text-gray-600">
+              Explore similar day tours in the region
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedTours.map((tour) => (
+              <a
+                href={`/sightseeing/${tour.slug}`}
+                class="group bg-white border-2 border-gray-200 hover:border-primary-500 rounded-xl overflow-hidden transition-all hover:shadow-xl"
+              >
+                <div class="relative h-48 overflow-hidden">
+                  <img
+                    src={tour.image}
+                    alt={tour.name}
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                </div>
+                <div class="p-4">
+                  <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    {tour.name}
+                  </h3>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600">{tour.duration}</span>
+                    <span class="text-primary-600 font-bold">{tour.price}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- FAQs & Map Section -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+          <!-- Map -->
+          {mapEmbedUrl && (
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-4">Tour Route Map</h2>
+              <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                <iframe
+                  src={mapEmbedUrl}
+                  width="100%"
+                  height="450"
+                  style="border:0;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  title="Tour Route Map"
+                ></iframe>
+              </div>
+            </div>
+          )}
+
+          <!-- FAQs -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            {faqs && faqs.length > 0 ? (
+              <div class="space-y-4">
+                {faqs.map((faq) => (
+                  <details class="group bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <summary class="flex justify-between items-center cursor-pointer p-4 hover:bg-gray-50 transition-colors">
+                      <h3 class="font-semibold text-gray-900 pr-4">{faq.question}</h3>
+                      <svg class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </summary>
+                    <div class="p-4 pt-0 text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            ) : (
+              <div class="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+                <p>No FAQs available for this tour yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="py-12 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-black mb-4">
+          Ready to Experience {tourData.name}?
+        </h2>
+        <p class="text-lg text-black/80 mb-8 max-w-2xl mx-auto">
+          Book now and create unforgettable memories. Our professional drivers and comfortable vehicles ensure a safe and enjoyable journey.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center bg-whatsapp text-white px-8 py-4 rounded-lg font-bold hover:bg-green-600 transition-all shadow-lg text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            WhatsApp Booking
+          </a>
+          <a
+            href="tel:+917351721351"
+            class="inline-flex items-center justify-center bg-black text-white px-8 py-4 rounded-lg font-bold hover:bg-gray-900 transition-all shadow-lg text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            Call: 7351721351
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center bg-white text-black px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-lg border-2 border-black text-base"
+          >
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Submit Query
+          </a>
+        </div>
+        <p class="mt-6 text-black/70 text-sm">
+          ✓ Fixed transparent pricing • ✓ No hidden charges • ✓ 24/7 customer support
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    main {
+      margin-top: 64px;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        margin-top: 80px;
+      }
+    }
+
+    /* Hero Slider Animation */
+    .hero-slider .hero-slide {
+      animation: slideShow 15s infinite;
+    }
+
+    .hero-slider .hero-slide:nth-child(2) {
+      animation-delay: 5s;
+    }
+
+    .hero-slider .hero-slide:nth-child(3) {
+      animation-delay: 10s;
+    }
+
+    @keyframes slideShow {
+      0%, 33.33% { opacity: 1; }
+      33.34%, 100% { opacity: 0; }
+    }
+  </style>
+
+  <script>
+    // Auto-scroll hero slider
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    let currentSlide = 0;
+
+    if (heroSlides.length > 1) {
+      setInterval(() => {
+        heroSlides[currentSlide].style.opacity = '0';
+        currentSlide = (currentSlide + 1) % heroSlides.length;
+        heroSlides[currentSlide].style.opacity = '1';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

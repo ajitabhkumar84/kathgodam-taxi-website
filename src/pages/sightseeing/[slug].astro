@@ -1,0 +1,127 @@
+---
+import SightseeingTourLayout from '../../layouts/SightseeingTourLayout.astro';
+import { getAllSightseeingTourSlugs, getSightseeingTourBySlug, urlFor } from '../../lib/sanity';
+import type { SightseeingTour } from '../../types/sightseeingTour';
+
+export async function getStaticPaths() {
+  const slugs = await getAllSightseeingTourSlugs();
+
+  return slugs.map((slug: string) => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+
+// Fetch sightseeing tour data from Sanity
+const tour: SightseeingTour = await getSightseeingTourBySlug(slug!);
+
+if (!tour) {
+  return Astro.redirect('/404');
+}
+
+// Transform tour data for layout props
+const tourData = {
+  name: tour.name,
+  slug: tour.slug,
+  duration: tour.duration,
+  distance: tour.distance,
+  difficulty: tour.difficulty,
+  price: tour.price,
+  bestTime: tour.bestTime,
+  pickupLocation: tour.pickupLocation,
+  dropLocation: tour.dropLocation,
+  tourType: tour.tourType,
+};
+
+// Transform hero slides
+const heroSlides = tour.heroSlides?.map((slide) => ({
+  image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
+  caption: slide.caption,
+})) || undefined;
+
+// Overview
+const overview = {
+  description: tour.overviewDescription,
+  highlights: tour.highlights,
+};
+
+// Transform itinerary with images
+const itinerary = tour.itinerary.map((item) => ({
+  time: item.time,
+  title: item.title,
+  description: item.description,
+  duration: item.duration,
+  image: item.image ? urlFor(item.image).width(800).height(400).url() : undefined,
+}));
+
+// Transform places included
+const placesIncluded = tour.placesIncluded.map((place) => ({
+  name: place.name,
+  description: place.description,
+  timeSpent: place.timeSpent,
+  image: place.image ? urlFor(place.image).width(800).height(600).url() : '',
+  highlights: place.highlights || [],
+}));
+
+// Transform pricing with vehicle images
+const pricing = tour.pricing.map((vehicle) => ({
+  vehicleType: vehicle.vehicleType,
+  model: vehicle.model,
+  capacity: vehicle.capacity,
+  price: vehicle.price,
+  features: vehicle.features,
+  image: vehicle.image ? urlFor(vehicle.image).width(800).height(600).url() : '',
+}));
+
+// Inclusions and exclusions
+const inclusions = tour.inclusions;
+const exclusions = tour.exclusions;
+const thingsToCarry = tour.thingsToCarry || undefined;
+const importantInfo = tour.importantInfo || undefined;
+
+// FAQs
+const faqs = tour.faqs || [];
+
+// Transform related tours
+const relatedTours = tour.relatedTours?.map((relatedTour) => ({
+  name: relatedTour.name,
+  duration: relatedTour.duration,
+  price: relatedTour.price,
+  image: relatedTour.heroSlides?.[0]?.image
+    ? urlFor(relatedTour.heroSlides[0].image).width(600).height(400).url()
+    : '',
+  slug: relatedTour.slug,
+})) || undefined;
+
+// Page content
+const pageContent = {
+  title: tour.pageTitle,
+  metaDescription: tour.metaDescription,
+  keywords: tour.keywords || '',
+};
+
+// Map and weather
+const mapEmbedUrl = tour.mapEmbedUrl || undefined;
+const weatherCoords = tour.weatherLatitude && tour.weatherLongitude
+  ? { latitude: tour.weatherLatitude, longitude: tour.weatherLongitude }
+  : undefined;
+---
+
+<SightseeingTourLayout
+  tourData={tourData}
+  heroSlides={heroSlides}
+  overview={overview}
+  itinerary={itinerary}
+  placesIncluded={placesIncluded}
+  pricing={pricing}
+  inclusions={inclusions}
+  exclusions={exclusions}
+  thingsToCarry={thingsToCarry}
+  importantInfo={importantInfo}
+  faqs={faqs}
+  relatedTours={relatedTours}
+  pageContent={pageContent}
+  mapEmbedUrl={mapEmbedUrl}
+  weatherCoords={weatherCoords}
+/>
