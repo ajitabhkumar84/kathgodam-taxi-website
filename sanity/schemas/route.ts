@@ -146,6 +146,20 @@ export default defineType({
       of: [{type: 'attraction'}],
     }),
 
+    // What's Excluded
+    defineField({
+      name: 'exclusions',
+      title: "What's Excluded",
+      type: 'array',
+      of: [{type: 'string'}],
+      description: 'List of items/services not included in the pricing',
+      initialValue: [
+        'Toll and Car parking charges',
+        'Non-AC Car. AC would not work in hills.',
+        'No waiting for pickup and drop for journey less than 2 hours.',
+      ],
+    }),
+
     // FAQs
     defineField({
       name: 'faqs',

@@ -53,6 +53,7 @@ interface Props {
     introText2: string;
     attractionsTitle: string;
   };
+  exclusions?: string[];
   packages?: {
     stayPackages?: Array<{
       name: string;
@@ -67,11 +68,12 @@ interface Props {
       features: string[];
       price: string;
       popular?: boolean;
+      image?: string;
     }>;
   };
 }
 
-const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, packages } = Astro.props;
+const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, exclusions, packages } = Astro.props;
 
 const whatsappNumber = '917351721351';
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book a taxi from ${routeData.from} to ${routeData.to}`)}`;
@@ -119,6 +121,8 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
       duration={routeData.duration}
       startingPrice={routeData.startingPrice}
       slides={heroSlides}
+      destinationLatitude={routeData.destinationLatitude}
+      destinationLongitude={routeData.destinationLongitude}
     />
 
     <!-- Route Overview Section -->
@@ -187,7 +191,7 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
     </section>
 
     <!-- Pricing Table -->
-    <RoutePricingTable carTypes={carTypes} />
+    <RoutePricingTable carTypes={carTypes} exclusions={exclusions} />
 
     <!-- Ready to Book CTA Section -->
     <section class="py-12 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500">
@@ -235,117 +239,93 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
       </div>
     </section>
 
-    <!-- Attractions Grid -->
+    <!-- Taxi Packages from Destination (Conditional) -->
+    {packages?.tourPackages && packages.tourPackages.length > 0 && (
+      <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+              Taxi Packages from {routeData.to}
+            </h2>
+            <p class="text-lg text-gray-600">
+              Explore Kumaon with our specially curated multi-day tour packages
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {packages.tourPackages.map((pkg) => (
+              <div class={`group bg-white border-2 ${pkg.popular ? 'border-primary-500 hover:border-primary-600' : 'border-gray-200 hover:border-primary-500'} rounded-xl overflow-hidden transition-all hover:shadow-xl relative`}>
+                {pkg.popular && (
+                  <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-3 py-1 rounded-bl-lg z-10">
+                    POPULAR
+                  </div>
+                )}
+
+                {/* Package Image */}
+                {pkg.image && (
+                  <div class="relative h-48 overflow-hidden">
+                    <img
+                      src={pkg.image}
+                      alt={pkg.name}
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  </div>
+                )}
+
+                <div class={`${pkg.image ? 'bg-white' : 'bg-gradient-to-r from-primary-500 to-yellow-500'} p-4 text-center`}>
+                  <h3 class={`text-xl font-bold ${pkg.image ? 'text-gray-900' : 'text-black'}`}>{pkg.name}</h3>
+                  <p class={`text-sm ${pkg.image ? 'text-gray-600' : 'text-black/80'}`}>{pkg.subtitle}</p>
+                </div>
+                <div class="p-6">
+                  <ul class="space-y-2 mb-4 text-sm text-gray-600">
+                    {pkg.features.map((feature) => (
+                      <li class="flex items-start">
+                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div class="border-t border-gray-200 pt-4 mb-4">
+                    <p class="text-2xl font-bold text-primary-600 text-center">{pkg.price}</p>
+                    <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
+                  </div>
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class={`block w-full ${pkg.popular ? 'bg-primary-500 text-black hover:bg-primary-400' : 'bg-secondary-900 text-white hover:bg-secondary-800'} text-center py-3 rounded-lg font-semibold transition-colors`}>
+                    Book Package
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <!-- Custom Package CTA -->
+          <div class="mt-10 text-center">
+            <p class="text-gray-600 mb-4 text-lg">
+              Need a custom package? We can create personalized itineraries for your group!
+            </p>
+            <a
+              href="/contact"
+              class="inline-flex items-center bg-primary-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors shadow-lg"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Request Custom Package
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Places Worth Seeing (Attractions Grid) -->
     {attractions && attractions.length > 0 && (
       <AttractionsGrid
         title={pageContent.attractionsTitle || `Places Worth Seeing in ${routeData.to}`}
         attractions={attractions}
       />
     )}
-
-    <!-- Kathgodam Stay + Next Day Drop Package (Conditional) -->
-    {packages?.stayPackages && packages.stayPackages.length > 0 && (
-      <section class="py-12 bg-gradient-to-br from-secondary-900 to-black text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-4xl font-bold mb-3">
-              {routeData.from} Stay + Next Day {routeData.to} Drop
-            </h2>
-            <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-              Arriving late in {routeData.from}? We've got you covered with comfortable hotel stay and next-day drop to {routeData.to}.
-            </p>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-6">
-            {packages.stayPackages.map((pkg) => (
-              <div class={`bg-white/10 backdrop-blur-sm border ${pkg.popular ? 'border-2 border-primary-500' : 'border-white/20'} rounded-xl p-6 hover:bg-white/15 transition-all relative`}>
-                {pkg.popular && (
-                  <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary-500 text-black text-xs font-bold px-4 py-1 rounded-full">
-                    POPULAR
-                  </div>
-                )}
-                <h3 class="text-xl font-bold mb-2">{pkg.name}</h3>
-                <p class="text-sm text-gray-300 mb-4">{pkg.description}</p>
-                <div class="space-y-2 mb-6">
-                  <div>
-                    <p class="text-xs text-gray-400">Season Rate</p>
-                    <p class="text-2xl font-bold text-primary-400">{pkg.seasonPrice}</p>
-                  </div>
-                  <div class="border-t border-white/20 pt-2">
-                    <p class="text-xs text-gray-400">Off-Season</p>
-                    <p class="text-xl font-bold">{pkg.offSeasonPrice}</p>
-                  </div>
-                </div>
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="block w-full bg-primary-500 text-black text-center py-3 rounded-lg font-semibold hover:bg-primary-400 transition-colors">
-                  Book Package
-                </a>
-              </div>
-            ))}
-          </div>
-
-          <p class="text-center text-sm text-gray-400 mt-8">
-            All packages include comfortable twin-sharing rooms in quality hotels near {routeData.from} railway station
-          </p>
-        </div>
-      </section>
-    )}
-
-    <!-- Google Maps & Weather Widget -->
-    <section class="py-12 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-8">
-          <!-- Google Maps -->
-          <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Route from {routeData.from} to {routeData.to}</h2>
-            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
-              <iframe
-                src={mapsEmbedUrl}
-                width="100%"
-                height="400"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                title={`Route from ${routeData.from} to ${routeData.to}`}
-              ></iframe>
-            </div>
-          </div>
-
-          <!-- Weather Widget -->
-          <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Current Weather in {routeData.to}</h2>
-            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 p-4">
-              {weatherCoords ? (
-                <>
-                  <a
-                    class="weatherwidget-io"
-                    href={`https://forecast7.com/en/${weatherCoords}/${routeData.to.toLowerCase()}/`}
-                    data-label_1={routeData.to.toUpperCase()}
-                    data-label_2="WEATHER"
-                    data-theme="pure"
-                    data-basecolor="#f59e0b"
-                    data-textcolor="#000000"
-                  >
-                    {routeData.to.toUpperCase()} WEATHER
-                  </a>
-                  <script>
-                    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-                  </script>
-                </>
-              ) : (
-                <div class="text-center py-8 text-gray-500">
-                  <svg class="w-16 h-16 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
-                  </svg>
-                  <p class="text-sm">Weather information unavailable</p>
-                  <p class="text-xs mt-1">Add destination coordinates in Sanity Studio to enable weather widget</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- Why Book With Us -->
     <section class="py-12 bg-white">
@@ -403,75 +383,55 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
       </div>
     </section>
 
-    <!-- FAQ Section -->
-    {faqs && faqs.length > 0 && <RouteFAQ faqs={faqs} />}
-
-    <!-- Taxi Packages from Destination (Conditional) -->
-    {packages?.tourPackages && packages.tourPackages.length > 0 && (
-      <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-              Taxi Packages from {routeData.to}
-            </h2>
-            <p class="text-lg text-gray-600">
-              Explore Kumaon with our specially curated multi-day tour packages
-            </p>
+    <!-- Route Map & FAQs Section (Side by Side) -->
+    <section class="py-12 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-8">
+          <!-- Google Maps -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Route from {routeData.from} to {routeData.to}</h2>
+            <div class="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200">
+              <iframe
+                src={mapsEmbedUrl}
+                width="100%"
+                height="450"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title={`Route from ${routeData.from} to ${routeData.to}`}
+              ></iframe>
+            </div>
           </div>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {packages.tourPackages.map((pkg) => (
-              <div class={`group bg-white border-2 ${pkg.popular ? 'border-primary-500 hover:border-primary-600' : 'border-gray-200 hover:border-primary-500'} rounded-xl overflow-hidden transition-all hover:shadow-xl relative`}>
-                {pkg.popular && (
-                  <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-3 py-1 rounded-bl-lg">
-                    POPULAR
-                  </div>
-                )}
-                <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4 text-center">
-                  <h3 class="text-xl font-bold text-black">{pkg.name}</h3>
-                  <p class="text-sm text-black/80">{pkg.subtitle}</p>
-                </div>
-                <div class="p-6">
-                  <ul class="space-y-2 mb-4 text-sm text-gray-600">
-                    {pkg.features.map((feature) => (
-                      <li class="flex items-start">
-                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div class="border-t border-gray-200 pt-4 mb-4">
-                    <p class="text-2xl font-bold text-primary-600 text-center">{pkg.price}</p>
-                    <p class="text-xs text-gray-500 text-center mt-1">Per vehicle (up to 4 pax)</p>
-                  </div>
-                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class={`block w-full ${pkg.popular ? 'bg-primary-500 text-black hover:bg-primary-400' : 'bg-secondary-900 text-white hover:bg-secondary-800'} text-center py-3 rounded-lg font-semibold transition-colors`}>
-                    Book Package
-                  </a>
-                </div>
+          <!-- FAQs -->
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            {faqs && faqs.length > 0 ? (
+              <div class="space-y-4">
+                {faqs.map((faq, index) => (
+                  <details class="group bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <summary class="flex justify-between items-center cursor-pointer p-4 hover:bg-gray-50 transition-colors">
+                      <h3 class="font-semibold text-gray-900 pr-4">{faq.question}</h3>
+                      <svg class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </summary>
+                    <div class="p-4 pt-0 text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  </details>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <!-- Custom Package CTA -->
-          <div class="mt-10 text-center">
-            <p class="text-gray-600 mb-4 text-lg">
-              Need a custom package? We can create personalized itineraries for your group!
-            </p>
-            <a
-              href="/contact"
-              class="inline-flex items-center bg-primary-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-primary-400 transition-colors shadow-lg"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              Request Custom Package
-            </a>
+            ) : (
+              <div class="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+                <p>No FAQs available for this route yet.</p>
+              </div>
+            )}
           </div>
         </div>
-      </section>
-    )}
+      </div>
+    </section>
   </main>
 
   <!-- Footer -->

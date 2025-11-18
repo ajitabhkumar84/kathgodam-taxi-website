@@ -40,6 +40,7 @@ export interface TourPackage {
   features: string[];
   price: string;
   popular?: boolean;
+  image?: any; // Sanity image object
 }
 
 export interface Route {
@@ -62,6 +63,7 @@ export interface Route {
   attractionsTitle?: string;
   carTypes: CarType[];
   attractions?: Attraction[];
+  exclusions?: string[];
   faqs?: FAQ[];
   stayPackages?: StayPackage[];
   tourPackages?: TourPackage[];

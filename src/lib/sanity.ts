@@ -56,6 +56,7 @@ export async function getAllRoutes() {
       image,
       highlights
     },
+    exclusions,
     faqs[] {
       question,
       answer
@@ -72,7 +73,8 @@ export async function getAllRoutes() {
       subtitle,
       features,
       price,
-      popular
+      popular,
+      image
     }
   }`;
 
@@ -118,6 +120,7 @@ export async function getRouteBySlug(slug: string) {
       image,
       highlights
     },
+    exclusions,
     faqs[] {
       question,
       answer
@@ -134,7 +137,8 @@ export async function getRouteBySlug(slug: string) {
       subtitle,
       features,
       price,
-      popular
+      popular,
+      image
     }
   }`;
 

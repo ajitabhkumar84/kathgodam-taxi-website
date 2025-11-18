@@ -12,9 +12,16 @@ interface Props {
   duration: string;
   startingPrice: string;
   slides?: Slide[];
+  destinationLatitude?: number;
+  destinationLongitude?: number;
 }
 
-const { from, to, distance, duration, startingPrice, slides: customSlides } = Astro.props;
+const { from, to, distance, duration, startingPrice, slides: customSlides, destinationLatitude, destinationLongitude } = Astro.props;
+
+// Weather widget coordinates (format: lat/lon)
+const weatherCoords = destinationLatitude && destinationLongitude
+  ? `${destinationLatitude.toFixed(2)}/${destinationLongitude.toFixed(2)}`
+  : null;
 
 // Use custom slides if provided, otherwise use default slides
 const slides = customSlides && customSlides.length > 0 ? customSlides : [
@@ -95,6 +102,26 @@ const slides = customSlides && customSlides.length > 0 ? customSlides : [
                 </div>
               </div>
             )}
+
+            {index === 1 && (
+              <div class="flex flex-wrap items-center gap-6 mb-8">
+                <div class="bg-white/10 backdrop-blur-sm px-6 py-4 rounded-lg border border-white/20 weather-widget-container">
+                  <div class="flex items-center mb-2">
+                    <svg class="w-6 h-6 text-primary-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                    </svg>
+                    <p class="text-xs text-gray-300">Current Weather in {to}</p>
+                  </div>
+                  <div id="weather-display-slider" class="text-white">
+                    {weatherCoords ? (
+                      <p class="text-sm">Loading weather...</p>
+                    ) : (
+                      <p class="text-sm text-gray-300">Weather data unavailable</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -132,13 +159,13 @@ const slides = customSlides && customSlides.length > 0 ? customSlides : [
   </button>
 </section>
 
-<script>
+<script define:vars={{ weatherCoords, to }}>
   let currentSlide = 0;
   const slides = document.querySelectorAll('.slider-item');
   const dots = document.querySelectorAll('.slider-dot');
   const totalSlides = slides.length;
 
-  function showSlide(index: number) {
+  function showSlide(index) {
     slides.forEach((slide, i) => {
       slide.classList.toggle('opacity-100', i === index);
       slide.classList.toggle('opacity-0', i !== index);
@@ -179,4 +206,45 @@ const slides = customSlides && customSlides.length > 0 ? customSlides : [
       showSlide(currentSlide);
     });
   });
+
+  // Fetch weather data for slider 2
+  const weatherDisplay = document.getElementById('weather-display-slider');
+  const destination = to;
+
+  if (weatherDisplay && weatherCoords && destination) {
+    const [lat, lon] = weatherCoords.split('/');
+
+    // Using Open-Meteo API (free, no API key required)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`)
+      .then(response => response.json())
+      .then(data => {
+        const current = data.current_weather;
+        const temp = Math.round(current.temperature);
+        const weatherCode = current.weathercode;
+
+        // Weather condition mapping
+        const getWeatherCondition = (code) => {
+          if (code === 0) return '☀️ Clear';
+          if (code <= 3) return '⛅ Partly Cloudy';
+          if (code <= 49) return '🌫️ Foggy';
+          if (code <= 67) return '🌧️ Rainy';
+          if (code <= 77) return '🌨️ Snowy';
+          if (code <= 99) return '⛈️ Thunderstorm';
+          return '🌤️ Cloudy';
+        };
+
+        weatherDisplay.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="text-4xl">${getWeatherCondition(weatherCode).split(' ')[0]}</div>
+            <div>
+              <p class="text-3xl font-bold">${temp}°C</p>
+              <p class="text-sm text-gray-200">${getWeatherCondition(weatherCode).split(' ')[1]}</p>
+            </div>
+          </div>
+        `;
+      })
+      .catch(error => {
+        weatherDisplay.innerHTML = '<p class="text-sm text-gray-300">Weather unavailable</p>';
+      });
+  }
 </script>

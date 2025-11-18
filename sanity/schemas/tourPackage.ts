@@ -38,6 +38,15 @@ export default defineType({
       type: 'boolean',
       initialValue: false,
     }),
+    defineField({
+      name: 'image',
+      title: 'Package Image',
+      type: 'image',
+      description: 'Destination/attraction image for this package',
+      options: {
+        hotspot: true,
+      },
+    }),
   ],
   preview: {
     select: {

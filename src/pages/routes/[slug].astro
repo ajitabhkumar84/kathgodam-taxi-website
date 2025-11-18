@@ -71,9 +71,19 @@ const pageContent = {
   attractionsTitle: route.attractionsTitle || `Places Worth Seeing in ${route.to}`,
 };
 
+const exclusions = route.exclusions || [];
+
+// Transform tour packages with Sanity images
 const packages = {
   stayPackages: route.stayPackages || [],
-  tourPackages: route.tourPackages || [],
+  tourPackages: route.tourPackages?.map((pkg) => ({
+    name: pkg.name,
+    subtitle: pkg.subtitle,
+    features: pkg.features,
+    price: pkg.price,
+    popular: pkg.popular,
+    image: pkg.image ? urlFor(pkg.image).width(800).height(600).url() : undefined,
+  })) || [],
 };
 ---
 
@@ -84,5 +94,6 @@ const packages = {
   attractions={attractions}
   faqs={faqs}
   pageContent={pageContent}
+  exclusions={exclusions}
   packages={packages}
 />

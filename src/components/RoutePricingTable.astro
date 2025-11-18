@@ -12,9 +12,10 @@ interface CarType {
 
 interface Props {
   carTypes: CarType[];
+  exclusions?: string[];
 }
 
-const { carTypes } = Astro.props;
+const { carTypes, exclusions } = Astro.props;
 ---
 
 <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
@@ -25,7 +26,7 @@ const { carTypes } = Astro.props;
         Transparent Pricing
       </h2>
       <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-        Choose from our fleet of well-maintained vehicles. All prices include tolls, taxes, and driver allowance.
+        Choose from our fleet of well-maintained vehicles with transparent, fixed pricing.
       </p>
     </div>
 
@@ -91,18 +92,21 @@ const { carTypes } = Astro.props;
     </div>
 
     <!-- Important Notes -->
-    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+    <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
       <div class="flex">
-        <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        <svg class="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
         </svg>
         <div class="text-sm text-gray-700">
-          <p class="font-semibold text-gray-900 mb-2">What's Included:</p>
+          <p class="font-semibold text-gray-900 mb-2">What's Excluded:</p>
           <ul class="list-disc list-inside space-y-1">
-            <li>All tolls, state taxes, and parking fees</li>
-            <li>Driver allowance and fuel charges</li>
-            <li>Pick up from Kathgodam Railway Station</li>
-            <li>Drop at Mall Road, Nainital (slight charges apply for Birla/Zoo Road or Ayarpatta areas)</li>
+            {(exclusions && exclusions.length > 0 ? exclusions : [
+              'Toll and Car parking charges',
+              'Non-AC Car. AC would not work in hills.',
+              'No waiting for pickup and drop for journey less than 2 hours.'
+            ]).map((exclusion) => (
+              <li>{exclusion}</li>
+            ))}
           </ul>
         </div>
       </div>
