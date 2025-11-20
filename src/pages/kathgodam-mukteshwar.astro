@@ -1,0 +1,236 @@
+---
+import RoutePageLayout from '../layouts/RoutePageLayout.astro';
+
+const routeData = {
+  from: 'Kathgodam',
+  to: 'Mukteshwar',
+  distance: '72 KM',
+  duration: '2 Hours',
+  startingPrice: '₹2,400',
+  slug: 'kathgodam-mukteshwar'
+};
+
+const carTypes = [
+  {
+    name: 'Hatchback',
+    model: 'Alto / Alto K10',
+    capacity: 'Up to 4 passengers',
+    seasonPrice: '₹2,800',
+    offSeasonPrice: '₹2,400',
+    image: 'https://images.unsplash.com/photo-1583267746897-c2f908e3f293?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'AC car with comfortable seating',
+      'Perfect for couples & small families',
+      'Fuel efficient for mountain roads',
+      'Experienced local driver'
+    ]
+  },
+  {
+    name: 'Sedan',
+    model: 'Xcent / Amaze / Dzire',
+    capacity: 'Up to 4 passengers',
+    seasonPrice: '₹3,300',
+    offSeasonPrice: '₹2,800',
+    image: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Premium comfort & space',
+      'Extra luggage capacity',
+      'Smooth ride on hills',
+      'Professional chauffeur service'
+    ]
+  },
+  {
+    name: 'SUV Standard',
+    model: 'Tavera / Ertiga / Triber',
+    capacity: 'Up to 7 passengers',
+    seasonPrice: '₹3,500',
+    offSeasonPrice: '₹3,200',
+    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Spacious for groups & families',
+      'Comfortable seating for 7',
+      'Perfect for family trips',
+      'Extra luggage space'
+    ]
+  },
+  {
+    name: 'SUV Luxury',
+    model: 'Innova Car - 7 pax',
+    capacity: 'Up to 7 passengers',
+    seasonPrice: '₹4,000',
+    offSeasonPrice: '₹3,500',
+    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop',
+    features: [
+      'Premium luxury experience',
+      'Most comfortable ride',
+      'Ideal for corporate travel',
+      'Top-of-the-line amenities'
+    ]
+  }
+];
+
+const attractions = [
+  {
+    name: 'Mukteshwar Dham',
+    description: 'It is a 350-year-old temple and is situated at the highest point in Mukteshwar also known as Mukteshwar Dham, after which the entire region was named Mukteshwar. The temple is dedicated to Lord Shiva and offers spiritual solace along with breathtaking views.',
+    image: 'https://images.unsplash.com/photo-1582721977844-fe0c47ac3d0a?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      '350-year-old ancient temple',
+      'Dedicated to Lord Shiva',
+      'Highest point in Mukteshwar',
+      'Spiritual significance'
+    ]
+  },
+  {
+    name: 'Chauli Ki Jaali',
+    description: 'It is a mesmerizing place situated on the cliff behind the Mukteshwar temple. Leaning on the edge of the cliff you can have invigorating and panoramic views of splendid Himalayan range and enchanting valley of Kumaon region.',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Breathtaking cliff viewpoint',
+      'Panoramic Himalayan views',
+      'Enchanting valley vistas',
+      'Adventure & photography spot'
+    ]
+  },
+  {
+    name: 'Inspection Bungalow',
+    description: 'This PWD inspection Bungalow in Mukteshwar is an architectural wonder. The bungalow has lush green surroundings and beautiful views which makes it a must-see in the hill station.',
+    image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Architectural marvel',
+      'Colonial era heritage',
+      'Lush green surroundings',
+      'Scenic mountain views'
+    ]
+  },
+  {
+    name: 'Renewable Park',
+    description: 'There is also a Renewable Park managed by The Energy and Resources Institute (TERI). This park showcases sustainable energy solutions and environmental conservation efforts in the Himalayan region.',
+    image: 'https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?q=80&w=800&auto=format&fit=crop',
+    highlights: [
+      'Managed by TERI',
+      'Sustainable energy exhibits',
+      'Environmental education',
+      'Eco-tourism destination'
+    ]
+  }
+];
+
+const faqs = [
+  {
+    question: 'How long does the journey take from Kathgodam to Mukteshwar?',
+    answer: 'The journey from Kathgodam to Mukteshwar typically takes around <strong>2 hours</strong>, covering a distance of 72 KM. The actual time may vary depending on traffic conditions and weather.'
+  },
+  {
+    question: 'What is included in the taxi fare?',
+    answer: 'Our taxi fare is fully inclusive of:<br>• All tolls and state taxes<br>• Parking fees<br>• Driver allowance<br>• Fuel charges<br>• Pick up from Kathgodam Railway Station<br>There are absolutely no hidden charges!'
+  },
+  {
+    question: 'Is the car AC or non-AC?',
+    answer: 'All our cars are <strong>fully air-conditioned</strong> with working AC. We maintain our fleet to the highest standards to ensure your comfort during the mountain journey.'
+  },
+  {
+    question: 'What if my train is delayed?',
+    answer: 'Don\'t worry! We track train timings and our drivers wait for delayed trains at no extra cost. Just inform us about your train number when booking, and we\'ll monitor it for you.'
+  },
+  {
+    question: 'What is your cancellation policy?',
+    answer: 'We offer flexible cancellation:<br>• <strong>Free cancellation</strong> up to 24 hours before pickup<br>• 50% charge for cancellations within 24 hours<br>• No refund for no-shows<br>Please contact us on WhatsApp or call for any changes to your booking.'
+  },
+  {
+    question: 'What is the best time to visit Mukteshwar?',
+    answer: 'Mukteshwar is beautiful year-round. <strong>March to June</strong> offers pleasant weather, while <strong>September to November</strong> provides clear mountain views. Winter (December-February) brings snow and chilly temperatures, perfect for snow lovers.'
+  }
+];
+
+const pageContent = {
+  title: 'Kathgodam to Mukteshwar Taxi - Starting ₹2,400 | Fixed Transparent Pricing',
+  description: 'Book Kathgodam to Mukteshwar taxi at fixed rates starting ₹2,400. 72 KM, 2 hours journey. Clean AC cars, experienced drivers, no hidden charges.',
+  metaDescription: 'Book Kathgodam to Mukteshwar taxi at fixed rates starting ₹2,400. 72 KM, 2 hours journey. Clean AC cars, experienced drivers, no hidden charges. Book now!',
+  keywords: 'Kathgodam to Mukteshwar taxi, Mukteshwar taxi fare, Kathgodam taxi, taxi booking Mukteshwar, Kathgodam railway station taxi',
+  introText1: 'Kathgodam to Mukteshwar is at a distance of <strong>72 KM</strong> from Kathgodam railway station. Mukteshwar is a peaceful destination situated at <strong>2,285 meters above sea level</strong>. Mukteshwar got its name from a 350 year old temple Mukteshwar Dham whose residing deity is Lord Shiva. Time to reach from Kathgodam to Mukteshwar is around <strong>2 hours</strong>.',
+  introText2: 'Our taxi fare from Kathgodam to Mukteshwar starts at <strong>₹2,400 for an Alto car</strong>, with transparent pricing that includes all tolls, taxes, and driver allowances. No hidden charges, no surprises!',
+  attractionsTitle: 'Places Worth Seeing in Mukteshwar'
+};
+
+const packages = {
+  stayPackages: [
+    {
+      name: 'Hatchback + Stay',
+      description: 'Alto/Alto K10 + 1 Room (Twin Sharing)',
+      seasonPrice: '₹3,700',
+      offSeasonPrice: '₹3,300',
+      popular: false
+    },
+    {
+      name: 'Sedan + Stay',
+      description: 'Xcent/Amaze/Dzire + 1 Room',
+      seasonPrice: '₹4,200',
+      offSeasonPrice: '₹3,700',
+      popular: true
+    },
+    {
+      name: 'SUV + Stay',
+      description: 'Tavera/Ertiga (7 pax) + 2 Rooms',
+      seasonPrice: '₹6,500',
+      offSeasonPrice: '₹6,200',
+      popular: false
+    }
+  ],
+  tourPackages: [
+    {
+      name: '2 Days & 1 Night',
+      subtitle: 'Mukteshwar Exploration',
+      features: [
+        'Mukteshwar Temple & Chauli Ki Jaali',
+        'Renewable Park Visit',
+        'Inspection Bungalow & Viewpoints'
+      ],
+      price: 'From ₹6,500',
+      popular: false
+    },
+    {
+      name: '3 Days & 2 Nights',
+      subtitle: 'Mukteshwar & Nainital',
+      features: [
+        'Complete Mukteshwar sightseeing',
+        'Nainital Lake & Mall Road',
+        'Bhimtal & Sattal Lakes'
+      ],
+      price: 'From ₹9,500',
+      popular: true
+    },
+    {
+      name: 'Kainchi Dham',
+      subtitle: '4 Dham Tour',
+      features: [
+        'Kainchi Dham Ashram',
+        'Neem Karoli Baba Temple',
+        'Ghorakhal & Chitai Temples'
+      ],
+      price: 'From ₹4,500',
+      popular: false
+    },
+    {
+      name: '4 Days & 3 Nights',
+      subtitle: 'Complete Kumaon Tour',
+      features: [
+        'Mukteshwar, Nainital, Ranikhet',
+        'All viewpoints & temples',
+        'Lakes & cultural sites'
+      ],
+      price: 'From ₹14,500',
+      popular: false
+    }
+  ]
+};
+---
+
+<RoutePageLayout
+  routeData={routeData}
+  carTypes={carTypes}
+  attractions={attractions}
+  faqs={faqs}
+  pageContent={pageContent}
+  packages={packages}
+/>
