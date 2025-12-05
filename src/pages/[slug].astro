@@ -1,0 +1,440 @@
+---
+import RoutePageLayout from '../layouts/RoutePageLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { getAllRouteSlugs, getAllPackageSlugs, getRouteBySlug, getPackageBySlug, urlFor } from '../lib/sanity';
+import type { Route } from '../types/route';
+import type { Package } from '../types/package';
+import '../styles/global.css';
+
+export async function getStaticPaths() {
+  const routeSlugs = await getAllRouteSlugs();
+  const packageSlugs = await getAllPackageSlugs();
+
+  const allSlugs = [
+    ...routeSlugs.map((slug: string) => ({ params: { slug }, props: { type: 'route' } })),
+    ...packageSlugs.map((slug: string) => ({ params: { slug }, props: { type: 'package' } })),
+  ];
+
+  return allSlugs;
+}
+
+const { slug } = Astro.params;
+const { type } = Astro.props;
+
+// Determine if this is a route or package
+let route: Route | null = null;
+let packageData: Package | null = null;
+let isPackage = false;
+
+if (type === 'route') {
+  route = await getRouteBySlug(slug!);
+} else if (type === 'package') {
+  packageData = await getPackageBySlug(slug!);
+  isPackage = true;
+}
+
+// If neither found, redirect to 404
+if (!route && !packageData) {
+  return Astro.redirect('/404');
+}
+
+// For routes, transform the data
+let routeData, heroSlides, carTypes, attractions, faqs, pageContent, exclusions, packages;
+
+if (route) {
+  routeData = {
+    from: route.from,
+    to: route.to,
+    distance: route.distance,
+    duration: route.duration,
+    startingPrice: route.startingPrice,
+    slug: route.slug,
+    destinationLatitude: route.destinationLatitude,
+    destinationLongitude: route.destinationLongitude,
+    googleMapsEmbedUrl: route.googleMapsEmbedUrl,
+  };
+
+  heroSlides = route.heroSlides?.map((slide) => ({
+    image: slide.image ? urlFor(slide.image).width(2070).height(1380).url() : '',
+    title: slide.title,
+    description: slide.description,
+  })) || undefined;
+
+  // Helper function to get default car image based on car name
+  const getDefaultCarImage = (carName: string): string => {
+    const imageMap: Record<string, string> = {
+      'Hatchback': '/images/cars/alto.jfif',
+      'Sedan': '/images/cars/dzire.jpg',
+      'SUV Standard': '/images/cars/tavera.jpg',
+      'SUV Deluxe': '/images/cars/innova.jpg',
+      'SUV Luxury': '/images/cars/innova-crysta.jpg',
+    };
+    return imageMap[carName] || '/images/cars/dzire.jpg'; // Default to dzire if not found
+  };
+
+  carTypes = route.carTypes.map((car) => ({
+    name: car.name,
+    model: car.model,
+    capacity: car.capacity,
+    seasonPrice: car.seasonPrice,
+    offSeasonPrice: car.offSeasonPrice,
+    image: car.image
+      ? (typeof car.image === 'string' ? car.image : urlFor(car.image).width(800).height(600).url())
+      : getDefaultCarImage(car.name),
+    features: car.features,
+  }));
+
+  attractions = route.attractions?.map((attraction) => ({
+    name: attraction.name,
+    description: attraction.description,
+    image: attraction.image ? urlFor(attraction.image).width(800).height(600).url() : '',
+    highlights: attraction.highlights,
+  })) || [];
+
+  // Process FAQs with dynamic content replacement
+  faqs = (route.faqs || []).map((faq) => {
+    const replacePlaceholders = (text: string) => {
+      return text
+        .replace(/\{\{from\}\}/g, route.from)
+        .replace(/\{\{to\}\}/g, route.to)
+        .replace(/\{\{distance\}\}/g, route.distance)
+        .replace(/\{\{duration\}\}/g, route.duration);
+    };
+
+    return {
+      question: replacePlaceholders(faq.question),
+      answer: replacePlaceholders(faq.answer),
+    };
+  });
+
+  pageContent = {
+    title: route.pageTitle,
+    description: route.metaDescription,
+    metaDescription: route.metaDescription,
+    keywords: route.keywords || '',
+    introText1: route.introText1,
+    introText2: route.introText2,
+    attractionsTitle: route.attractionsTitle || `Places Worth Seeing in ${route.to}`,
+  };
+
+  exclusions = route.exclusions || [];
+
+  packages = {
+    stayPackages: route.stayPackages || [],
+    tourPackages: route.tourPackages?.map((pkg) => ({
+      name: pkg.name,
+      subtitle: pkg.subtitle,
+      features: pkg.features,
+      price: pkg.price,
+      popular: pkg.popular,
+      image: pkg.image ? urlFor(pkg.image).width(800).height(600).url() : undefined,
+    })) || [],
+  };
+}
+
+// For packages
+const whatsappNumber = '917351721351';
+const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
+---
+
+{!isPackage && route ? (
+  <RoutePageLayout
+    routeData={routeData}
+    heroSlides={heroSlides}
+    carTypes={carTypes}
+    attractions={attractions}
+    faqs={faqs}
+    pageContent={pageContent}
+    exclusions={exclusions}
+    packages={packages}
+  />
+) : packageData ? (
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>{packageData.pageTitle}</title>
+      <meta name="description" content={packageData.metaDescription} />
+      {packageData.keywords && <meta name="keywords" content={packageData.keywords} />}
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <meta property="og:title" content={packageData.pageTitle} />
+      <meta property="og:description" content={packageData.metaDescription} />
+      <meta property="og:type" content="website" />
+    </head>
+    <body class="antialiased">
+      <Navbar />
+      <main class="pt-16">
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white overflow-hidden min-h-[65vh]">
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-black rounded-full blur-3xl"></div>
+          </div>
+
+          <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="grid lg:grid-cols-2 gap-8 items-center">
+              <div class="space-y-4">
+                {packageData.subtitle && (
+                  <div class="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-semibold">
+                    {packageData.subtitle}
+                  </div>
+                )}
+
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  {packageData.name}
+                </h1>
+
+                {packageData.duration && (
+                  <p class="text-lg text-white/90">{packageData.duration}</p>
+                )}
+
+                <div class="inline-flex items-center gap-2 bg-secondary-900 px-4 py-2 rounded-lg">
+                  <span class="text-sm text-white/80">Starting from</span>
+                  <span class="text-2xl md:text-3xl font-bold text-primary-400">{packageData.startingPrice}</span>
+                </div>
+
+                <div class="flex flex-wrap gap-3 pt-2">
+                  <a href="#pricing" class="inline-flex items-center gap-2 bg-secondary-900 text-primary-500 px-6 py-3 rounded-lg font-bold hover:bg-secondary-800 transition-all shadow-xl hover:shadow-2xl hover:scale-105">
+                    <span>View Details</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </a>
+                  <a href={`${baseWhatsappUrl}?text=${encodeURIComponent(`Hi, I want to book ${packageData.name}`)}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-[#25d366] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#1fb855] transition-all shadow-xl hover:shadow-2xl hover:scale-105">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    <span>Book Now</span>
+                  </a>
+                </div>
+              </div>
+
+              {packageData.heroSlides && packageData.heroSlides.length > 0 && (
+                <div class="hidden lg:block">
+                  <img
+                    src={urlFor(packageData.heroSlides[0].image).width(700).height(450).url()}
+                    alt={packageData.heroSlides[0].title || packageData.name}
+                    class="rounded-2xl shadow-2xl w-full object-cover h-[400px]"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <!-- Introduction Section -->
+        <section class="py-12 bg-gray-50">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="prose prose-lg max-w-none">
+              <div set:html={packageData.introText} class="text-gray-700 leading-relaxed"></div>
+            </div>
+
+            {packageData.highlights && packageData.highlights.length > 0 && (
+              <div class="mt-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Highlights</h2>
+                <ul class="grid md:grid-cols-2 gap-3">
+                  {packageData.highlights.map((highlight) => (
+                    <li class="flex items-start gap-2">
+                      <svg class="w-6 h-6 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span class="text-gray-700">{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <!-- Itinerary Section -->
+        {packageData.itinerary && packageData.itinerary.length > 0 && (
+          <section class="py-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8">Itinerary</h2>
+              <div class="space-y-6">
+                {packageData.itinerary.map((day) => (
+                  <div class="border-l-4 border-primary-500 pl-6 py-4">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{day.day}: {day.title}</h3>
+                    <ul class="space-y-2">
+                      {day.activities.map((activity) => (
+                        <li class="flex items-start gap-2 text-gray-700">
+                          <svg class="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                          <span>{activity}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- Pricing Options -->
+        {packageData.pricingOptions && packageData.pricingOptions.length > 0 && (
+          <section id="pricing" class="py-12 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Pricing Options</h2>
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {packageData.pricingOptions.map((option) => (
+                  <div class={`bg-white rounded-xl shadow-lg p-6 ${option.popular ? 'ring-2 ring-primary-500 relative' : ''}`}>
+                    {option.popular && (
+                      <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-bold">
+                        Popular
+                      </div>
+                    )}
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{option.name}</h3>
+                    {option.description && <p class="text-gray-600 mb-4">{option.description}</p>}
+                    <div class="text-3xl font-bold text-primary-600 mb-6">{option.price}</div>
+                    {option.features && option.features.length > 0 && (
+                      <ul class="space-y-2 mb-6">
+                        {option.features.map((feature) => (
+                          <li class="flex items-start gap-2 text-gray-700">
+                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <a href={`${baseWhatsappUrl}?text=${encodeURIComponent(`Hi, I want to book ${option.name} - ${packageData.name}`)}`} target="_blank" rel="noopener noreferrer" class="block w-full text-center bg-primary-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-600 transition-colors">
+                      Book Now
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- Inclusions & Exclusions -->
+        {(packageData.inclusions || packageData.exclusions) && (
+          <section class="py-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="grid md:grid-cols-2 gap-8">
+                {packageData.inclusions && packageData.inclusions.length > 0 && (
+                  <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
+                    <ul class="space-y-2">
+                      {packageData.inclusions.map((item) => (
+                        <li class="flex items-start gap-2 text-gray-700">
+                          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {packageData.exclusions && packageData.exclusions.length > 0 && (
+                  <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Excluded</h2>
+                    <ul class="space-y-2">
+                      {packageData.exclusions.map((item) => (
+                        <li class="flex items-start gap-2 text-gray-700">
+                          <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- Attractions -->
+        {packageData.attractions && packageData.attractions.length > 0 && (
+          <section class="py-12 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8">Places to Visit</h2>
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {packageData.attractions.map((attraction) => (
+                  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    {attraction.image && (
+                      <img
+                        src={urlFor(attraction.image).width(400).height(250).url()}
+                        alt={attraction.name}
+                        class="w-full h-48 object-cover"
+                      />
+                    )}
+                    <div class="p-6">
+                      <h3 class="text-xl font-bold text-gray-900 mb-2">{attraction.name}</h3>
+                      <p class="text-gray-600 mb-4">{attraction.description}</p>
+                      {attraction.highlights && attraction.highlights.length > 0 && (
+                        <ul class="space-y-1">
+                          {attraction.highlights.map((highlight) => (
+                            <li class="text-sm text-gray-700 flex items-start gap-1">
+                              <span class="text-primary-500">•</span>
+                              <span>{highlight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- FAQs -->
+        {packageData.faqs && packageData.faqs.length > 0 && (
+          <section class="py-12 bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+              <div class="space-y-4">
+                {packageData.faqs.map((faq) => (
+                  <details class="bg-gray-50 rounded-lg p-6 group">
+                    <summary class="font-bold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                      <span>{faq.question}</span>
+                      <svg class="w-5 h-5 text-primary-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </summary>
+                    <p class="mt-4 text-gray-700">{faq.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- Related Routes -->
+        {packageData.relatedRoutes && packageData.relatedRoutes.length > 0 && (
+          <section class="py-12 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-8">Related Routes</h2>
+              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {packageData.relatedRoutes.map((relatedRoute) => (
+                  <a href={`/${relatedRoute.slug}`} class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{relatedRoute.from} → {relatedRoute.to}</h3>
+                    <div class="space-y-1 text-sm text-gray-600">
+                      <p><strong>Distance:</strong> {relatedRoute.distance}</p>
+                      <p><strong>Duration:</strong> {relatedRoute.duration}</p>
+                      <p><strong>Starting at:</strong> {relatedRoute.startingPrice}</p>
+                    </div>
+                    <span class="inline-block mt-4 text-primary-600 font-semibold hover:underline">
+                      View Details →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+      <Footer />
+    </body>
+  </html>
+) : null}

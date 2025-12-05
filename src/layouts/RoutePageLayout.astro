@@ -136,11 +136,9 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
               <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 {routeData.from} to {routeData.to} Taxi Service
               </h1>
-              <p class="text-lg text-gray-700 leading-relaxed mb-4">
-                {pageContent.introText1}
+              <p class="text-lg text-gray-700 leading-relaxed mb-4" set:html={pageContent.introText1}>
               </p>
-              <p class="text-lg text-gray-700 leading-relaxed">
-                {pageContent.introText2}
+              <p class="text-lg text-gray-700 leading-relaxed" set:html={pageContent.introText2}>
               </p>
             </div>
 
@@ -417,8 +415,7 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                       </svg>
                     </summary>
-                    <div class="p-4 pt-0 text-gray-600 leading-relaxed">
-                      {faq.answer}
+                    <div class="p-4 pt-0 text-gray-600 leading-relaxed" set:html={faq.answer}>
                     </div>
                   </details>
                 ))}

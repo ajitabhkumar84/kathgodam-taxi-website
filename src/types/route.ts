@@ -10,7 +10,7 @@ export interface CarType {
   capacity: string;
   seasonPrice: string;
   offSeasonPrice: string;
-  image: any; // Sanity image object
+  image: string | any; // URL string or Sanity image object
   features: string[];
 }
 

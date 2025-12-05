@@ -1,90 +1,31 @@
 ---
 import RouteCard from './RouteCard.astro';
 
-const routes = [
-  {
-    from: 'Kathgodam',
-    to: 'Nainital',
-    distance: '35 KM',
-    duration: '1 hour',
-    price: '₹1,200',
-    description: 'Enjoy a scenic drive to the beautiful lake city of Nainital. Perfect for families and nature lovers seeking tranquility in the hills.',
-    image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=2071&auto=format&fit=crop',
-    href: '/kathgodam-nainital/'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Kainchi Dham',
-    distance: '30 KM',
-    duration: '45 min',
-    price: '₹1,200',
-    description: 'Visit the sacred Kainchi Dham ashram, blessed by Neem Karoli Baba. A spiritual journey through peaceful mountain roads.',
-    image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Mukteshwar',
-    distance: '70 KM',
-    duration: '2 hours',
-    price: '₹2,500',
-    description: 'Explore the serene hill station known for its temples and panoramic Himalayan views. Ideal for weekend getaways and adventure enthusiasts.',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Jim Corbett',
-    distance: '75 KM',
-    duration: '2 hours',
-    price: '₹2,400',
-    description: 'Experience India\'s oldest national park, home to majestic Bengal tigers and diverse wildlife. Perfect for safari adventures.',
-    image: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?q=80&w=2076&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Ranikhet',
-    distance: '80 KM',
-    duration: '2.5 hours',
-    price: '₹2,800',
-    description: 'Discover the "Queen\'s Meadow" with stunning views of snow-capped peaks. A peaceful retreat surrounded by pine and oak forests.',
-    image: 'https://images.unsplash.com/photo-1563979266-f7a97b3e2d05?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Binsar',
-    distance: '125 KM',
-    duration: '3.5 hours',
-    price: '₹3,200',
-    description: 'Journey to the wildlife sanctuary offering breathtaking 360-degree views of Himalayan peaks. A paradise for nature photographers.',
-    image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Kausani',
-    distance: '145 KM',
-    duration: '4 hours',
-    price: '₹4,000',
-    description: 'Visit the "Switzerland of India" renowned for its mesmerizing sunrise views over the Himalayas. A haven for peace seekers.',
-    image: 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=2076&auto=format&fit=crop'
-  },
-  {
-    from: 'Pantnagar',
-    to: 'Nainital',
-    distance: '65 KM',
-    duration: '1.5 hours',
-    price: '₹2,500',
-    description: 'Convenient airport pickup to Nainital. Start your hill station vacation with a comfortable ride from Pantnagar Airport.',
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Pantnagar',
-    to: 'Kathgodam',
-    distance: '30 KM',
-    duration: '45 min',
-    price: '₹1,200',
-    description: 'Hassle-free airport transfer service. Connect seamlessly from Pantnagar Airport to Kathgodam railway station.',
-    image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop'
-  }
-];
+interface Route {
+  from: string;
+  to: string;
+  distance: string;
+  duration: string;
+  price: string;
+  description: string;
+  image: string;
+  href?: string;
+  slug?: string;
+}
+
+interface Props {
+  routes?: Route[];
+  sectionTitle?: string;
+  sectionDescription?: string;
+  bottomCTA?: string;
+}
+
+const {
+  routes = [],
+  sectionTitle = 'Our Most Requested Taxi Services',
+  sectionDescription = 'Fixed prices, no hidden charges. All fares include tolls, state taxes, and driver allowances. Book now for a hassle-free journey!',
+  bottomCTA = "Don't see your destination? We cover all Kumaon region destinations!"
+} = Astro.props;
 ---
 
 <section class="py-10 bg-gray-50" id="routes">
@@ -98,10 +39,14 @@ const routes = [
         Popular Routes
       </div>
       <h2 class="text-4xl font-bold text-gray-900 mb-4">
-        Our Most Requested <span class="text-primary-600">Taxi Services</span>
+        {sectionTitle.includes('Taxi Services') ? (
+          <Fragment set:html={sectionTitle.replace('Taxi Services', '<span class="text-primary-600">Taxi Services</span>')} />
+        ) : (
+          sectionTitle
+        )}
       </h2>
       <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        Fixed prices, no hidden charges. All fares include tolls, state taxes, and driver allowances. Book now for a hassle-free journey!
+        {sectionDescription}
       </p>
     </div>
 
@@ -116,14 +61,14 @@ const routes = [
           price={route.price}
           description={route.description}
           image={route.image}
-          href={route.href}
+          href={route.href || `/${route.slug}` || '#'}
         />
       ))}
     </div>
 
     <!-- Bottom CTA -->
     <div class="mt-8 text-center">
-      <p class="text-gray-600 mb-4">Don't see your destination? We cover all Kumaon region destinations!</p>
+      <p class="text-gray-600 mb-4">{bottomCTA}</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href="/contact"

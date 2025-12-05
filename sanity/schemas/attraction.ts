@@ -22,6 +22,7 @@ export default defineType({
       name: 'image',
       title: 'Attraction Image',
       type: 'image',
+      description: 'Recommended: 800x800px (1:1 square aspect ratio), Max 1MB, JPEG/WebP format. Image should showcase the attraction prominently.',
       options: {
         hotspot: true,
       },
@@ -30,7 +31,7 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative text',
-          description: 'Important for SEO and accessibility',
+          description: 'Important for SEO and accessibility. Describe the attraction shown.',
         }
       ],
       validation: (Rule) => Rule.required(),

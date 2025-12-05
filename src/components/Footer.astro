@@ -1,23 +1,43 @@
 ---
-const phoneNumber = '7351721351';
-const whatsappNumber = '917351721351';
-const email = 'kathgodamtaxi@gmail.com';
+import { getSiteSettings, getFooter } from '../lib/sanity';
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Our Tours', href: '#tours' },
-  { name: 'Our Fleet', href: '#fleet' },
-  { name: 'Reviews', href: '#reviews' },
+// Fetch data from Sanity
+const siteSettings = await getSiteSettings();
+const footerConfig = await getFooter();
+
+// Fallback to defaults if Sanity data not available
+const logoText = siteSettings?.logoText || 'Kathgodam';
+const logoHighlight = siteSettings?.logoHighlight || 'Taxi';
+const phoneNumber = siteSettings?.phone || '7351721351';
+const whatsappNumber = siteSettings?.whatsappNumber || '917351721351';
+const email = siteSettings?.email || 'kathgodamtaxi@gmail.com';
+const whatsappMessage = siteSettings?.whatsappMessage || 'Hi, I would like to book a taxi from Kathgodam.';
+
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
+const brandDescription = footerConfig?.brandDescription || 'Your trusted taxi partner for exploring the beautiful Kumaon hills. Safe drivers, transparent pricing, unforgettable trips.';
+
+const navigation = footerConfig?.navigationLinks || [
+  { label: 'Home', href: '/' },
+  { label: 'Our Tours', href: '#tours' },
+  { label: 'Our Fleet', href: '#fleet' },
+  { label: 'Reviews', href: '#reviews' },
 ];
 
-const services = [
-  { name: 'Kathgodam to Nainital', href: '/kathgodam-nainital' },
-  { name: 'Kainchi Dham Visit', href: '#' },
-  { name: 'Mukteshwar Tour', href: '#' },
-  { name: 'Airport Transfers', href: '#' },
+const services = footerConfig?.serviceLinks || [
+  { label: 'Kathgodam to Nainital', href: '/kathgodam-nainital' },
+  { label: 'Kainchi Dham Visit', href: '#' },
+  { label: 'Mukteshwar Tour', href: '#' },
+  { label: 'Airport Transfers', href: '#' },
 ];
 
-const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I would like to book a taxi from Kathgodam.')}`;
+const contactSectionTitle = footerConfig?.contactSectionTitle || 'Contact Us';
+const submitQueryLabel = footerConfig?.submitQueryLabel || 'Submit Query';
+const submitQueryLink = footerConfig?.submitQueryLink || '/contact';
+
+const copyrightText = footerConfig?.copyrightText || '{year} Kathgodam Taxi. All rights reserved.';
+const currentYear = new Date().getFullYear();
+const displayCopyright = copyrightText.replace('{year}', currentYear.toString());
 ---
 
 <footer class="bg-gray-900 text-gray-300">
@@ -27,10 +47,10 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
       <!-- Brand & Description -->
       <div class="lg:col-span-1">
         <div class="text-2xl font-bold text-white mb-4">
-          Kathgodam <span class="text-primary-500">Taxi</span>
+          {logoText} <span class="text-primary-500">{logoHighlight}</span>
         </div>
         <p class="text-gray-400 text-sm leading-relaxed mb-4">
-          Your trusted taxi partner for exploring the beautiful Kumaon hills. Safe drivers, transparent pricing, unforgettable trips.
+          {brandDescription}
         </p>
         <div class="flex space-x-4">
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-whatsapp transition-colors">
@@ -45,10 +65,10 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
       <div>
         <h3 class="text-white font-semibold text-lg mb-4">Navigation</h3>
         <ul class="space-y-2">
-          {navigation.map(item => (
+          {navigation.map((item: any) => (
             <li>
               <a href={item.href} class="text-gray-400 hover:text-primary-500 transition-colors text-sm">
-                {item.name}
+                {item.label}
               </a>
             </li>
           ))}
@@ -59,10 +79,10 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
       <div>
         <h3 class="text-white font-semibold text-lg mb-4">Our Services</h3>
         <ul class="space-y-2">
-          {services.map(item => (
+          {services.map((item: any) => (
             <li>
               <a href={item.href} class="text-gray-400 hover:text-primary-500 transition-colors text-sm">
-                {item.name}
+                {item.label}
               </a>
             </li>
           ))}
@@ -71,7 +91,7 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
 
       <!-- Contact Us -->
       <div>
-        <h3 class="text-white font-semibold text-lg mb-4">Contact Us</h3>
+        <h3 class="text-white font-semibold text-lg mb-4">{contactSectionTitle}</h3>
         <ul class="space-y-3">
           <li>
             <a href={`tel:+91${phoneNumber}`} class="text-gray-400 hover:text-primary-500 transition-colors text-sm flex items-center space-x-2">
@@ -99,20 +119,20 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
           </li>
         </ul>
         <a
-          href="/contact"
+          href={submitQueryLink}
           class="mt-4 inline-flex items-center justify-center bg-primary-500 text-black px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-primary-400 transition-colors"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Submit Query
+          {submitQueryLabel}
         </a>
       </div>
     </div>
 
     <!-- Bottom Bar -->
     <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-      <p>&copy; {new Date().getFullYear()} Kathgodam Taxi. All rights reserved.</p>
+      <p>&copy; {displayCopyright}</p>
     </div>
   </div>
 </footer>

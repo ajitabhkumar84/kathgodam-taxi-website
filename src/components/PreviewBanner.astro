@@ -1,0 +1,41 @@
+---
+interface Props {
+  show: boolean;
+}
+
+const { show } = Astro.props;
+
+if (!show) return null;
+---
+
+{show && (
+  <div class="fixed top-0 left-0 right-0 z-[9999] bg-yellow-500 text-black px-4 py-3 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <div>
+          <strong class="font-bold">Preview Mode Active</strong>
+          <span class="text-sm ml-2">You're viewing draft content from Sanity CMS</span>
+        </div>
+      </div>
+      <a
+        href="/api/exit-preview"
+        class="inline-flex items-center px-4 py-2 bg-black text-yellow-500 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        Exit Preview
+      </a>
+    </div>
+  </div>
+)}
+
+<style>
+  /* Adjust body padding when banner is visible */
+  :global(body:has(.fixed.bg-yellow-500)) {
+    padding-top: 60px;
+  }
+</style>

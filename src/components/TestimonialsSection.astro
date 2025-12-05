@@ -1,62 +1,26 @@
 ---
 import TestimonialCard from './TestimonialCard.astro';
 
-const testimonials = [
-  {
-    name: 'Anil Sharma',
-    location: 'New Delhi',
-    rating: 5,
-    quote: 'The driver was excellent and the car was very clean. The journey from Kathgodam to Nainital was comfortable and safe. Highly recommended!'
-  },
-  {
-    name: 'Priya Mehta',
-    location: 'Mumbai',
-    rating: 5,
-    quote: 'Transparent pricing with no hidden charges. The driver was very courteous and knew all the best spots in Mukteshwar. Will definitely book again!'
-  },
-  {
-    name: 'Rajesh Kumar',
-    location: 'Bangalore',
-    rating: 5,
-    quote: 'Professional service from start to finish. The car was well-maintained and the driver was very knowledgeable about the local area. Great experience!'
-  },
-  {
-    name: 'Sneha Patel',
-    location: 'Ahmedabad',
-    rating: 5,
-    quote: 'Booked a taxi for our family trip to Ranikhet. The driver arrived on time and was very patient with our kids. The car was spacious and comfortable for the mountain roads.'
-  },
-  {
-    name: 'Vikram Singh',
-    location: 'Lucknow',
-    rating: 5,
-    quote: 'I travel to Nainital frequently for business. Kathgodam Taxi has been my go-to choice for over a year now. Always reliable, always professional. Great service!'
-  },
-  {
-    name: 'Meera Reddy',
-    location: 'Hyderabad',
-    rating: 5,
-    quote: 'We hired them for a 3-day Kumaon tour. The driver was like a local guide, showing us hidden gems and best viewpoints. Made our trip truly memorable!'
-  },
-  {
-    name: 'Amit Gupta',
-    location: 'Pune',
-    rating: 5,
-    quote: 'Picked us up from Pantnagar Airport late at night. Despite the delay, the driver waited patiently. Very safe drive to Bhimtal. Excellent customer service!'
-  },
-  {
-    name: 'Kavita Joshi',
-    location: 'Kolkata',
-    rating: 5,
-    quote: 'Visited Kainchi Dham with my elderly parents. The driver was extremely careful on the winding roads and helped them in and out of the car. Very caring and professional!'
-  },
-  {
-    name: 'Rohit Verma',
-    location: 'Chandigarh',
-    rating: 5,
-    quote: 'Best taxi service in the region! Fixed prices, no bargaining, clean cars, and courteous drivers. Used them for Kathgodam to Jim Corbett. Will use again for sure!'
-  }
-];
+interface Testimonial {
+  name: string;
+  location: string;
+  rating: number;
+  quote: string;
+}
+
+interface Props {
+  testimonials?: Testimonial[];
+  sectionTitle?: string;
+  sectionDescription?: string;
+  footerText?: string;
+}
+
+const {
+  testimonials = [],
+  sectionTitle = 'What Our Guests Say',
+  sectionDescription = "Don't just take our word for it. Hear from our happy customers who have experienced the Kumaon hills with us.",
+  footerText = '4.9/5 Average Rating from 500+ Reviews'
+} = Astro.props;
 ---
 
 <section class="py-10 bg-white" id="reviews">
@@ -64,10 +28,10 @@ const testimonials = [
     <!-- Section Header -->
     <div class="text-center mb-8">
       <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-        What Our Guests Say
+        {sectionTitle}
       </h2>
       <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-        Don't just take our word for it. Hear from our happy customers who have experienced the Kumaon hills with us.
+        {sectionDescription}
       </p>
     </div>
 
@@ -103,7 +67,7 @@ const testimonials = [
         <svg class="w-6 h-6 text-primary-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
         </svg>
-        <span class="text-primary-900 font-semibold">4.9/5 Average Rating from 500+ Reviews</span>
+        <span class="text-primary-900 font-semibold">{footerText}</span>
       </div>
     </div>
   </div>

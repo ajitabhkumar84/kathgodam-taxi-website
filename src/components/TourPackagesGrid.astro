@@ -1,62 +1,26 @@
 ---
 import RouteCard from './RouteCard.astro';
 
-const tourPackages = [
-  {
-    from: 'Kathgodam',
-    to: 'Nainital Tour',
-    distance: 'Multi-day',
-    duration: '2-3 days',
-    price: '₹4,500',
-    description: 'Explore Nainital\'s lakes, viewpoints, and colonial charm. Includes hotel stay, sightseeing, and scenic hill drives.',
-    image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=2071&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Kainchi Dham Package',
-    distance: 'Full Day',
-    duration: '1 day',
-    price: '₹4,500',
-    description: 'Spiritual day trip with hotel accommodation. Visit the sacred ashram and nearby temples with experienced local guides.',
-    image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Mukteshwar Package',
-    distance: 'Multi-day',
-    duration: '2-3 days',
-    price: '₹6,000',
-    description: 'Complete hill station experience with adventure activities, temple visits, and panoramic mountain views.',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Jim Corbett Safari',
-    distance: 'Multi-day',
-    duration: '2-3 days',
-    price: '₹8,000',
-    description: 'Thrilling wildlife safari package with jungle stay. Multiple safari drives and nature walks included.',
-    image: 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?q=80&w=2076&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Ranikhet Retreat',
-    distance: 'Multi-day',
-    duration: '2-3 days',
-    price: '₹7,500',
-    description: 'Peaceful mountain retreat with heritage walks, golf course visits, and breathtaking sunset views.',
-    image: 'https://images.unsplash.com/photo-1563979266-f7a97b3e2d05?q=80&w=2070&auto=format&fit=crop'
-  },
-  {
-    from: 'Kathgodam',
-    to: 'Kausani Tour',
-    distance: 'Multi-day',
-    duration: '3-4 days',
-    price: '₹9,000',
-    description: 'Premium Himalayan experience with sunrise viewpoints, tea gardens, and cultural exploration.',
-    image: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=2070&auto=format&fit=crop'
-  }
-];
+interface Package {
+  name: string;
+  slug: string;
+  subtitle?: string;
+  price: string;
+  duration?: string;
+  image: string;
+}
+
+interface Props {
+  packages?: Package[];
+  sectionTitle?: string;
+  sectionDescription?: string;
+}
+
+const {
+  packages = [],
+  sectionTitle = 'Customized Tour Packages',
+  sectionDescription = 'Multi-day tours designed for complete relaxation and exploration. All packages include accommodation, meals, and sightseeing.'
+} = Astro.props;
 ---
 
 <section class="py-10 bg-white" id="tours">
@@ -71,24 +35,29 @@ const tourPackages = [
         Tour Packages
       </div>
       <h2 class="text-4xl font-bold text-gray-900 mb-4">
-        Customized <span class="text-primary-600">Tour Packages</span>
+        {sectionTitle.includes('Tour Packages') ? (
+          <Fragment set:html={sectionTitle.replace('Tour Packages', '<span class="text-primary-600">Tour Packages</span>')} />
+        ) : (
+          sectionTitle
+        )}
       </h2>
       <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        Multi-day tours designed for complete relaxation and exploration. All packages include accommodation, meals, and sightseeing.
+        {sectionDescription}
       </p>
     </div>
 
     <!-- Tour Packages Grid -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {tourPackages.map((tour) => (
+      {packages.map((pkg) => (
         <RouteCard
-          from={tour.from}
-          to={tour.to}
-          distance={tour.distance}
-          duration={tour.duration}
-          price={tour.price}
-          description={tour.description}
-          image={tour.image}
+          from="Kathgodam"
+          to={pkg.name}
+          distance={pkg.duration || 'Multi-day'}
+          duration={pkg.duration || ''}
+          price={pkg.price}
+          description={pkg.subtitle || ''}
+          image={pkg.image}
+          href={`/${pkg.slug}`}
         />
       ))}
     </div>

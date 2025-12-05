@@ -9,21 +9,20 @@ export default defineType({
       name: 'name',
       title: 'Car Name',
       type: 'string',
+      description: 'Car category name (Hatchback, Sedan, SUV Standard, SUV Deluxe, SUV Luxury)',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'model',
       title: 'Car Model',
       type: 'string',
-      description: 'e.g., Alto / Alto K10',
-      validation: (Rule) => Rule.required(),
+      description: 'e.g., Alto, Dzire, Ertiga/Xylo, Innova, Innova Crysta',
     }),
     defineField({
       name: 'capacity',
       title: 'Passenger Capacity',
       type: 'string',
-      description: 'e.g., Up to 4 passengers',
-      validation: (Rule) => Rule.required(),
+      description: 'e.g., Up to 4 passengers, Up to 6 passengers, Up to 7 passengers',
     }),
     defineField({
       name: 'seasonPrice',
@@ -41,8 +40,9 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Car Image',
+      title: 'Car Image (Optional)',
       type: 'image',
+      description: 'Optional: Override the default car image for this specific route. If not provided, will use the default image from Site Settings.',
       options: {
         hotspot: true,
       },
@@ -51,7 +51,7 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative text',
-          description: 'Important for SEO and accessibility',
+          description: 'Describe the car model (e.g., "White Toyota Innova Crysta")',
         }
       ],
     }),
@@ -60,14 +60,20 @@ export default defineType({
       title: 'Features',
       type: 'array',
       of: [{type: 'string'}],
-      validation: (Rule) => Rule.required().min(2).max(6),
+      description: 'List of features for this car type (defaults are set for each category)',
     }),
   ],
   preview: {
     select: {
       title: 'name',
       subtitle: 'model',
-      media: 'image',
+    },
+    prepare(selection) {
+      const {title, subtitle} = selection
+      return {
+        title: title || 'Car Type',
+        subtitle: subtitle || 'Model not set',
+      }
     },
   },
 })
