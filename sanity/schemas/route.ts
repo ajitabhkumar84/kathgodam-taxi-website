@@ -135,7 +135,76 @@ export default defineType({
       title: 'Car Types & Pricing',
       type: 'array',
       of: [{type: 'carType'}],
+      description: 'Default car types are pre-filled. You can edit any field including prices, features, or add/remove car types.',
       validation: (Rule) => Rule.required().min(1),
+      initialValue: [
+        {
+          name: 'Hatchback',
+          model: 'Alto',
+          capacity: 'Up to 4 passengers',
+          seasonPrice: '',
+          offSeasonPrice: '',
+          features: [
+            'Compact Car - ideal for solo or couples',
+            'Fuel efficient for mountain roads',
+            'Experienced local driver',
+            'AC is not available'
+          ]
+        },
+        {
+          name: 'Sedan',
+          model: 'Dzire',
+          capacity: 'Up to 4 passengers',
+          seasonPrice: '',
+          offSeasonPrice: '',
+          features: [
+            'Premium comfort & space',
+            'Ideal for journey of more than 2.5 hours in hills for small families',
+            'Extra luggage capacity',
+            'Experienced local driver'
+          ]
+        },
+        {
+          name: 'SUV Standard',
+          model: 'Ertiga/Triber/Tavera',
+          capacity: 'Up to 6 passengers',
+          seasonPrice: '',
+          offSeasonPrice: '',
+          features: [
+            'Spacious for large groups 6 pax',
+            'Perfect for family trips',
+            'For hills, less chances of motion sickness',
+            'Experienced local driver'
+          ]
+        },
+        {
+          name: 'SUV Deluxe',
+          model: 'Innova',
+          capacity: 'Up to 7 passengers',
+          seasonPrice: '',
+          offSeasonPrice: '',
+          features: [
+            'Comfortable and Spacious',
+            'Perfect for family trip',
+            'Carrier on top - extra luggage',
+            'Less chances of motion sickness',
+            'Experienced local driver'
+          ]
+        },
+        {
+          name: 'SUV Luxury',
+          model: 'Innova Crysta',
+          capacity: 'Up to 7 passengers',
+          seasonPrice: '',
+          offSeasonPrice: '',
+          features: [
+            'Premium luxury experience',
+            'Most comfortable ride',
+            'Ideal for corporate Travel',
+            'Experienced local driver'
+          ]
+        }
+      ],
     }),
 
     // Attractions
@@ -156,7 +225,7 @@ export default defineType({
       initialValue: [
         'Toll and Car parking charges',
         'Non-AC Car. AC would not work in hills.',
-        'No waiting for pickup and drop for journey less than 2 hours.',
+        'No stoppage for sightseeing for pickup and drop journeys.',
       ],
     }),
 
@@ -166,6 +235,29 @@ export default defineType({
       title: 'FAQs',
       type: 'array',
       of: [{type: 'faq'}],
+      description: 'Edit these default FAQs as needed. Use {{from}}, {{to}}, {{distance}}, {{duration}} for dynamic values.',
+      initialValue: [
+        {
+          question: 'How long does the journey take from {{from}} to {{to}}?',
+          answer: 'The journey from {{from}} to {{to}} typically takes around <strong>{{duration}}</strong>, covering a distance of {{distance}}. The actual time may vary depending on traffic conditions and weather.'
+        },
+        {
+          question: 'What is included in the taxi fare?',
+          answer: 'Our taxi fare is fully inclusive of:<br>• All tolls and state taxes<br>• Parking fees<br>• Driver allowance<br>• Fuel charges<br>• Pick up from {{from}}<br>There are absolutely no hidden charges!'
+        },
+        {
+          question: 'Is the car AC or non-AC?',
+          answer: 'AC will not work on hills. If required its Rs. 400/route extra and not work while car is stationary or in extended jam onroute.'
+        },
+        {
+          question: 'What if my train is delayed?',
+          answer: 'Don\'t worry! We track train timings and our drivers wait for delayed trains at no extra cost for multiple day bookings. If you have only booked one way cab then we wait for 2 hours of train delay and if we have other commitments from onward journeys then we refund the advance amount.'
+        },
+        {
+          question: 'Is the drop till our Hotel?',
+          answer: 'The charges are generally for the city center or the bus stand of that particular area. However, we accommodate till Hotel drop for most of places, provided they are within reasonable distance from city center. Please check with us the hotel name for clarifications regarding prices as some hotels are very distant from main place.'
+        }
+      ],
     }),
 
     // Stay Packages (Optional)
@@ -186,6 +278,15 @@ export default defineType({
       description: 'Optional: Add multi-day tour packages',
     }),
 
+    // Related Packages (Optional)
+    defineField({
+      name: 'relatedPackages',
+      title: 'Related Package Pages',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'package'}]}],
+      description: 'Optional: Link to related standalone package pages',
+    }),
+
     // Published status
     defineField({
       name: 'published',
@@ -193,6 +294,32 @@ export default defineType({
       type: 'boolean',
       description: 'Set to true to make this route visible on the website',
       initialValue: false,
+    }),
+
+    // Homepage Feature Settings
+    defineField({
+      name: 'showOnHomepage',
+      title: 'Show on Homepage',
+      type: 'boolean',
+      description: 'Make this route available for homepage selection',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'featuredHomepageImage',
+      title: 'Featured Homepage Image',
+      type: 'image',
+      description: 'Image displayed on homepage for this route. Recommended size: 800x600px (4:3 ratio). Required when "Show on Homepage" is enabled.',
+      options: {
+        hotspot: true,
+      },
+      validation: (Rule) =>
+        Rule.custom((image, context) => {
+          const showOnHomepage = (context.document as any)?.showOnHomepage
+          if (showOnHomepage && !image) {
+            return 'Featured Homepage Image is required when "Show on Homepage" is enabled'
+          }
+          return true
+        }),
     }),
   ],
 

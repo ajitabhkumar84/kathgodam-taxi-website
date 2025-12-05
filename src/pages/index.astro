@@ -8,11 +8,86 @@ import WhyChooseUs from '../components/WhyChooseUs.astro';
 import CorporateClients from '../components/CorporateClients.astro';
 import TestimonialsSection from '../components/TestimonialsSection.astro';
 import Footer from '../components/Footer.astro';
+import PreviewBanner from '../components/PreviewBanner.astro';
+import { getSiteSettings, getHomePage, getWhyChooseUs, getCorporateClients, urlFor } from '../lib/sanity';
 import '../styles/global.css';
 
-const whatsappNumber = '917351721351';
-const whatsappMessage = 'Hi, I would like to book a taxi from Kathgodam.';
+// Mark this page as server-rendered to support preview mode
+export const prerender = false;
+
+// Check if we're in preview mode
+const isPreview = Astro.cookies.get('preview-mode')?.value === 'true';
+
+// Fetch data from Sanity (with preview mode if enabled)
+const siteSettings = await getSiteSettings();
+const homePage = await getHomePage(isPreview);
+const whyChooseUsData = await getWhyChooseUs(isPreview);
+const corporateClientsData = await getCorporateClients(isPreview);
+
+// Fallback to defaults if Sanity data is not available
+const whatsappNumber = siteSettings?.whatsappNumber || '917351721351';
+const whatsappMessage = siteSettings?.whatsappMessage || 'Hi, I would like to book a taxi from Kathgodam.';
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+const phoneNumber = siteSettings?.phone || '7351721351';
+
+// Process homepage data
+const pageTitle = homePage?.pageTitle || 'Kathgodam Taxi - Safe & Reliable Taxi Services in Kumaon Hills';
+const metaDescription = homePage?.metaDescription || 'Kathgodam Taxi - Your trusted taxi service for Kumaon Hills.';
+const keywords = homePage?.keywords || 'Kathgodam taxi, Nainital taxi, Kumaon taxi';
+
+// Transform hero slides - convert Sanity images to URLs
+const heroSlides = homePage?.heroSlides?.map((slide: any) => ({
+  image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
+  title: slide.title,
+  subtitle: slide.subtitle,
+  description: slide.description,
+  ctaText: slide.ctaText,
+  ctaLink: slide.ctaLink,
+  badgeText: slide.badgeText,
+  hasSecondaryCTA: slide.hasSecondaryCTA,
+  secondaryCtaText: slide.secondaryCtaText,
+  secondaryCtaLink: slide.secondaryCtaLink,
+})) || [];
+
+// Transform routes
+const routes = homePage?.featuredRoutes?.map((route: any) => ({
+  from: route.from,
+  to: route.to,
+  slug: route.slug,
+  distance: route.distance,
+  duration: route.duration,
+  price: route.startingPrice,
+  description: route.introText1?.substring(0, 150) + '...' || '',
+  // Use featuredHomepageImage if available, otherwise fallback to first hero slide
+  image: route.featuredHomepageImage
+    ? urlFor(route.featuredHomepageImage).width(800).height(600).url()
+    : route.heroSlides?.[0]?.image
+      ? urlFor(route.heroSlides[0].image).width(800).height(600).url()
+      : '',
+})) || [];
+
+// Transform packages
+const packages = homePage?.featuredPackages?.map((pkg: any) => ({
+  name: pkg.name,
+  slug: pkg.slug,
+  subtitle: pkg.subtitle || '',
+  price: pkg.startingPrice,
+  duration: pkg.duration || '',
+  // Use featuredHomepageImage if available, otherwise fallback to first hero slide
+  image: pkg.featuredHomepageImage
+    ? urlFor(pkg.featuredHomepageImage).width(800).height(600).url()
+    : pkg.heroSlides?.[0]?.image
+      ? urlFor(pkg.heroSlides[0].image).width(800).height(600).url()
+      : '',
+})) || [];
+
+// Transform testimonials
+const testimonials = homePage?.testimonials || [];
+
+// CTA section data
+const finalCtaHeading = homePage?.finalCtaHeading || 'Ready to Explore the Kumaon Hills?';
+const finalCtaSubheading = homePage?.finalCtaSubheading || 'Book your taxi today and experience safe, reliable, and comfortable journeys with Kathgodam Taxi.';
+const trustBadges = homePage?.trustBadges || ['15+ Years Experience', 'Fixed Transparent Pricing', '500+ Happy Customers'];
 ---
 
 <!DOCTYPE html>
@@ -20,14 +95,14 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(w
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Kathgodam Taxi - Your trusted taxi service for Kumaon Hills. Fixed transparent pricing, safe drivers, and reliable service. Book now from Kathgodam to Nainital, Mukteshwar, and all destinations." />
-    <meta name="keywords" content="Kathgodam taxi, Nainital taxi, Kumaon taxi, taxi from Kathgodam, Pantnagar taxi, Mukteshwar taxi" />
+    <meta name="description" content={metaDescription} />
+    <meta name="keywords" content={keywords} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Kathgodam Taxi - Safe & Reliable Taxi Services in Kumaon Hills</title>
+    <title>{pageTitle}</title>
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Kathgodam Taxi - Safe & Reliable Taxi Services in Kumaon Hills" />
-    <meta property="og:description" content="Fixed transparent pricing, safe drivers, and reliable service. Book now!" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content="website" />
 
     <!-- Preconnect to external resources -->
@@ -35,31 +110,60 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(w
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body class="antialiased">
+    <!-- Preview Banner (shown only in preview mode) -->
+    <PreviewBanner show={isPreview} />
+
     <!-- Navbar -->
     <Navbar />
 
     <!-- Main Content -->
     <main>
       <!-- Hero Slider -->
-      <HeroSlider />
+      {heroSlides.length > 0 ? (
+        <HeroSlider slides={heroSlides} />
+      ) : (
+        <HeroSlider />
+      )}
 
       <!-- Trust Signals Bar -->
       <TrustSignals />
 
       <!-- Popular Routes Section -->
-      <PopularRoutes />
+      {routes.length > 0 && (
+        <PopularRoutes
+          routes={routes}
+          sectionTitle={homePage?.routesSectionTitle}
+          sectionDescription={homePage?.routesSectionDescription}
+          bottomCTA={homePage?.routesBottomCTA}
+        />
+      )}
 
       <!-- Tour Packages Grid -->
-      <TourPackagesGrid />
+      {packages.length > 0 && (
+        <TourPackagesGrid
+          packages={packages}
+          sectionTitle={homePage?.packagesSectionTitle}
+          sectionDescription={homePage?.packagesSectionDescription}
+        />
+      )}
 
       <!-- Why Choose Us Section -->
-      <WhyChooseUs />
+      <WhyChooseUs data={whyChooseUsData} />
 
       <!-- Corporate Clients Section -->
-      <CorporateClients />
+      <CorporateClients data={corporateClientsData} />
 
       <!-- Customer Reviews Section -->
-      <TestimonialsSection />
+      {testimonials.length > 0 ? (
+        <TestimonialsSection
+          testimonials={testimonials}
+          sectionTitle={homePage?.testimonialsSectionTitle}
+          sectionDescription={homePage?.testimonialsSectionDescription}
+          footerText={homePage?.testimonialsFooterText}
+        />
+      ) : (
+        <TestimonialsSection />
+      )}
 
       <!-- Final CTA Section -->
       <section class="py-10 bg-gradient-to-r from-secondary-900 via-black to-secondary-900 relative overflow-hidden">
@@ -70,11 +174,10 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(w
         </div>
 
         <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Ready to Explore the <span class="text-primary-500">Kumaon Hills?</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4" set:html={finalCtaHeading.replace('Kumaon Hills', '<span class="text-primary-500">Kumaon Hills</span>')}>
           </h2>
           <p class="text-xl text-gray-300 mb-8">
-            Book your taxi today and experience safe, reliable, and comfortable journeys with Kathgodam Taxi.
+            {finalCtaSubheading}
           </p>
           <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a
@@ -98,7 +201,7 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(w
               WhatsApp
             </a>
             <a
-              href="tel:+917351721351"
+              href={`tel:+91${phoneNumber}`}
               class="inline-flex items-center justify-center bg-secondary-700 text-white px-8 py-3 rounded-lg font-bold hover:bg-secondary-600 transition-colors shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all"
             >
               <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,24 +213,14 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(w
 
           <!-- Trust Badges -->
           <div class="mt-12 flex flex-wrap justify-center gap-8 text-sm text-gray-400">
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              15+ Years Experience
-            </div>
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              Fixed Transparent Pricing
-            </div>
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              500+ Happy Customers
-            </div>
+            {trustBadges.map((badge: string) => (
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                {badge}
+              </div>
+            ))}
           </div>
         </div>
       </section>
