@@ -1,0 +1,112 @@
+---
+interface Props {
+  title: string
+  subtitle?: string
+  badge?: string
+  backgroundImage?: string
+}
+
+const {title, subtitle, badge, backgroundImage} = Astro.props
+---
+
+<section
+  class="relative bg-gradient-to-br from-secondary-900 via-black to-secondary-900 text-white overflow-hidden min-h-[40vh] md:min-h-[45vh]"
+>
+  <!-- Background Image Overlay -->
+  {
+    backgroundImage && (
+      <div class="absolute inset-0 opacity-20">
+        <img src={backgroundImage} alt="" class="w-full h-full object-cover" />
+      </div>
+    )
+  }
+
+  <!-- Decorative Elements -->
+  <div class="absolute inset-0 opacity-10">
+    <div
+      class="absolute top-0 left-0 w-64 h-64 bg-primary-500 rounded-full blur-3xl"
+    >
+    </div>
+    <div
+      class="absolute bottom-0 right-0 w-96 h-96 bg-primary-500 rounded-full blur-3xl"
+    >
+    </div>
+  </div>
+
+  <div
+    class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20"
+  >
+    <div class="text-center space-y-4">
+      {
+        badge && (
+          <div class="inline-flex items-center gap-2 bg-primary-500 text-black px-4 py-2 rounded-full text-sm font-bold">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            {badge}
+          </div>
+        )
+      }
+
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+        {
+          title.includes('Rates') ? (
+            <Fragment
+              set:html={title.replace(
+                'Rates',
+                '<span class="text-primary-500">Rates</span>'
+              )}
+            />
+          ) : (
+            title
+          )
+        }
+      </h1>
+
+      {
+        subtitle && (
+          <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            {subtitle}
+          </p>
+        )
+      }
+
+      <!-- Trust Indicators -->
+      <div
+        class="flex flex-wrap justify-center gap-6 pt-4 text-sm text-gray-400"
+      >
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>Fixed Prices</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>No Hidden Charges</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>All-Inclusive</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

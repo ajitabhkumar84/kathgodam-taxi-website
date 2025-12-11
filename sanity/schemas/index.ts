@@ -14,6 +14,8 @@ import homeHeroSlide from './homeHeroSlide'
 import homeTestimonial from './homeTestimonial'
 import whyChooseUs from './whyChooseUs'
 import corporateClient from './corporateClient'
+import routeCategory from './routeCategory'
+import ratesPage from './ratesPage'
 
 export const schemaTypes = [
   // Document types
@@ -21,6 +23,7 @@ export const schemaTypes = [
   packageDoc,
   siteSettings,
   homePage,
+  ratesPage,
   navbar,
   footer,
   whyChooseUs,
@@ -30,6 +33,7 @@ export const schemaTypes = [
   heroSlide,
   homeHeroSlide,
   homeTestimonial,
+  routeCategory,
   carType,
   attraction,
   faq,

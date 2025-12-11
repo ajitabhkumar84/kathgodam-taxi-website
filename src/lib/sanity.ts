@@ -453,3 +453,52 @@ export async function getCorporateClients(preview: boolean = false) {
 
   return await activeClient.fetch(query);
 }
+
+// Helper function to get rates page data
+export async function getRatesPage(preview: boolean = false) {
+  const activeClient = getClient(preview);
+  const query = `*[_type == "ratesPage"][0] {
+    pageTitle,
+    metaDescription,
+    keywords,
+    heroTitle,
+    heroSubtitle,
+    heroBadge,
+    heroImage,
+    introText,
+    showCategoryNav,
+    categoryNavTitle,
+    routeCategories[] {
+      categoryName,
+      "categorySlug": categorySlug.current,
+      categoryDescription,
+      icon,
+      displayOrder,
+      routes[]-> {
+        _id,
+        from,
+        to,
+        "slug": slug.current,
+        distance,
+        duration,
+        startingPrice,
+        introText1,
+        featuredHomepageImage,
+        heroSlides[0] {
+          image
+        }
+      }
+    } | order(displayOrder asc),
+    bottomCtaHeading,
+    bottomCtaText,
+    showAdditionalInfo,
+    additionalInfoTitle,
+    additionalInfoPoints,
+    faqs[] {
+      question,
+      answer
+    }
+  }`;
+
+  return await activeClient.fetch(query);
+}

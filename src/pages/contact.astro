@@ -1,0 +1,282 @@
+---
+import Navbar from '../components/Navbar.astro'
+import Footer from '../components/Footer.astro'
+import PreviewBanner from '../components/PreviewBanner.astro'
+import ContactHero from '../components/ContactHero.astro'
+import ContactForm from '../components/ContactForm.astro'
+import ContactInfo from '../components/ContactInfo.astro'
+import ContactFAQ from '../components/ContactFAQ.astro'
+import {getSiteSettings} from '../lib/sanity'
+import '../styles/global.css'
+
+// Mark as server-rendered for preview support
+export const prerender = false
+
+// Check preview mode
+const isPreview = Astro.cookies.get('preview-mode')?.value === 'true'
+
+// Fetch site settings
+const siteSettings = await getSiteSettings()
+
+// Page metadata
+const pageTitle = 'Contact Us - Kathgodam Taxi Services'
+const metaDescription =
+  'Get in touch with Kathgodam Taxi for bookings, inquiries, and quotes. Available 24/7 via phone, WhatsApp, or email. Book your reliable taxi service in Kumaon Hills today.'
+const keywords =
+  'contact Kathgodam taxi, book taxi Kathgodam, Nainital taxi contact, Kumaon taxi booking, taxi inquiry, 24/7 taxi service'
+
+// Contact details
+const whatsappNumber = siteSettings?.whatsappNumber || '917351721351'
+const phoneNumber = siteSettings?.phone || '7351721351'
+const email = 'kathgodamtaxi@gmail.com'
+const address =
+  'A19- Near Kathgodam Railway Station, Nainital, Uttarakhand 263126'
+
+// WhatsApp URL for floating button
+const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I would like to inquire about your taxi services.')}`
+
+// Google Maps embed URL (you can customize this)
+const mapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3468.123456789!2d79.516!3d29.266!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDE1JzU3LjYiTiA3OcKwMzAnNTcuNiJF!5e0!3m2!1sen!2sin!4v1234567890`
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={metaDescription} />
+    <meta name="keywords" content={keywords} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:type" content="website" />
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Structured Data for Local Business -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Kathgodam Taxi Services",
+        "description": "Reliable taxi services in Kumaon Hills, Uttarakhand",
+        "telephone": "+917351721351",
+        "email": "kathgodamtaxi@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "A19- Near Kathgodam Railway Station",
+          "addressLocality": "Nainital",
+          "addressRegion": "Uttarakhand",
+          "postalCode": "263126",
+          "addressCountry": "IN"
+        },
+        "openingHours": "Mo-Su 00:00-23:59",
+        "priceRange": "$$"
+      }
+    </script>
+  </head>
+
+  <body class="antialiased">
+    <!-- Preview Banner -->
+    <PreviewBanner show={isPreview} />
+
+    <!-- Navbar -->
+    <Navbar />
+
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <ContactHero
+        title="Get in Touch"
+        subtitle="Book your taxi or request a quote - we're here to help 24/7"
+      />
+
+      <!-- Contact Form Section -->
+      <ContactForm
+        formTitle="Request a Free Quote"
+        formDescription="Fill out the form below and we'll get back to you within minutes"
+      />
+
+      <!-- Contact Information & Map -->
+      <ContactInfo
+        whatsappNumber={whatsappNumber}
+        phoneNumber={phoneNumber}
+        email={email}
+        address={address}
+        mapUrl={mapUrl}
+      />
+
+      <!-- FAQs Section -->
+      <ContactFAQ />
+
+      <!-- Bottom CTA Section -->
+      <section
+        class="py-12 bg-gradient-to-r from-secondary-900 via-black to-secondary-900 text-white relative overflow-hidden"
+      >
+        <!-- Decorative Elements -->
+        <div class="absolute inset-0 opacity-10">
+          <div
+            class="absolute top-10 left-10 w-32 h-32 bg-primary-500 rounded-full blur-3xl"
+          >
+          </div>
+          <div
+            class="absolute bottom-10 right-10 w-48 h-48 bg-primary-500 rounded-full blur-3xl"
+          >
+          </div>
+        </div>
+
+        <div
+          class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+        >
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Book Your Journey?
+          </h2>
+          <p class="text-xl text-gray-300 mb-8">
+            Experience safe, comfortable, and reliable taxi services in the Kumaon
+            Hills
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="/rates"
+              class="inline-flex items-center justify-center bg-primary-500 text-black px-8 py-3 rounded-lg font-bold hover:bg-primary-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                ></path>
+              </svg>
+              View Our Rates
+            </a>
+            <a
+              href="/"
+              class="inline-flex items-center justify-center bg-white text-black px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                ></path>
+              </svg>
+              Back to Home
+            </a>
+          </div>
+
+          <!-- Trust Badges -->
+          <div
+            class="mt-12 flex flex-wrap justify-center gap-8 text-sm text-gray-400"
+          >
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 text-primary-500 mr-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              15+ Years Experience
+            </div>
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 text-primary-500 mr-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              Fixed Transparent Pricing
+            </div>
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 text-primary-500 mr-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              500+ Happy Customers
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+
+    <!-- Floating WhatsApp Button -->
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="fixed bottom-6 right-6 z-50 bg-whatsapp text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-300 animate-pulse-slow"
+      aria-label="Chat on WhatsApp"
+    >
+      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+        <path
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        ></path>
+      </svg>
+    </a>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      main {
+        margin-top: 64px;
+      }
+
+      @media (min-width: 768px) {
+        main {
+          margin-top: 80px;
+        }
+      }
+
+      @keyframes pulse-slow {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 0.9;
+        }
+      }
+
+      .animate-pulse-slow {
+        animation: pulse-slow 2s ease-in-out infinite;
+      }
+    </style>
+  </body>
+</html>

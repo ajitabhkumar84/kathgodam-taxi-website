@@ -1,0 +1,75 @@
+---
+interface Props {
+  title?: string
+  subtitle?: string
+  backgroundImage?: string
+}
+
+const {
+  title = 'Get in Touch',
+  subtitle = 'Book your taxi or request a quote - we\'re here to help 24/7',
+  backgroundImage,
+} = Astro.props
+---
+
+<section class="relative h-[400px] flex items-center justify-center overflow-hidden">
+  <!-- Background Image with Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-r from-secondary-900 via-black to-secondary-900">
+    {
+      backgroundImage && (
+        <img
+          src={backgroundImage}
+          alt="Contact Us"
+          class="w-full h-full object-cover opacity-30"
+        />
+      )
+    }
+  </div>
+
+  <!-- Decorative Elements -->
+  <div class="absolute inset-0 opacity-20">
+    <div class="absolute top-10 left-10 w-32 h-32 bg-primary-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-10 right-10 w-48 h-48 bg-primary-500 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+      {title}
+    </h1>
+    <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto">
+      {subtitle}
+    </p>
+
+    <!-- Quick Contact Badges -->
+    <div class="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+      <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+        <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"></path>
+        </svg>
+        24/7 Available
+      </div>
+      <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+        <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"></path>
+        </svg>
+        Instant Response
+      </div>
+      <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+        <svg class="w-5 h-5 text-primary-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"></path>
+        </svg>
+        Free Quote
+      </div>
+    </div>
+  </div>
+</section>

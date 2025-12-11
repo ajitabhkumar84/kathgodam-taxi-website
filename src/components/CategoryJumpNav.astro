@@ -1,0 +1,105 @@
+---
+interface Category {
+  categoryName: string
+  categorySlug: string
+  icon?: string
+}
+
+interface Props {
+  categories: Category[]
+  title?: string
+}
+
+const {categories, title = 'Browse by Category'} = Astro.props
+---
+
+<div
+  class="bg-white border-b border-gray-200 sticky top-16 md:top-20 z-40 shadow-sm"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="text-center mb-3">
+      <h2 class="text-lg font-bold text-gray-900">{title}</h2>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-2 md:gap-3">
+      {
+        categories.map((category) => (
+          <a
+            href={`#${category.categorySlug}`}
+            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-primary-500 hover:text-black text-gray-700 rounded-full font-medium text-sm transition-all duration-200 hover:shadow-md"
+          >
+            {/* Icon for temple */}
+            {category.icon === 'temple' && (
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2L3 8v10h5v-6h4v6h5V8l-7-6z" />
+              </svg>
+            )}
+            {/* Icon for mountain */}
+            {category.icon === 'mountain' && (
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2l6 14H4L10 2z" />
+              </svg>
+            )}
+            {/* Icon for lake */}
+            {category.icon === 'lake' && (
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            )}
+            {/* Icon for city */}
+            {category.icon === 'city' && (
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            )}
+            {/* Icon for nature */}
+            {category.icon === 'nature' && (
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            )}
+            <span>{category.categoryName}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  // Smooth scroll behavior for anchor links
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault()
+        const targetId = this.getAttribute('href')
+        if (targetId) {
+          const target = document.querySelector(targetId)
+          if (target) {
+            const offset = 140 // Account for sticky header + nav
+            const elementPosition = target.getBoundingClientRect().top
+            const offsetPosition = elementPosition + window.pageYOffset - offset
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth',
+            })
+          }
+        }
+      })
+    })
+  })
+</script>

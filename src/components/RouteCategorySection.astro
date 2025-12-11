@@ -1,0 +1,80 @@
+---
+import RouteCard from './RouteCard.astro'
+
+interface Route {
+  from: string
+  to: string
+  distance: string
+  duration: string
+  price: string
+  description: string
+  image: string
+  slug: string
+}
+
+interface Props {
+  categoryName: string
+  categorySlug: string
+  categoryDescription?: string
+  routes: Route[]
+  isFirst?: boolean
+}
+
+const {categoryName, categorySlug, categoryDescription, routes, isFirst = false} =
+  Astro.props
+
+const bgClass = isFirst ? 'bg-white' : 'bg-gray-50'
+---
+
+<section id={categorySlug} class={`py-12 ${bgClass} scroll-mt-32`}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8">
+      <div
+        class="inline-flex items-center bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm"
+      >
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+            clip-rule="evenodd"></path>
+        </svg>
+        {categoryName}
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        {categoryName}
+      </h2>
+      {
+        categoryDescription && (
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            {categoryDescription}
+          </p>
+        )
+      }
+    </div>
+
+    <!-- Routes Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        routes.map((route) => (
+          <RouteCard
+            from={route.from}
+            to={route.to}
+            distance={route.distance}
+            duration={route.duration}
+            price={route.price}
+            description={route.description}
+            image={route.image}
+            href={`/${route.slug}`}
+          />
+        ))
+      }
+    </div>
+
+    <!-- Route Count -->
+    <div class="mt-6 text-center text-sm text-gray-500">
+      Showing {routes.length}
+      {routes.length === 1 ? 'route' : 'routes'} in this category
+    </div>
+  </div>
+</section>
