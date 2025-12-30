@@ -212,7 +212,8 @@ export default defineType({
       name: 'attractions',
       title: 'Attractions',
       type: 'array',
-      of: [{type: 'attraction'}],
+      of: [{type: 'reference', to: [{type: 'attraction'}]}],
+      description: 'Select from existing attractions or create new ones. Referenced attractions can be reused across multiple routes.',
     }),
 
     // What's Excluded

@@ -1,0 +1,77 @@
+---
+interface Props {
+  name: string
+  subtitle?: string
+  duration?: string
+  price: string
+  highlights?: string[]
+  image: string
+  href: string
+}
+
+const { name, subtitle, duration, price, highlights, image, href } = Astro.props
+---
+
+<a
+  href={href}
+  class="group block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+>
+  <!-- Image Container -->
+  <div class="relative h-56 overflow-hidden">
+    <img
+      src={image}
+      alt={name}
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+    />
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    <!-- Duration Badge -->
+    {duration && (
+      <div class="absolute top-4 left-4 bg-secondary-900 text-white px-3 py-1.5 rounded-full shadow-lg">
+        <p class="text-sm font-semibold flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {duration}
+        </p>
+      </div>
+    )}
+
+    <!-- Price Badge -->
+    <div class="absolute top-4 right-4 bg-white px-3 py-1.5 rounded-full shadow-lg">
+      <p class="text-primary-600 font-bold text-sm">{price}</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+      {name}
+    </h3>
+
+    {subtitle && (
+      <p class="text-sm text-gray-600 mb-3">{subtitle}</p>
+    )}
+
+    {highlights && highlights.length > 0 && (
+      <ul class="space-y-1 mb-4">
+        {highlights.slice(0, 3).map((highlight: string) => (
+          <li class="text-sm text-gray-700 flex items-start gap-2">
+            <svg class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{highlight}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="flex items-center text-sm text-primary-600 font-semibold">
+      <span>View Package Details</span>
+      <svg class="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </div>
+  </div>
+</a>

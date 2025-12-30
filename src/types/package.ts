@@ -20,6 +20,24 @@ export interface ItineraryDay {
   day: string;
   title: string;
   activities: string[];
+  image?: any; // Sanity image object
+}
+
+export interface CarType {
+  name: string;
+  model: string;
+  capacity: string;
+  seasonPrice: string;
+  offSeasonPrice: string;
+  image?: any; // Sanity image object or URL
+  features?: string[];
+  popular?: boolean;
+}
+
+export interface HotelAddon {
+  enabled: boolean;
+  carTypes?: CarType[];
+  hotelDetails?: string;
 }
 
 export interface PricingOption {
@@ -55,6 +73,8 @@ export interface Package {
   highlights?: string[];
   itinerary?: ItineraryDay[];
   pricingOptions?: PricingOption[];
+  carTypes?: CarType[];
+  hotelAddon?: HotelAddon;
   inclusions?: string[];
   exclusions?: string[];
   relatedRoutes?: RelatedRoute[];

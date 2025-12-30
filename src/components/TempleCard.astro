@@ -1,0 +1,106 @@
+---
+interface Props {
+  name: string
+  subtitle?: string
+  district: string
+  templeType?: string
+  highlights?: string[]
+  image: string
+  href: string
+}
+
+const { name, subtitle, district, templeType, highlights, image, href } = Astro.props
+
+const districtLabels: Record<string, string> = {
+  'nainital': 'Nainital',
+  'almora': 'Almora',
+  'champawat': 'Champawat',
+  'pithoragarh': 'Pithoragarh',
+  'bageshwar': 'Bageshwar',
+  'udham-singh-nagar': 'Udham Singh Nagar',
+}
+
+const templeTypeLabels: Record<string, string> = {
+  'shiva': 'Shiva Temple',
+  'shakti': 'Shakti Temple',
+  'ashram': 'Ashram',
+  'heritage': 'Heritage',
+  'local': 'Local Deity',
+  'pilgrimage': 'Pilgrimage',
+}
+---
+
+<a
+  href={href}
+  class="group block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+  data-district={district}
+  data-temple-type={templeType || ''}
+>
+  <!-- Image Container -->
+  <div class="relative h-56 overflow-hidden">
+    <img
+      src={image}
+      alt={name}
+      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+      loading="lazy"
+    />
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    <!-- District Badge -->
+    <div class="absolute top-4 left-4 bg-white/95 text-gray-800 px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
+      <p class="text-sm font-semibold flex items-center gap-1.5">
+        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        {districtLabels[district] || district}
+      </p>
+    </div>
+
+    <!-- Temple Type Badge -->
+    {templeType && (
+      <div class="absolute top-4 right-4 bg-primary-500 text-black px-3 py-1.5 rounded-full shadow-lg">
+        <p class="text-xs font-bold uppercase tracking-wide">{templeTypeLabels[templeType] || templeType}</p>
+      </div>
+    )}
+
+    <!-- Temple Icon Overlay at Bottom -->
+    <div class="absolute bottom-4 left-4 text-white">
+      <svg class="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5zM4 10v2h2v8H4v2h16v-2h-2v-8h2v-2H4zm4 2h8v8H8v-8zm2 2v4h4v-4h-4z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="p-6">
+    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+      {name}
+    </h3>
+
+    {subtitle && (
+      <p class="text-sm text-gray-600 mb-3 italic line-clamp-2">{subtitle}</p>
+    )}
+
+    {highlights && highlights.length > 0 && (
+      <ul class="space-y-1.5 mb-4">
+        {highlights.slice(0, 3).map((highlight: string) => (
+          <li class="text-sm text-gray-700 flex items-start gap-2">
+            <svg class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5z"/>
+            </svg>
+            <span class="line-clamp-1">{highlight}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="flex items-center text-sm text-primary-600 font-semibold pt-2 border-t border-gray-100">
+      <span>Explore Temple</span>
+      <svg class="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </div>
+  </div>
+</a>

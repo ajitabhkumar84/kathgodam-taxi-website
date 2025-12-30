@@ -113,16 +113,25 @@ export default defineType({
               title: 'Activities',
               of: [{type: 'string'}],
             },
+            {
+              name: 'image',
+              type: 'image',
+              title: 'Day Image',
+              description: 'Image for this day (optional). Recommended size: 800x600px',
+              options: {
+                hotspot: true,
+              },
+            },
           ],
         },
       ],
       description: 'Day-by-day itinerary',
     }),
 
-    // Pricing Options
+    // Pricing Options (Legacy - kept for backward compatibility)
     defineField({
       name: 'pricingOptions',
-      title: 'Pricing Options',
+      title: 'Pricing Options (Legacy)',
       type: 'array',
       of: [
         {
@@ -136,7 +145,50 @@ export default defineType({
           ],
         },
       ],
-      description: 'Different pricing tiers or options',
+      description: 'Legacy pricing tiers - Use Car Types below instead',
+      hidden: true,
+    }),
+
+    // Car Types for Taxi-Only Pricing
+    defineField({
+      name: 'carTypes',
+      title: 'Car Types (Taxi-Only Pricing)',
+      type: 'array',
+      of: [{type: 'carType'}],
+      description: 'Available car types with season and off-season pricing for taxi-only package',
+    }),
+
+    // Hotel Add-on Pricing
+    defineField({
+      name: 'hotelAddon',
+      title: 'Hotel Add-on Option',
+      type: 'object',
+      fields: [
+        {
+          name: 'enabled',
+          type: 'boolean',
+          title: 'Enable Hotel Add-on',
+          description: 'Show "Taxi + Hotel" pricing section on the package page',
+          initialValue: false,
+        },
+        {
+          name: 'carTypes',
+          type: 'array',
+          title: 'Car Types (Taxi + Hotel Pricing)',
+          of: [{type: 'carType'}],
+          description: 'Combined pricing for taxi + hotel. Sedan includes 1 Deluxe Room, SUVs include 2 Deluxe Rooms (Twin Sharing)',
+          hidden: ({parent}) => !parent?.enabled,
+        },
+        {
+          name: 'hotelDetails',
+          type: 'text',
+          title: 'Hotel Details',
+          rows: 3,
+          description: 'Additional information about hotel accommodation (optional)',
+          hidden: ({parent}) => !parent?.enabled,
+        },
+      ],
+      description: 'Configure hotel add-on pricing for this package',
     }),
 
     // What's Included/Excluded

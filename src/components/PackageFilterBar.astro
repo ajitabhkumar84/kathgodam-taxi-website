@@ -1,0 +1,180 @@
+---
+interface Props {
+  showDurationFilter?: boolean
+  showPriceFilter?: boolean
+}
+
+const {showDurationFilter = true, showPriceFilter = true} = Astro.props
+---
+
+<div class="bg-white border-b border-gray-200 py-6 sticky top-16 md:top-20 z-30 shadow-sm" id="filter-bar">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Search Box -->
+      <div class="flex-1">
+        <label for="package-search" class="sr-only">Search packages</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="package-search"
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Search packages by name..."
+          />
+        </div>
+      </div>
+
+      <!-- Duration Filter -->
+      {showDurationFilter && (
+        <div class="w-full md:w-48">
+          <label for="duration-filter" class="sr-only">Filter by duration</label>
+          <select
+            id="duration-filter"
+            class="block w-full py-2.5 px-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Durations</option>
+            <option value="short">Short (1-3 days)</option>
+            <option value="medium">Medium (4-6 days)</option>
+            <option value="long">Long (7+ days)</option>
+          </select>
+        </div>
+      )}
+
+      <!-- Price Filter -->
+      {showPriceFilter && (
+        <div class="w-full md:w-48">
+          <label for="price-filter" class="sr-only">Filter by price</label>
+          <select
+            id="price-filter"
+            class="block w-full py-2.5 px-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Prices</option>
+            <option value="budget">Budget (Under ₹5,000)</option>
+            <option value="mid">Mid-range (₹5,000-₹15,000)</option>
+            <option value="premium">Premium (₹15,000+)</option>
+          </select>
+        </div>
+      )}
+
+      <!-- Reset Button -->
+      <button
+        type="button"
+        id="reset-filters"
+        class="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset
+      </button>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mt-4 text-sm text-gray-600" id="results-count">
+      <!-- Updated via JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Client-side filtering logic
+  function initializeFilters() {
+    const searchInput = document.getElementById('package-search') as HTMLInputElement
+    const durationFilter = document.getElementById('duration-filter') as HTMLSelectElement
+    const priceFilter = document.getElementById('price-filter') as HTMLSelectElement
+    const resetButton = document.getElementById('reset-filters') as HTMLButtonElement
+    const resultsCount = document.getElementById('results-count')
+
+    // Get all package cards
+    const packageCards = document.querySelectorAll('a[href*="/"][class*="group block"]') as NodeListOf<HTMLAnchorElement>
+
+    function filterPackages() {
+      const searchTerm = searchInput?.value.toLowerCase() || ''
+      const durationValue = durationFilter?.value || ''
+      const priceValue = priceFilter?.value || ''
+
+      let visibleCount = 0
+
+      packageCards.forEach(card => {
+        const packageName = card.querySelector('h3')?.textContent?.toLowerCase() || ''
+        const packageDuration = card.querySelector('svg[class*="w-4 h-4"]')?.parentElement?.textContent || ''
+        const packagePrice = card.querySelector('[class*="text-primary-600"]')?.textContent || ''
+
+        // Extract numeric price for comparison
+        const priceMatch = packagePrice.match(/[\d,]+/)
+        const numericPrice = priceMatch ? parseInt(priceMatch[0].replace(/,/g, '')) : 0
+
+        // Apply filters
+        const matchesSearch = packageName.includes(searchTerm)
+        const matchesDuration = !durationValue || checkDurationMatch(packageDuration, durationValue)
+        const matchesPrice = !priceValue || checkPriceMatch(numericPrice, priceValue)
+
+        const isVisible = matchesSearch && matchesDuration && matchesPrice
+
+        // Show/hide card
+        if (isVisible) {
+          (card as HTMLElement).style.display = 'block'
+          visibleCount++
+        } else {
+          (card as HTMLElement).style.display = 'none'
+        }
+      })
+
+      // Update category sections visibility
+      document.querySelectorAll('section[id]').forEach(section => {
+        const visibleCards = section.querySelectorAll('a[href*="/"][style="display: block"]')
+        if (visibleCards.length === 0 && section.id !== 'filter-bar') {
+          (section as HTMLElement).style.display = 'none'
+        } else if (section.id !== 'filter-bar') {
+          (section as HTMLElement).style.display = 'block'
+        }
+      })
+
+      // Update results count
+      if (resultsCount) {
+        resultsCount.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'package' : 'packages'}`
+      }
+    }
+
+    function checkDurationMatch(duration: string, filter: string): boolean {
+      const daysMatch = duration.match(/(\d+)\s*days?/i)
+      if (!daysMatch) return true
+
+      const days = parseInt(daysMatch[1])
+      if (filter === 'short') return days <= 3
+      if (filter === 'medium') return days >= 4 && days <= 6
+      if (filter === 'long') return days >= 7
+      return true
+    }
+
+    function checkPriceMatch(price: number, filter: string): boolean {
+      if (filter === 'budget') return price < 5000
+      if (filter === 'mid') return price >= 5000 && price <= 15000
+      if (filter === 'premium') return price > 15000
+      return true
+    }
+
+    function resetFilters() {
+      if (searchInput) searchInput.value = ''
+      if (durationFilter) durationFilter.value = ''
+      if (priceFilter) priceFilter.value = ''
+      filterPackages()
+    }
+
+    // Event listeners
+    searchInput?.addEventListener('input', filterPackages)
+    durationFilter?.addEventListener('change', filterPackages)
+    priceFilter?.addEventListener('change', filterPackages)
+    resetButton?.addEventListener('click', resetFilters)
+
+    // Initialize count
+    filterPackages()
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initializeFilters)
+</script>

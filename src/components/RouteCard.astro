@@ -34,11 +34,17 @@ const { from, to, distance, duration, price, image, description, href = '#' } = 
   <div class="p-6">
     <!-- Route Title -->
     <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
-      <span>{from}</span>
-      <svg class="w-5 h-5 mx-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-      </svg>
-      <span>{to}</span>
+      {from ? (
+        <>
+          <span>{from}</span>
+          <svg class="w-5 h-5 mx-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+          <span>{to}</span>
+        </>
+      ) : (
+        <span>{to}</span>
+      )}
     </h3>
 
     <!-- Route Details -->

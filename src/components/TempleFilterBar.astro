@@ -1,0 +1,178 @@
+---
+interface Props {
+  showDistrictFilter?: boolean
+  showTypeFilter?: boolean
+}
+
+const { showDistrictFilter = true, showTypeFilter = true } = Astro.props
+---
+
+<div class="bg-white border-b border-gray-200 py-6 sticky top-16 md:top-20 z-30 shadow-sm" id="temple-filter-bar">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Search Box -->
+      <div class="flex-1">
+        <label for="temple-search" class="sr-only">Search temples</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="temple-search"
+            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            placeholder="Search temples by name..."
+          />
+        </div>
+      </div>
+
+      <!-- District Filter -->
+      {showDistrictFilter && (
+        <div class="w-full md:w-48">
+          <label for="district-filter" class="sr-only">Filter by district</label>
+          <select
+            id="district-filter"
+            class="block w-full py-2.5 px-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Districts</option>
+            <option value="nainital">Nainital</option>
+            <option value="almora">Almora</option>
+            <option value="champawat">Champawat</option>
+            <option value="pithoragarh">Pithoragarh</option>
+            <option value="bageshwar">Bageshwar</option>
+            <option value="udham-singh-nagar">Udham Singh Nagar</option>
+          </select>
+        </div>
+      )}
+
+      <!-- Temple Type Filter -->
+      {showTypeFilter && (
+        <div class="w-full md:w-48">
+          <label for="type-filter" class="sr-only">Filter by temple type</label>
+          <select
+            id="type-filter"
+            class="block w-full py-2.5 px-3 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Types</option>
+            <option value="shiva">Shiva Temples</option>
+            <option value="shakti">Shakti Temples</option>
+            <option value="ashram">Ashrams</option>
+            <option value="heritage">Heritage</option>
+            <option value="local">Local Deity</option>
+            <option value="pilgrimage">Pilgrimage Sites</option>
+          </select>
+        </div>
+      )}
+
+      <!-- Reset Button -->
+      <button
+        type="button"
+        id="reset-temple-filters"
+        class="inline-flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset
+      </button>
+    </div>
+
+    <!-- Results Count -->
+    <div class="mt-4 text-sm text-gray-600" id="temple-results-count">
+      <!-- Updated via JavaScript -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // Client-side filtering logic for temples
+  function initializeTempleFilters() {
+    const searchInput = document.getElementById('temple-search') as HTMLInputElement
+    const districtFilter = document.getElementById('district-filter') as HTMLSelectElement
+    const typeFilter = document.getElementById('type-filter') as HTMLSelectElement
+    const resetButton = document.getElementById('reset-temple-filters') as HTMLButtonElement
+    const resultsCount = document.getElementById('temple-results-count')
+
+    // Get all temple cards - they have data-district and data-temple-type attributes
+    const templeCards = document.querySelectorAll('a[data-district]') as NodeListOf<HTMLAnchorElement>
+
+    function filterTemples() {
+      const searchTerm = searchInput?.value.toLowerCase() || ''
+      const districtValue = districtFilter?.value || ''
+      const typeValue = typeFilter?.value || ''
+
+      let visibleCount = 0
+
+      templeCards.forEach(card => {
+        const templeName = card.querySelector('h3')?.textContent?.toLowerCase() || ''
+        const templeSubtitle = card.querySelector('.italic')?.textContent?.toLowerCase() || ''
+        const district = card.getAttribute('data-district') || ''
+        const templeType = card.getAttribute('data-temple-type') || ''
+
+        // Apply filters
+        const matchesSearch = templeName.includes(searchTerm) || templeSubtitle.includes(searchTerm)
+        const matchesDistrict = !districtValue || district === districtValue
+        const matchesType = !typeValue || templeType === typeValue
+
+        const isVisible = matchesSearch && matchesDistrict && matchesType
+
+        // Show/hide card
+        if (isVisible) {
+          (card as HTMLElement).style.display = 'block'
+          visibleCount++
+        } else {
+          (card as HTMLElement).style.display = 'none'
+        }
+      })
+
+      // Update category sections visibility
+      document.querySelectorAll('section[id]').forEach(section => {
+        const sectionId = section.id
+        // Skip filter bar section
+        if (sectionId === 'temple-filter-bar' || sectionId === 'filter-bar') return
+
+        const cardsInSection = section.querySelectorAll('a[data-district]')
+        if (cardsInSection.length === 0) return
+
+        let visibleInSection = 0
+        cardsInSection.forEach(card => {
+          if ((card as HTMLElement).style.display !== 'none') {
+            visibleInSection++
+          }
+        })
+
+        if (visibleInSection === 0) {
+          (section as HTMLElement).style.display = 'none'
+        } else {
+          (section as HTMLElement).style.display = 'block'
+        }
+      })
+
+      // Update results count
+      if (resultsCount) {
+        resultsCount.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'temple' : 'temples'}`
+      }
+    }
+
+    function resetFilters() {
+      if (searchInput) searchInput.value = ''
+      if (districtFilter) districtFilter.value = ''
+      if (typeFilter) typeFilter.value = ''
+      filterTemples()
+    }
+
+    // Event listeners
+    searchInput?.addEventListener('input', filterTemples)
+    districtFilter?.addEventListener('change', filterTemples)
+    typeFilter?.addEventListener('change', filterTemples)
+    resetButton?.addEventListener('click', resetFilters)
+
+    // Initialize count
+    filterTemples()
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initializeTempleFilters)
+</script>

@@ -1,0 +1,527 @@
+---
+import { isAdminAuthenticated } from '../../../lib/admin-auth'
+import { getBookingById, getAllVehicles, urlFor } from '../../../lib/sanity'
+import '../../../styles/global.css'
+
+export const prerender = false
+
+// Check authentication
+if (!isAdminAuthenticated(Astro.cookies)) {
+  return Astro.redirect('/admin/login')
+}
+
+const { id } = Astro.params
+
+if (!id) {
+  return Astro.redirect('/admin/bookings')
+}
+
+// Fetch booking
+const booking = await getBookingById(id)
+
+if (!booking) {
+  return Astro.redirect('/admin/bookings')
+}
+
+// Fetch available vehicles for assignment
+const allVehicles = await getAllVehicles()
+const availableVehicles = allVehicles.filter(v => v.isActive && !v.maintenanceMode)
+
+// Status display mapping
+const statusDisplay: Record<string, { label: string; color: string; bgColor: string }> = {
+  pending: { label: 'Pending', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
+  confirmed: { label: 'Confirmed', color: 'text-green-700', bgColor: 'bg-green-100' },
+  in_progress: { label: 'In Progress', color: 'text-blue-700', bgColor: 'bg-blue-100' },
+  completed: { label: 'Completed', color: 'text-gray-700', bgColor: 'bg-gray-100' },
+  cancelled: { label: 'Cancelled', color: 'text-red-700', bgColor: 'bg-red-100' }
+}
+
+const paymentStatusDisplay: Record<string, { label: string; color: string; bgColor: string }> = {
+  pending: { label: 'Payment Pending', color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
+  screenshot_uploaded: { label: 'Screenshot Uploaded', color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  verified: { label: 'Payment Verified', color: 'text-green-600', bgColor: 'bg-green-50' },
+  rejected: { label: 'Payment Rejected', color: 'text-red-600', bgColor: 'bg-red-50' },
+  refunded: { label: 'Refunded', color: 'text-purple-600', bgColor: 'bg-purple-50' }
+}
+
+const pageTitle = `Booking ${booking.bookingId} - Admin Dashboard`
+
+// WhatsApp message templates
+const confirmationMessage = `Hi ${booking.customerName},
+
+Your booking ${booking.bookingId} has been CONFIRMED! ✅
+
+Trip Details:
+📍 ${booking.pickupLocation} → ${booking.dropLocation}
+📅 ${booking.travelDate}
+⏰ ${booking.pickupTime}
+🚗 ${booking.carType}${booking.carModel ? ` (${booking.carModel})` : ''}
+💰 ₹${booking.totalAmount?.toLocaleString('en-IN')}
+
+Our driver will contact you before pickup.
+
+Thank you for choosing Kathgodam Taxi!`
+
+const reminderMessage = `Hi ${booking.customerName},
+
+This is a reminder for your upcoming trip:
+
+📍 ${booking.pickupLocation} → ${booking.dropLocation}
+📅 ${booking.travelDate}
+⏰ ${booking.pickupTime}
+
+Booking ID: ${booking.bookingId}
+
+Have a safe journey!`
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+
+  <body class="antialiased bg-gray-100 min-h-screen">
+    <!-- Admin Header -->
+    <header class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold text-gray-900">Kathgodam Taxi Admin</h1>
+          </div>
+          <div class="flex items-center gap-4">
+            <a href="/" target="_blank" class="text-sm text-gray-500 hover:text-gray-700">
+              View Site →
+            </a>
+            <a href="/studio" target="_blank" class="text-sm text-amber-600 hover:text-amber-700">
+              Sanity Studio
+            </a>
+            <form method="POST" action="/admin/logout" class="inline">
+              <button type="submit" class="text-sm text-red-600 hover:text-red-700">
+                Logout
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-6">
+          <a href="/admin" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+            Dashboard
+          </a>
+          <a href="/admin/bookings" class="py-3 border-b-2 border-amber-500 text-amber-600 font-medium text-sm">
+            Bookings
+          </a>
+          <a href="/admin/payments" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">
+            Payments
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Back Button & Title -->
+      <div class="mb-6">
+        <a href="/admin/bookings" class="text-amber-600 hover:text-amber-700 text-sm mb-2 inline-block">
+          ← Back to Bookings
+        </a>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 font-mono">{booking.bookingId}</h2>
+            <p class="text-sm text-gray-500">Created {new Date(booking._createdAt).toLocaleString('en-IN')}</p>
+          </div>
+          <div class="flex gap-2">
+            <span class={`px-3 py-1 rounded-full text-sm font-medium ${statusDisplay[booking.status]?.bgColor} ${statusDisplay[booking.status]?.color}`}>
+              {statusDisplay[booking.status]?.label}
+            </span>
+            <span class={`px-3 py-1 rounded-full text-sm font-medium ${paymentStatusDisplay[booking.paymentStatus]?.bgColor} ${paymentStatusDisplay[booking.paymentStatus]?.color}`}>
+              {paymentStatusDisplay[booking.paymentStatus]?.label}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Details -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Trip Details -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Trip Details</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Pickup Location</p>
+                <p class="font-medium">{booking.pickupLocation}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Drop Location</p>
+                <p class="font-medium">{booking.dropLocation}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Travel Date</p>
+                <p class="font-medium">{booking.travelDate}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Pickup Time</p>
+                <p class="font-medium">{booking.pickupTime}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Trip Type</p>
+                <p class="font-medium">{booking.isRoundTrip ? 'Round Trip' : 'One Way'}</p>
+              </div>
+              {booking.isRoundTrip && booking.returnDate && (
+                <div>
+                  <p class="text-sm text-gray-500">Return Date</p>
+                  <p class="font-medium">{booking.returnDate}</p>
+                </div>
+              )}
+              <div>
+                <p class="text-sm text-gray-500">Car Type</p>
+                <p class="font-medium">{booking.carType}</p>
+              </div>
+              {booking.carModel && (
+                <div>
+                  <p class="text-sm text-gray-500">Car Model</p>
+                  <p class="font-medium">{booking.carModel}</p>
+                </div>
+              )}
+              <div>
+                <p class="text-sm text-gray-500">Passengers</p>
+                <p class="font-medium">{booking.passengerCount || 'Not specified'}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Total Amount</p>
+                <p class="font-bold text-xl text-amber-600">₹{booking.totalAmount?.toLocaleString('en-IN')}</p>
+              </div>
+            </div>
+            {booking.customerNotes && (
+              <div class="mt-4 pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-500">Customer Notes</p>
+                <p class="mt-1 text-gray-900">{booking.customerNotes}</p>
+              </div>
+            )}
+          </div>
+
+          <!-- Customer Details -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Details</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-sm text-gray-500">Name</p>
+                <p class="font-medium">{booking.customerName}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Phone</p>
+                <a href={`tel:${booking.customerPhone}`} class="font-medium text-amber-600 hover:text-amber-700">
+                  {booking.customerPhone}
+                </a>
+              </div>
+              {booking.customerEmail && (
+                <div class="col-span-2">
+                  <p class="text-sm text-gray-500">Email</p>
+                  <a href={`mailto:${booking.customerEmail}`} class="font-medium text-amber-600 hover:text-amber-700">
+                    {booking.customerEmail}
+                  </a>
+                </div>
+              )}
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+              <a
+                href={`tel:${booking.customerPhone}`}
+                class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors text-sm text-center"
+              >
+                📞 Call
+              </a>
+              <a
+                href={`https://wa.me/91${booking.customerPhone}?text=${encodeURIComponent(confirmationMessage)}`}
+                target="_blank"
+                class="flex-1 px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors text-sm text-center"
+              >
+                💬 WhatsApp
+              </a>
+              {booking.customerEmail && (
+                <a
+                  href={`mailto:${booking.customerEmail}`}
+                  class="flex-1 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors text-sm text-center"
+                >
+                  ✉️ Email
+                </a>
+              )}
+            </div>
+          </div>
+
+          <!-- Payment Screenshot -->
+          {booking.paymentScreenshot && (
+            <div class="bg-white rounded-lg shadow p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Screenshot</h3>
+              <a href={urlFor(booking.paymentScreenshot).url()} target="_blank">
+                <img
+                  src={urlFor(booking.paymentScreenshot).width(600).url()}
+                  alt="Payment screenshot"
+                  class="rounded-lg border border-gray-200 max-w-full"
+                />
+              </a>
+              {booking.paymentStatus === 'screenshot_uploaded' && (
+                <div class="mt-4 flex gap-3">
+                  <button
+                    type="button"
+                    id="verify-btn"
+                    class="flex-1 px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors"
+                  >
+                    ✓ Verify Payment
+                  </button>
+                  <button
+                    type="button"
+                    id="reject-btn"
+                    class="flex-1 px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    ✕ Reject Payment
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <!-- Admin Notes -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Admin Notes</h3>
+            <textarea
+              id="admin-notes"
+              rows="3"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+              placeholder="Add notes about this booking..."
+            >{booking.adminNotes || ''}</textarea>
+            <button
+              type="button"
+              id="save-notes-btn"
+              class="mt-2 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-colors text-sm"
+            >
+              Save Notes
+            </button>
+          </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="space-y-6">
+          <!-- Quick Actions -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+              <!-- Update Status -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Update Status</label>
+                <select
+                  id="status-select"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                >
+                  <option value="pending" selected={booking.status === 'pending'}>Pending</option>
+                  <option value="confirmed" selected={booking.status === 'confirmed'}>Confirmed</option>
+                  <option value="in_progress" selected={booking.status === 'in_progress'}>In Progress</option>
+                  <option value="completed" selected={booking.status === 'completed'}>Completed</option>
+                  <option value="cancelled" selected={booking.status === 'cancelled'}>Cancelled</option>
+                </select>
+                <button
+                  type="button"
+                  id="update-status-btn"
+                  class="mt-2 w-full px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-colors text-sm"
+                >
+                  Update Status
+                </button>
+              </div>
+
+              <!-- Assign Vehicle -->
+              {availableVehicles.length > 0 && (
+                <div class="pt-4 border-t border-gray-200">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Assign Vehicle</label>
+                  <select
+                    id="vehicle-select"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm"
+                  >
+                    <option value="">Select vehicle...</option>
+                    {availableVehicles.map(v => (
+                      <option value={v._id} selected={booking.assignedVehicle?._ref === v._id}>
+                        {v.vehicleId} - {v.model} ({v.carType})
+                      </option>
+                    ))}
+                  </select>
+                  <p class="text-xs text-gray-500 mt-1">Vehicle assignment is for internal tracking</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <!-- Send Messages -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Send Messages</h3>
+            <div class="space-y-3">
+              <a
+                href={`https://wa.me/91${booking.customerPhone}?text=${encodeURIComponent(confirmationMessage)}`}
+                target="_blank"
+                class="block w-full px-4 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors text-sm text-center"
+              >
+                Send Confirmation
+              </a>
+              <a
+                href={`https://wa.me/91${booking.customerPhone}?text=${encodeURIComponent(reminderMessage)}`}
+                target="_blank"
+                class="block w-full px-4 py-2 bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 transition-colors text-sm text-center"
+              >
+                Send Reminder
+              </a>
+            </div>
+          </div>
+
+          <!-- Booking Source -->
+          <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Booking Source</h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Type</span>
+                <span class="font-medium capitalize">{booking.sourceType || 'Direct'}</span>
+              </div>
+              {booking.sourceRoute && (
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Route</span>
+                  <a href={`/${booking.sourceRoute.slug?.current}`} target="_blank" class="text-amber-600 hover:text-amber-700">
+                    View Route →
+                  </a>
+                </div>
+              )}
+              {booking.sourcePackage && (
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Package</span>
+                  <a href={`/${booking.sourcePackage.slug?.current}`} target="_blank" class="text-amber-600 hover:text-amber-700">
+                    View Package →
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <!-- Customer Booking Link -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-600 mb-2">Customer View:</p>
+            <a
+              href={`/book/${booking.bookingId}`}
+              target="_blank"
+              class="text-amber-600 hover:text-amber-700 text-sm break-all"
+            >
+              /book/{booking.bookingId}
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script define:vars={{ bookingId: booking.bookingId }}>
+      // Update Status
+      document.getElementById('update-status-btn')?.addEventListener('click', async () => {
+        const select = document.getElementById('status-select') as HTMLSelectElement;
+        const status = select.value;
+
+        if (!confirm(`Update booking status to "${status}"?`)) return;
+
+        const btn = document.getElementById('update-status-btn') as HTMLButtonElement;
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+
+        try {
+          const response = await fetch('/api/admin/update-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingId, status })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to update status');
+            btn.disabled = false;
+            btn.textContent = 'Update Status';
+          }
+        } catch (error) {
+          alert('Network error. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Update Status';
+        }
+      });
+
+      // Verify Payment
+      document.getElementById('verify-btn')?.addEventListener('click', async () => {
+        if (!confirm('Verify this payment?')) return;
+
+        const btn = document.getElementById('verify-btn') as HTMLButtonElement;
+        btn.disabled = true;
+        btn.textContent = 'Verifying...';
+
+        try {
+          const response = await fetch('/api/admin/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingId, action: 'verified' })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to verify payment');
+            btn.disabled = false;
+            btn.textContent = '✓ Verify Payment';
+          }
+        } catch (error) {
+          alert('Network error. Please try again.');
+          btn.disabled = false;
+          btn.textContent = '✓ Verify Payment';
+        }
+      });
+
+      // Reject Payment
+      document.getElementById('reject-btn')?.addEventListener('click', async () => {
+        if (!confirm('Reject this payment?')) return;
+
+        const btn = document.getElementById('reject-btn') as HTMLButtonElement;
+        btn.disabled = true;
+        btn.textContent = 'Rejecting...';
+
+        try {
+          const response = await fetch('/api/admin/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingId, action: 'rejected' })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to reject payment');
+            btn.disabled = false;
+            btn.textContent = '✕ Reject Payment';
+          }
+        } catch (error) {
+          alert('Network error. Please try again.');
+          btn.disabled = false;
+          btn.textContent = '✕ Reject Payment';
+        }
+      });
+
+      // Save Notes (note: this would need a separate API endpoint)
+      document.getElementById('save-notes-btn')?.addEventListener('click', () => {
+        alert('To save admin notes, please use Sanity Studio. This feature will be added in a future update.');
+      });
+    </script>
+  </body>
+</html>

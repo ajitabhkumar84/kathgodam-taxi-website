@@ -1,11 +1,13 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import RouteHeroSlider from '../components/RouteHeroSlider.astro';
+import SafetyBanner from '../components/SafetyBanner.astro';
 import RoutePricingTable from '../components/RoutePricingTable.astro';
 import AttractionsGrid from '../components/AttractionsGrid.astro';
 import RouteFAQ from '../components/RouteFAQ.astro';
 import StickyBookingSidebar from '../components/StickyBookingSidebar.astro';
 import Footer from '../components/Footer.astro';
+import BookingModalContainer from '../components/booking/BookingModalContainer';
 import '../styles/global.css';
 
 interface Props {
@@ -16,6 +18,7 @@ interface Props {
     duration: string;
     startingPrice: string;
     slug: string;
+    _id: string;
     destinationLatitude?: number;
     destinationLongitude?: number;
     googleMapsEmbedUrl?: string;
@@ -71,12 +74,48 @@ interface Props {
       image?: string;
     }>;
   };
+  bookingSettings?: {
+    upiQrCodeUrl?: string;
+    upiId?: string;
+    payeeName?: string;
+    bookingTerms?: string;
+    cancellationPolicy?: string;
+    bookingHelpPhone?: string;
+    bookingHelpWhatsapp?: string;
+  };
+  safetyBannerData?: {
+    enabled?: boolean;
+    backgroundColor?: string;
+    badges?: Array<{
+      text: string;
+      icon: string;
+    }>;
+  };
 }
 
-const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, exclusions, packages } = Astro.props;
+const { routeData, heroSlides, carTypes, attractions, faqs, pageContent, exclusions, packages, bookingSettings, safetyBannerData } = Astro.props;
 
-const whatsappNumber = '917351721351';
+const whatsappNumber = bookingSettings?.bookingHelpWhatsapp || '917351721351';
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hi, I'd like to book a taxi from ${routeData.from} to ${routeData.to}`)}`;
+
+// Prepare route data for the booking modal
+const modalRouteData = {
+  from: routeData.from,
+  to: routeData.to,
+  slug: routeData.slug,
+  _id: routeData._id,
+  carTypes: carTypes || []
+};
+
+const modalBookingSettings = {
+  upiQrCodeUrl: bookingSettings?.upiQrCodeUrl,
+  upiId: bookingSettings?.upiId,
+  payeeName: bookingSettings?.payeeName,
+  bookingTerms: bookingSettings?.bookingTerms,
+  cancellationPolicy: bookingSettings?.cancellationPolicy,
+  helpPhone: bookingSettings?.bookingHelpPhone,
+  helpWhatsapp: bookingSettings?.bookingHelpWhatsapp
+};
 
 // Weather widget coordinates (format: lat/lon)
 const weatherCoords = routeData.destinationLatitude && routeData.destinationLongitude
@@ -124,6 +163,9 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
       destinationLatitude={routeData.destinationLatitude}
       destinationLongitude={routeData.destinationLongitude}
     />
+
+    <!-- Safety Banner -->
+    <SafetyBanner data={safetyBannerData} />
 
     <!-- Route Overview Section -->
     <section class="py-12 bg-white">
@@ -182,6 +224,10 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
               from={routeData.from}
               to={routeData.to}
               startingPrice={routeData.startingPrice}
+              slug={routeData.slug}
+              routeId={routeData._id}
+              carTypes={carTypes}
+              whatsappNumber={whatsappNumber}
             />
           </div>
         </div>
@@ -189,7 +235,16 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
     </section>
 
     <!-- Pricing Table -->
-    <RoutePricingTable carTypes={carTypes} exclusions={exclusions} />
+    <RoutePricingTable
+      carTypes={carTypes}
+      exclusions={exclusions}
+      routeInfo={{
+        from: routeData.from,
+        to: routeData.to,
+        slug: routeData.slug,
+        routeId: routeData._id
+      }}
+    />
 
     <!-- Ready to Book CTA Section -->
     <section class="py-12 bg-gradient-to-r from-primary-500 via-yellow-500 to-primary-500">
@@ -429,7 +484,125 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
         </div>
       </div>
     </section>
+
+    <!-- Terms & Cancellation Policy Section -->
+    <section id="terms-cancellation" class="py-12 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Booking Terms & Cancellation Policy</h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Booking Terms -->
+          <div class="bg-gray-50 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <svg class="w-5 h-5 text-amber-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Booking Terms
+            </h3>
+            {bookingSettings?.bookingTerms ? (
+              <div class="text-sm text-gray-600 space-y-2 prose prose-sm" set:html={bookingSettings.bookingTerms} />
+            ) : (
+              <ul class="text-sm text-gray-600 space-y-2">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Full payment required at the time of booking</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Booking confirmation sent via WhatsApp</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Driver details shared 2-4 hours before pickup</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Online booking available for 5 AM - 3 PM pickup</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Prices are fixed - no bargaining required</span>
+                </li>
+              </ul>
+            )}
+          </div>
+
+          <!-- Cancellation Policy -->
+          <div class="bg-gray-50 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              Cancellation Policy
+            </h3>
+            {bookingSettings?.cancellationPolicy ? (
+              <div class="text-sm text-gray-600 space-y-2 prose prose-sm" set:html={bookingSettings.cancellationPolicy} />
+            ) : (
+              <ul class="text-sm text-gray-600 space-y-2">
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-amber-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                  </svg>
+                  <span><strong>24+ hours before:</strong> Full refund</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-amber-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                  </svg>
+                  <span><strong>12-24 hours before:</strong> 50% refund</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                  </svg>
+                  <span><strong>Less than 12 hours:</strong> No refund</span>
+                </li>
+                <li class="flex items-start">
+                  <svg class="w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Refunds processed within 3-5 business days</span>
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <!-- Contact for Questions -->
+        <div class="mt-8 text-center">
+          <p class="text-gray-600 mb-4">Have questions about our terms?</p>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-6 py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Contact Us on WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Booking Modal -->
+  <BookingModalContainer
+    client:only="react"
+    routeData={modalRouteData}
+    bookingSettings={modalBookingSettings}
+  />
 
   <!-- Footer -->
   <Footer />

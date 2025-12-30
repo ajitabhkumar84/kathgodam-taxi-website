@@ -1,19 +1,28 @@
 ---
 import RoutePageLayout from '../layouts/RoutePageLayout.astro';
+import TemplePageLayout from '../layouts/TemplePageLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { getAllRouteSlugs, getAllPackageSlugs, getRouteBySlug, getPackageBySlug, urlFor } from '../lib/sanity';
+import PackagePricingTable from '../components/PackagePricingTable.astro';
+import SafetyBanner from '../components/SafetyBanner.astro';
+import { getAllRouteSlugs, getAllPackageSlugs, getAllTempleSlugs, getRouteBySlug, getPackageBySlug, getTempleBySlug, urlFor, getBookingSettings, getSafetyBanner } from '../lib/sanity';
 import type { Route } from '../types/route';
 import type { Package } from '../types/package';
+import type { Temple } from '../types/temple';
 import '../styles/global.css';
+
+// Pre-render all route, package, and temple pages at build time
+export const prerender = true;
 
 export async function getStaticPaths() {
   const routeSlugs = await getAllRouteSlugs();
   const packageSlugs = await getAllPackageSlugs();
+  const templeSlugs = await getAllTempleSlugs();
 
   const allSlugs = [
     ...routeSlugs.map((slug: string) => ({ params: { slug }, props: { type: 'route' } })),
     ...packageSlugs.map((slug: string) => ({ params: { slug }, props: { type: 'package' } })),
+    ...templeSlugs.map((slug: string) => ({ params: { slug }, props: { type: 'temple' } })),
   ];
 
   return allSlugs;
@@ -22,22 +31,44 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const { type } = Astro.props;
 
-// Determine if this is a route or package
+// Determine if this is a route, package, or temple
 let route: Route | null = null;
 let packageData: Package | null = null;
+let templeData: Temple | null = null;
 let isPackage = false;
+let isTemple = false;
 
 if (type === 'route') {
   route = await getRouteBySlug(slug!);
 } else if (type === 'package') {
   packageData = await getPackageBySlug(slug!);
   isPackage = true;
+} else if (type === 'temple') {
+  templeData = await getTempleBySlug(slug!);
+  isTemple = true;
 }
 
-// If neither found, redirect to 404
-if (!route && !packageData) {
+// If none found, redirect to 404
+if (!route && !packageData && !templeData) {
   return Astro.redirect('/404');
 }
+
+// Fetch booking settings for route pages
+const bookingSettingsData = route ? await getBookingSettings() : null;
+
+// Fetch safety banner data
+const safetyBannerData = await getSafetyBanner();
+
+// Transform booking settings for the layout
+const bookingSettings = bookingSettingsData ? {
+  upiQrCodeUrl: bookingSettingsData.upiQrCode ? urlFor(bookingSettingsData.upiQrCode).url() : undefined,
+  upiId: bookingSettingsData.upiId,
+  payeeName: bookingSettingsData.payeeName,
+  bookingTerms: bookingSettingsData.bookingTerms,
+  cancellationPolicy: bookingSettingsData.cancellationPolicy,
+  bookingHelpPhone: bookingSettingsData.bookingHelpPhone,
+  bookingHelpWhatsapp: bookingSettingsData.bookingHelpWhatsapp,
+} : undefined;
 
 // For routes, transform the data
 let routeData, heroSlides, carTypes, attractions, faqs, pageContent, exclusions, packages;
@@ -50,6 +81,7 @@ if (route) {
     duration: route.duration,
     startingPrice: route.startingPrice,
     slug: route.slug,
+    _id: route._id,
     destinationLatitude: route.destinationLatitude,
     destinationLongitude: route.destinationLongitude,
     googleMapsEmbedUrl: route.googleMapsEmbedUrl,
@@ -73,24 +105,28 @@ if (route) {
     return imageMap[carName] || '/images/cars/dzire.jpg'; // Default to dzire if not found
   };
 
-  carTypes = route.carTypes.map((car) => ({
-    name: car.name,
-    model: car.model,
-    capacity: car.capacity,
-    seasonPrice: car.seasonPrice,
-    offSeasonPrice: car.offSeasonPrice,
-    image: car.image
-      ? (typeof car.image === 'string' ? car.image : urlFor(car.image).width(800).height(600).url())
-      : getDefaultCarImage(car.name),
-    features: car.features,
-  }));
+  carTypes = (route.carTypes || [])
+    .filter((car) => car !== null)
+    .map((car) => ({
+      name: car.name,
+      model: car.model,
+      capacity: car.capacity,
+      seasonPrice: car.seasonPrice,
+      offSeasonPrice: car.offSeasonPrice,
+      image: car.image
+        ? (typeof car.image === 'string' ? car.image : urlFor(car.image).width(800).height(600).url())
+        : getDefaultCarImage(car.name),
+      features: car.features,
+    }));
 
-  attractions = route.attractions?.map((attraction) => ({
-    name: attraction.name,
-    description: attraction.description,
-    image: attraction.image ? urlFor(attraction.image).width(800).height(600).url() : '',
-    highlights: attraction.highlights,
-  })) || [];
+  attractions = (route.attractions || [])
+    .filter((attraction) => attraction !== null)
+    .map((attraction) => ({
+      name: attraction.name,
+      description: attraction.description,
+      image: attraction.image ? urlFor(attraction.image).width(800).height(600).url() : '',
+      highlights: attraction.highlights,
+    }));
 
   // Process FAQs with dynamic content replacement
   faqs = (route.faqs || []).map((faq) => {
@@ -122,14 +158,16 @@ if (route) {
 
   packages = {
     stayPackages: route.stayPackages || [],
-    tourPackages: route.tourPackages?.map((pkg) => ({
-      name: pkg.name,
-      subtitle: pkg.subtitle,
-      features: pkg.features,
-      price: pkg.price,
-      popular: pkg.popular,
-      image: pkg.image ? urlFor(pkg.image).width(800).height(600).url() : undefined,
-    })) || [],
+    tourPackages: (route.tourPackages || [])
+      .filter((pkg) => pkg !== null)
+      .map((pkg) => ({
+        name: pkg.name,
+        subtitle: pkg.subtitle,
+        features: pkg.features,
+        price: pkg.price,
+        popular: pkg.popular,
+        image: pkg.image ? urlFor(pkg.image).width(800).height(600).url() : undefined,
+      })),
   };
 }
 
@@ -138,7 +176,9 @@ const whatsappNumber = '917351721351';
 const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
 ---
 
-{!isPackage && route ? (
+{isTemple && templeData ? (
+  <TemplePageLayout temple={templeData} />
+) : !isPackage && route ? (
   <RoutePageLayout
     routeData={routeData}
     heroSlides={heroSlides}
@@ -148,6 +188,8 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
     pageContent={pageContent}
     exclusions={exclusions}
     packages={packages}
+    bookingSettings={bookingSettings}
+    safetyBannerData={safetyBannerData}
   />
 ) : packageData ? (
   <html lang="en">
@@ -223,6 +265,9 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
           </div>
         </section>
 
+        <!-- Safety Banner -->
+        <SafetyBanner data={safetyBannerData} />
+
         <!-- Introduction Section -->
         <section class="py-12 bg-gray-50">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -234,7 +279,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
               <div class="mt-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Highlights</h2>
                 <ul class="grid md:grid-cols-2 gap-3">
-                  {packageData.highlights.map((highlight) => (
+                  {packageData.highlights.filter((highlight) => highlight !== null).map((highlight) => (
                     <li class="flex items-start gap-2">
                       <svg class="w-6 h-6 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -252,21 +297,35 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
         {packageData.itinerary && packageData.itinerary.length > 0 && (
           <section class="py-12 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-8">Itinerary</h2>
-              <div class="space-y-6">
-                {packageData.itinerary.map((day) => (
-                  <div class="border-l-4 border-primary-500 pl-6 py-4">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{day.day}: {day.title}</h3>
-                    <ul class="space-y-2">
-                      {day.activities.map((activity) => (
-                        <li class="flex items-start gap-2 text-gray-700">
-                          <svg class="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                          </svg>
-                          <span>{activity}</span>
-                        </li>
-                      ))}
-                    </ul>
+              <h2 class="text-3xl font-bold text-gray-900 mb-8">Day-wise Itinerary</h2>
+              <div class="space-y-8">
+                {packageData.itinerary.filter((day) => day !== null).map((day) => (
+                  <div class="grid lg:grid-cols-5 gap-6 bg-gray-50 rounded-xl overflow-hidden border-l-4 border-primary-500 shadow-sm hover:shadow-md transition-shadow">
+                    {/* Day Content */}
+                    <div class={`${day.image ? 'lg:col-span-3' : 'lg:col-span-5'} p-6`}>
+                      <h3 class="text-2xl font-bold text-gray-900 mb-3">{day.day}: {day.title}</h3>
+                      <ul class="space-y-2">
+                        {(day.activities || []).filter((activity) => activity !== null).map((activity) => (
+                          <li class="flex items-start gap-2 text-gray-700">
+                            <svg class="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                            <span>{activity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Day Image */}
+                    {day.image && (
+                      <div class="lg:col-span-2 order-first lg:order-last">
+                        <img
+                          src={urlFor(day.image).width(800).height(600).url()}
+                          alt={`${day.day} - ${day.title}`}
+                          class="w-full h-full object-cover min-h-[250px] lg:min-h-full"
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -274,13 +333,22 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
           </section>
         )}
 
-        <!-- Pricing Options -->
-        {packageData.pricingOptions && packageData.pricingOptions.length > 0 && (
+        <!-- Pricing Section -->
+        {(packageData.carTypes && packageData.carTypes.length > 0) && (
+          <PackagePricingTable
+            carTypes={packageData.carTypes}
+            hotelAddon={packageData.hotelAddon}
+            exclusions={packageData.exclusions}
+          />
+        )}
+
+        <!-- Legacy Pricing Options (for backward compatibility) -->
+        {(!packageData.carTypes || packageData.carTypes.length === 0) && packageData.pricingOptions && packageData.pricingOptions.length > 0 && (
           <section id="pricing" class="py-12 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Pricing Options</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.pricingOptions.map((option) => (
+                {packageData.pricingOptions.filter((option) => option !== null).map((option) => (
                   <div class={`bg-white rounded-xl shadow-lg p-6 ${option.popular ? 'ring-2 ring-primary-500 relative' : ''}`}>
                     {option.popular && (
                       <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-bold">
@@ -292,7 +360,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
                     <div class="text-3xl font-bold text-primary-600 mb-6">{option.price}</div>
                     {option.features && option.features.length > 0 && (
                       <ul class="space-y-2 mb-6">
-                        {option.features.map((feature) => (
+                        {option.features.filter((feature) => feature !== null).map((feature) => (
                           <li class="flex items-start gap-2 text-gray-700">
                             <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -313,30 +381,29 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
         )}
 
         <!-- Inclusions & Exclusions -->
-        {(packageData.inclusions || packageData.exclusions) && (
+        {packageData.inclusions && packageData.inclusions.length > 0 && (
           <section class="py-12 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div class="grid md:grid-cols-2 gap-8">
-                {packageData.inclusions && packageData.inclusions.length > 0 && (
-                  <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
-                    <ul class="space-y-2">
-                      {packageData.inclusions.map((item) => (
-                        <li class="flex items-start gap-2 text-gray-700">
-                          <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                {packageData.exclusions && packageData.exclusions.length > 0 && (
+              <div class={`${packageData.exclusions && packageData.exclusions.length > 0 && (!packageData.carTypes || packageData.carTypes.length === 0) ? 'grid md:grid-cols-2 gap-8' : ''}`}>
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
+                  <ul class="space-y-2">
+                    {packageData.inclusions.filter((item) => item !== null).map((item) => (
+                      <li class="flex items-start gap-2 text-gray-700">
+                        <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Show exclusions here only if not using new car types pricing (which already shows them) */}
+                {packageData.exclusions && packageData.exclusions.length > 0 && (!packageData.carTypes || packageData.carTypes.length === 0) && (
                   <div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Excluded</h2>
                     <ul class="space-y-2">
-                      {packageData.exclusions.map((item) => (
+                      {packageData.exclusions.filter((item) => item !== null).map((item) => (
                         <li class="flex items-start gap-2 text-gray-700">
                           <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -358,7 +425,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8">Places to Visit</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.attractions.map((attraction) => (
+                {packageData.attractions.filter((attraction) => attraction !== null).map((attraction) => (
                   <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     {attraction.image && (
                       <img
@@ -372,7 +439,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
                       <p class="text-gray-600 mb-4">{attraction.description}</p>
                       {attraction.highlights && attraction.highlights.length > 0 && (
                         <ul class="space-y-1">
-                          {attraction.highlights.map((highlight) => (
+                          {attraction.highlights.filter((highlight) => highlight !== null).map((highlight) => (
                             <li class="text-sm text-gray-700 flex items-start gap-1">
                               <span class="text-primary-500">•</span>
                               <span>{highlight}</span>
@@ -394,7 +461,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
               <div class="space-y-4">
-                {packageData.faqs.map((faq) => (
+                {packageData.faqs.filter((faq) => faq !== null).map((faq) => (
                   <details class="bg-gray-50 rounded-lg p-6 group">
                     <summary class="font-bold text-gray-900 cursor-pointer list-none flex items-center justify-between">
                       <span>{faq.question}</span>
@@ -416,7 +483,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8">Related Routes</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.relatedRoutes.map((relatedRoute) => (
+                {packageData.relatedRoutes.filter((relatedRoute) => relatedRoute !== null).map((relatedRoute) => (
                   <a href={`/${relatedRoute.slug}`} class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">{relatedRoute.from} → {relatedRoute.to}</h3>
                     <div class="space-y-1 text-sm text-gray-600">

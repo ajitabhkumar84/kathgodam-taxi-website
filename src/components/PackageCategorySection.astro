@@ -1,0 +1,68 @@
+---
+import PackageCard from './PackageCard.astro'
+
+interface Package {
+  name: string
+  slug: string
+  subtitle?: string
+  duration?: string
+  price: string
+  highlights?: string[]
+  image: string
+}
+
+interface Props {
+  categoryName: string
+  categorySlug: string
+  categoryDescription?: string
+  packages: Package[]
+  isFirst?: boolean
+}
+
+const {categoryName, categorySlug, categoryDescription, packages, isFirst = false} = Astro.props
+
+const bgClass = isFirst ? 'bg-white' : 'bg-gray-50'
+---
+
+<section id={categorySlug} class={`py-12 ${bgClass} scroll-mt-32`}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+        </svg>
+        {categoryName}
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        {categoryName}
+      </h2>
+      {categoryDescription && (
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          {categoryDescription}
+        </p>
+      )}
+    </div>
+
+    <!-- Packages Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {packages.map((pkg) => (
+        <PackageCard
+          name={pkg.name}
+          subtitle={pkg.subtitle}
+          duration={pkg.duration}
+          price={pkg.price}
+          highlights={pkg.highlights}
+          image={pkg.image}
+          href={`/${pkg.slug}`}
+        />
+      ))}
+    </div>
+
+    <!-- Package Count -->
+    <div class="mt-6 text-center text-sm text-gray-500">
+      Showing {packages.length} {packages.length === 1 ? 'package' : 'packages'} in this category
+    </div>
+  </div>
+</section>

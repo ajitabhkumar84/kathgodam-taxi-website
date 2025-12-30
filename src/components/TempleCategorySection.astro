@@ -1,0 +1,101 @@
+---
+import TempleCard from './TempleCard.astro'
+import { urlFor } from '../lib/sanity'
+
+interface Temple {
+  _id: string
+  name: string
+  slug: string
+  subtitle?: string
+  district: string
+  templeType?: string
+  introText?: string
+  highlights?: string[]
+  featuredImage?: any
+  heroSlides?: { image: any }[]
+}
+
+interface Props {
+  categoryName: string
+  categorySlug: string
+  categoryDescription?: string
+  icon?: string
+  temples: Temple[]
+  isFirst?: boolean
+}
+
+const { categoryName, categorySlug, categoryDescription, icon, temples, isFirst = false } = Astro.props
+
+const bgClass = isFirst ? 'bg-white' : 'bg-gray-50'
+
+// Icon mapping for different temple categories
+const getIconSvg = (iconType: string | undefined) => {
+  switch (iconType) {
+    case 'om':
+      return `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm2.07-7.75l-.9.92C11.45 10.9 11 11.5 11 13h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H6c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>`
+    case 'shiva':
+      return `<path d="M12 2l-5.5 9h11L12 2zm0 3.84L14.26 9H9.74L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 21.5h8v-2H3v2zm0-4h8v-2H3v2z"/>`
+    case 'shakti':
+      return `<path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2zm0 4.24l4.74 11.14L12 15l-4.74 2.38L12 6.24z"/>`
+    case 'lotus':
+      return `<path d="M12 2c-1.1 0-2 .9-2 2 0 .74.4 1.38 1 1.72V7c-2.24 0-4.29.73-5.96 1.96C3.82 10.24 3 12.14 3 14.25 3 18.52 6.48 22 10.75 22h2.5C17.52 22 21 18.52 21 14.25c0-2.11-.82-4.01-2.04-5.29C17.29 7.73 15.24 7 13 7V5.72c.6-.34 1-.98 1-1.72 0-1.1-.9-2-2-2z"/>`
+    case 'mountain':
+      return `<path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z"/>`
+    case 'star':
+      return `<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>`
+    case 'heritage':
+      return `<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.84L18 11v7h-2v-6H8v6H6v-7l6-5.16z"/>`
+    default: // temple
+      return `<path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5zM4 10v2h2v8H4v2h16v-2h-2v-8h2v-2H4zm4 2h8v8H8v-8zm2 2v4h4v-4h-4z"/>`
+  }
+}
+---
+
+<section id={categorySlug} class={`py-12 ${bgClass} scroll-mt-32`}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" set:html={getIconSvg(icon)} />
+        {categoryName}
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        {categoryName}
+      </h2>
+      {categoryDescription && (
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          {categoryDescription}
+        </p>
+      )}
+    </div>
+
+    <!-- Temples Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {temples.map((temple) => {
+        // Get image URL - prefer featuredImage, fall back to first hero slide
+        const imageUrl = temple.featuredImage
+          ? urlFor(temple.featuredImage).width(800).height(600).url()
+          : temple.heroSlides?.[0]?.image
+            ? urlFor(temple.heroSlides[0].image).width(800).height(600).url()
+            : '/images/temple-placeholder.jpg'
+
+        return (
+          <TempleCard
+            name={temple.name}
+            subtitle={temple.subtitle}
+            district={temple.district}
+            templeType={temple.templeType}
+            highlights={temple.highlights}
+            image={imageUrl}
+            href={`/${temple.slug}`}
+          />
+        )
+      })}
+    </div>
+
+    <!-- Temple Count -->
+    <div class="mt-6 text-center text-sm text-gray-500">
+      Showing {temples.length} {temples.length === 1 ? 'temple' : 'temples'} in this category
+    </div>
+  </div>
+</section>

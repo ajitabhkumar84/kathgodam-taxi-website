@@ -14,7 +14,9 @@
       "mcp__chrome-devtools__take_screenshot",
       "Bash(dir:*)",
       "Bash(nul)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(grep:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

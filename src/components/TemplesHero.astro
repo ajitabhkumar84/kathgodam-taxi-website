@@ -1,0 +1,89 @@
+---
+interface Props {
+  title: string
+  subtitle?: string
+  badge?: string
+  backgroundImage?: string
+}
+
+const { title, subtitle, badge, backgroundImage } = Astro.props
+---
+
+<section class="relative bg-gradient-to-br from-secondary-900 via-black to-secondary-900 text-white overflow-hidden min-h-[40vh] md:min-h-[45vh]">
+  {backgroundImage && (
+    <div class="absolute inset-0 opacity-25">
+      <img src={backgroundImage} alt="" class="w-full h-full object-cover" />
+    </div>
+  )}
+
+  <!-- Decorative blur circles -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-0 w-64 h-64 bg-primary-500 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-primary-500 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Temple decorative pattern -->
+  <div class="absolute inset-0 opacity-5">
+    <svg class="absolute top-10 left-10 w-32 h-32 text-primary-500" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5zM4 10v2h2v8H4v2h16v-2h-2v-8h2v-2H4zm4 2h8v8H8v-8zm2 2v4h4v-4h-4z"/>
+    </svg>
+    <svg class="absolute bottom-10 right-10 w-48 h-48 text-primary-500" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5zM4 10v2h2v8H4v2h16v-2h-2v-8h2v-2H4zm4 2h8v8H8v-8zm2 2v4h4v-4h-4z"/>
+    </svg>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+    <div class="text-center space-y-4">
+      {badge && (
+        <div class="inline-flex items-center gap-2 bg-primary-500 text-black px-4 py-2 rounded-full text-sm font-bold">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L4 7v2h16V7L12 2zm0 2.5l4 2.5H8l4-2.5zM4 10v2h2v8H4v2h16v-2h-2v-8h2v-2H4zm4 2h8v8H8v-8z"/>
+          </svg>
+          {badge}
+        </div>
+      )}
+
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+        {title.includes('Temples') ? (
+          <Fragment set:html={title.replace('Temples', '<span class="text-primary-500">Temples</span>')} />
+        ) : (
+          title
+        )}
+      </h1>
+
+      {subtitle && (
+        <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+
+      <!-- Feature badges -->
+      <div class="flex flex-wrap justify-center gap-6 pt-4 text-sm text-gray-400">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L4 7v2h16V7L12 2z"/>
+          </svg>
+          <span>30+ Sacred Sites</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>6 Districts</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>Reliable Taxi Service</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>Local Expertise</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

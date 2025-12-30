@@ -1,0 +1,238 @@
+---
+import type { CarType, HotelAddon } from '../types/package';
+
+interface Props {
+  carTypes?: CarType[];
+  hotelAddon?: HotelAddon;
+  exclusions?: string[];
+}
+
+const { carTypes = [], hotelAddon, exclusions = [] } = Astro.props;
+
+// Helper function to get default car image based on car name
+const getDefaultCarImage = (carName: string): string => {
+  const imageMap: Record<string, string> = {
+    'Hatchback': '/images/cars/alto.jfif',
+    'Sedan': '/images/cars/dzire.jpg',
+    'SUV Standard': '/images/cars/tavera.jpg',
+    'SUV Deluxe': '/images/cars/innova.jpg',
+    'SUV Luxury': '/images/cars/innova-crysta.jpg',
+  };
+  return imageMap[carName] || '/images/cars/dzire.jpg';
+};
+
+// Helper function to get room configuration based on car type
+const getRoomConfig = (carName: string): string => {
+  if (carName.toLowerCase().includes('sedan')) {
+    return '1 Deluxe Room';
+  }
+  return '2 Deluxe Rooms (Twin Sharing)';
+};
+
+// Process car types - convert Sanity images to URLs
+const processedCarTypes = carTypes.map((car) => ({
+  ...car,
+  image: typeof car.image === 'string' ? car.image : getDefaultCarImage(car.name),
+}));
+
+const processedHotelCarTypes = hotelAddon?.carTypes?.map((car) => ({
+  ...car,
+  image: typeof car.image === 'string' ? car.image : getDefaultCarImage(car.name),
+  roomConfig: getRoomConfig(car.name),
+})) || [];
+---
+
+<section class="py-12 bg-gradient-to-br from-gray-50 to-white" id="pricing">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Taxi-Only Pricing Section -->
+    {processedCarTypes.length > 0 && (
+      <div class="mb-12">
+        <!-- Section Header -->
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Taxi Charges
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Choose from our fleet of well-maintained vehicles with transparent, fixed pricing.
+          </p>
+        </div>
+
+        <!-- Pricing Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {processedCarTypes.map((car) => (
+            <div class={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${car.popular ? 'ring-4 ring-primary-500 transform scale-105' : ''}`}>
+              {car.popular && (
+                <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-4 py-1 rounded-bl-lg">
+                  POPULAR
+                </div>
+              )}
+
+              <!-- Car Image -->
+              <div class="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                <img
+                  src={car.image}
+                  alt={car.name}
+                  class="w-full h-full object-contain p-4"
+                />
+              </div>
+
+              <!-- Card Content -->
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-1">{car.name}</h3>
+                <p class="text-sm text-gray-500 mb-1">{car.model}</p>
+                <p class="text-sm text-gray-600 mb-4 flex items-center">
+                  <svg class="w-4 h-4 mr-1 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                  {car.capacity}
+                </p>
+
+                <!-- Pricing -->
+                <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div class="mb-3">
+                    <p class="text-xs text-gray-500 mb-1">Season Rate</p>
+                    <p class="text-2xl font-bold text-gray-900">{car.seasonPrice}</p>
+                    <p class="text-xs text-gray-500 mt-1">Apr-Jul, Sept-Oct, Dec-Jan</p>
+                  </div>
+                  <div class="border-t border-gray-200 pt-3">
+                    <p class="text-xs text-gray-500 mb-1">Off-Season Rate</p>
+                    <p class="text-xl font-bold text-primary-600">{car.offSeasonPrice}</p>
+                    <p class="text-xs text-gray-500 mt-1">Other months</p>
+                  </div>
+                </div>
+
+                <!-- Features -->
+                {car.features && car.features.length > 0 && (
+                  <ul class="space-y-2">
+                    {car.features.map((feature) => (
+                      <li class="flex items-start text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Hotel Add-on Pricing Section -->
+    {hotelAddon?.enabled && processedHotelCarTypes.length > 0 && (
+      <div class="mb-8">
+        <!-- Section Header -->
+        <div class="text-center mb-10">
+          <div class="inline-flex items-center gap-2 bg-primary-100 text-primary-900 px-4 py-2 rounded-full mb-4 font-semibold text-sm">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
+            Hotel Package
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Taxi + Hotel Package
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Complete package with comfortable accommodation included.
+          </p>
+          {hotelAddon.hotelDetails && (
+            <p class="text-sm text-gray-600 max-w-2xl mx-auto mt-2">
+              {hotelAddon.hotelDetails}
+            </p>
+          )}
+        </div>
+
+        <!-- Hotel Pricing Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {processedHotelCarTypes.map((car) => (
+            <div class={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-primary-200 ${car.popular ? 'ring-4 ring-primary-500 transform scale-105' : ''}`}>
+              {car.popular && (
+                <div class="absolute top-0 right-0 bg-primary-500 text-black text-xs font-bold px-4 py-1 rounded-bl-lg">
+                  POPULAR
+                </div>
+              )}
+
+              <!-- Car Image -->
+              <div class="relative h-40 bg-gradient-to-br from-primary-50 to-primary-100 overflow-hidden">
+                <img
+                  src={car.image}
+                  alt={car.name}
+                  class="w-full h-full object-contain p-4"
+                />
+                <!-- Hotel Badge -->
+                <div class="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded text-center">
+                  <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  {car.roomConfig}
+                </div>
+              </div>
+
+              <!-- Card Content -->
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-1">{car.name}</h3>
+                <p class="text-sm text-gray-500 mb-1">{car.model}</p>
+                <p class="text-sm text-gray-600 mb-4 flex items-center">
+                  <svg class="w-4 h-4 mr-1 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                  {car.capacity}
+                </p>
+
+                <!-- Pricing -->
+                <div class="mb-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+                  <div class="mb-3">
+                    <p class="text-xs text-gray-500 mb-1">Season Rate</p>
+                    <p class="text-2xl font-bold text-gray-900">{car.seasonPrice}</p>
+                    <p class="text-xs text-gray-500 mt-1">Apr-Jul, Sept-Oct, Dec-Jan</p>
+                  </div>
+                  <div class="border-t border-primary-200 pt-3">
+                    <p class="text-xs text-gray-500 mb-1">Off-Season Rate</p>
+                    <p class="text-xl font-bold text-primary-600">{car.offSeasonPrice}</p>
+                    <p class="text-xs text-gray-500 mt-1">Other months</p>
+                  </div>
+                </div>
+
+                <!-- Features -->
+                {car.features && car.features.length > 0 && (
+                  <ul class="space-y-2">
+                    {car.features.map((feature) => (
+                      <li class="flex items-start text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Exclusions Notice -->
+    {exclusions.length > 0 && (
+      <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
+        <div class="flex">
+          <svg class="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          <div class="text-sm text-gray-700">
+            <p class="font-semibold text-gray-900 mb-2">What's Excluded:</p>
+            <ul class="list-disc list-inside space-y-1">
+              {exclusions.map((exclusion) => (
+                <li>{exclusion}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</section>

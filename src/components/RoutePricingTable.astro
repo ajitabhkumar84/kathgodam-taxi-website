@@ -10,12 +10,20 @@ interface CarType {
   popular?: boolean;
 }
 
+interface RouteInfo {
+  from: string;
+  to: string;
+  slug: string;
+  routeId: string;
+}
+
 interface Props {
   carTypes: CarType[];
   exclusions?: string[];
+  routeInfo?: RouteInfo;
 }
 
-const { carTypes, exclusions } = Astro.props;
+const { carTypes, exclusions, routeInfo } = Astro.props;
 ---
 
 <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
@@ -75,7 +83,7 @@ const { carTypes, exclusions } = Astro.props;
             </div>
 
             <!-- Features -->
-            <ul class="space-y-2 mb-6">
+            <ul class="space-y-2 mb-4">
               {car.features.map((feature) => (
                 <li class="flex items-start text-sm text-gray-600">
                   <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -86,6 +94,28 @@ const { carTypes, exclusions } = Astro.props;
               ))}
             </ul>
 
+            <!-- Book Now Button -->
+            {routeInfo && (
+              <button
+                type="button"
+                class="book-car-btn w-full bg-gradient-to-r from-primary-500 to-yellow-500 text-black font-bold py-3 px-4 rounded-lg hover:from-primary-600 hover:to-yellow-600 transition-all shadow-md hover:shadow-lg text-sm flex items-center justify-center gap-2"
+                data-car-name={car.name}
+                data-car-model={car.model}
+                data-car-capacity={car.capacity}
+                data-car-season-price={car.seasonPrice}
+                data-car-offseason-price={car.offSeasonPrice}
+                data-car-image={car.image}
+                data-route-from={routeInfo.from}
+                data-route-to={routeInfo.to}
+                data-route-slug={routeInfo.slug}
+                data-route-id={routeInfo.routeId}
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Book Now
+              </button>
+            )}
           </div>
         </div>
       ))}
@@ -113,3 +143,43 @@ const { carTypes, exclusions } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  // Handle book now button clicks for each car type
+  document.addEventListener('DOMContentLoaded', () => {
+    const bookButtons = document.querySelectorAll('.book-car-btn');
+
+    bookButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+
+        // Get car type data from button attributes
+        const carData = {
+          name: target.dataset.carName,
+          model: target.dataset.carModel,
+          capacity: target.dataset.carCapacity,
+          seasonPrice: target.dataset.carSeasonPrice,
+          offSeasonPrice: target.dataset.carOffseasonPrice,
+          image: target.dataset.carImage
+        };
+
+        // Get route data
+        const routeData = {
+          from: target.dataset.routeFrom,
+          to: target.dataset.routeTo,
+          slug: target.dataset.routeSlug,
+          routeId: target.dataset.routeId
+        };
+
+        // Dispatch custom event with car type pre-selected
+        const event = new CustomEvent('open-booking-modal-with-car', {
+          detail: {
+            carType: carData,
+            route: routeData
+          }
+        });
+        window.dispatchEvent(event);
+      });
+    });
+  });
+</script>

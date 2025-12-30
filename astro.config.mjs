@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  output: 'server', // Enable SSR for booking/admin pages (use prerender = true for static pages)
   integrations: [
     react(),
     sanity({
