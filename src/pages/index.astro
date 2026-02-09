@@ -10,14 +10,18 @@ import CorporateClients from '../components/CorporateClients.astro';
 import TestimonialsSection from '../components/TestimonialsSection.astro';
 import Footer from '../components/Footer.astro';
 import PreviewBanner from '../components/PreviewBanner.astro';
+import GlobalHeadScripts from '../components/GlobalHeadScripts.astro';
+import GlobalBodyScripts from '../components/GlobalBodyScripts.astro';
+import SearchModalContainer from '../components/SearchModalContainer';
 import { getSiteSettings, getHomePage, getWhyChooseUs, getCorporateClients, getSafetySection, urlFor } from '../lib/sanity';
+import { getAllSearchableContent } from '../lib/searchData';
 import '../styles/global.css';
 
-// Mark this page as server-rendered to support preview mode
-export const prerender = false;
+// Pre-render at build time for performance; use /studio for content editing
+export const prerender = true;
 
-// Check if we're in preview mode
-const isPreview = Astro.cookies.get('preview-mode')?.value === 'true';
+// Prerendered pages always show published content (no preview mode)
+const isPreview = false;
 
 // Fetch data from Sanity (with preview mode if enabled)
 const siteSettings = await getSiteSettings();
@@ -40,6 +44,8 @@ const keywords = homePage?.keywords || 'Kathgodam taxi, Nainital taxi, Kumaon ta
 // Transform hero slides - convert Sanity images to URLs
 const heroSlides = homePage?.heroSlides?.map((slide: any) => ({
   image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
+  mobileImage: slide.mobileImage ? urlFor(slide.mobileImage).width(768).height(1024).url() : undefined,
+  imageAlt: slide.image?.alt || slide.title,
   title: slide.title,
   subtitle: slide.subtitle,
   description: slide.description,
@@ -90,6 +96,9 @@ const testimonials = homePage?.testimonials || [];
 const finalCtaHeading = homePage?.finalCtaHeading || 'Ready to Explore the Kumaon Hills?';
 const finalCtaSubheading = homePage?.finalCtaSubheading || 'Book your taxi today and experience safe, reliable, and comfortable journeys with Kathgodam Taxi.';
 const trustBadges = homePage?.trustBadges || ['15+ Years Experience', 'Fixed Transparent Pricing', '500+ Happy Customers'];
+
+// Fetch searchable content for search modal
+const searchData = await getAllSearchableContent();
 ---
 
 <!DOCTYPE html>
@@ -97,26 +106,61 @@ const trustBadges = homePage?.trustBadges || ['15+ Years Experience', 'Fixed Tra
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <GlobalHeadScripts />
     <meta name="description" content={metaDescription} />
     <meta name="keywords" content={keywords} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://kathgodamtaxi.com/" />
     <title>{pageTitle}</title>
 
     <!-- Open Graph -->
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kathgodamtaxi.com/" />
+    {heroSlides?.[0]?.image && <meta property="og:image" content={heroSlides[0].image} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    {heroSlides?.[0]?.image && <meta name="twitter:image" content={heroSlides[0].image} />}
 
     <!-- Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+
+    <!-- Structured Data: TaxiService -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "TaxiService",
+      "name": "Kathgodam Taxi",
+      "description": metaDescription,
+      "url": "https://kathgodamtaxi.com",
+      "telephone": `+91${phoneNumber}`,
+      "areaServed": {
+        "@type": "Place",
+        "name": "Kumaon Hills, Uttarakhand, India"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "Kathgodam Taxi",
+        "url": "https://kathgodamtaxi.com"
+      }
+    })} />
   </head>
   <body class="antialiased">
+    <GlobalBodyScripts />
     <!-- Preview Banner (shown only in preview mode) -->
     <PreviewBanner show={isPreview} />
 
     <!-- Navbar -->
     <Navbar />
+
+    <!-- Search Modal (globally available) -->
+    <SearchModalContainer searchData={searchData} client:idle />
 
     <!-- Main Content -->
     <main>

@@ -40,7 +40,7 @@ export function getClient(preview: boolean = false) {
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source: SanityImageSource) {
-  return builder.image(source);
+  return builder.image(source).auto('format');
 }
 
 // Helper function to get all published routes
@@ -202,17 +202,56 @@ export async function getAllPackages() {
     keywords,
     introText,
     highlights,
+    featureBox {
+      enabled,
+      title,
+      description,
+      stats[] {
+        value,
+        label
+      }
+    },
     itinerary[] {
       day,
       title,
-      activities
-    },
-    pricingOptions[] {
-      name,
       description,
-      price,
-      features,
-      popular
+      route,
+      totalTime,
+      badge,
+      activities,
+      image
+    },
+    carTypes[] {
+      name,
+      model,
+      capacity,
+      seasonPrice,
+      offSeasonPrice,
+      image,
+      features
+    },
+    hotelAddon {
+      enabled,
+      carTypes[] {
+        name,
+        model,
+        capacity,
+        seasonPrice,
+        offSeasonPrice,
+        image,
+        features
+      },
+      hotelDetails
+    },
+    onlineBooking {
+      enabled,
+      upiQrCodeUrl,
+      upiId,
+      payeeName,
+      bookingTerms,
+      cancellationPolicy,
+      helpPhone,
+      helpWhatsapp
     },
     inclusions,
     exclusions,
@@ -260,17 +299,56 @@ export async function getPackageBySlug(slug: string) {
     keywords,
     introText,
     highlights,
+    featureBox {
+      enabled,
+      title,
+      description,
+      stats[] {
+        value,
+        label
+      }
+    },
     itinerary[] {
       day,
       title,
-      activities
-    },
-    pricingOptions[] {
-      name,
       description,
-      price,
-      features,
-      popular
+      route,
+      totalTime,
+      badge,
+      activities,
+      image
+    },
+    carTypes[] {
+      name,
+      model,
+      capacity,
+      seasonPrice,
+      offSeasonPrice,
+      image,
+      features
+    },
+    hotelAddon {
+      enabled,
+      carTypes[] {
+        name,
+        model,
+        capacity,
+        seasonPrice,
+        offSeasonPrice,
+        image,
+        features
+      },
+      hotelDetails
+    },
+    onlineBooking {
+      enabled,
+      upiQrCodeUrl,
+      upiId,
+      payeeName,
+      bookingTerms,
+      cancellationPolicy,
+      helpPhone,
+      helpWhatsapp
     },
     inclusions,
     exclusions,
@@ -309,8 +387,17 @@ export async function getAllPackageSlugs() {
   return packages.map((pkg: { slug: string }) => pkg.slug);
 }
 
-// Helper function to get site settings
+// Simple in-memory cache for frequently called queries
+let siteSettingsCache: { data: any; timestamp: number } | null = null;
+const CACHE_TTL = 60_000; // 60 seconds
+
+// Helper function to get site settings (cached to avoid duplicate calls per render)
 export async function getSiteSettings() {
+  const now = Date.now();
+  if (siteSettingsCache && (now - siteSettingsCache.timestamp) < CACHE_TTL) {
+    return siteSettingsCache.data;
+  }
+
   const query = `*[_type == "siteSettings"][0] {
     phone,
     whatsappNumber,
@@ -318,10 +405,16 @@ export async function getSiteSettings() {
     email,
     logoText,
     logoHighlight,
-    socialLinks
+    socialLinks,
+    gtmId,
+    googleSiteVerification,
+    facebookDomainVerification,
+    customHeadScripts
   }`;
 
-  return await client.fetch(query);
+  const data = await client.fetch(query);
+  siteSettingsCache = { data, timestamp: now };
+  return data;
 }
 
 // Helper function to get homepage data
@@ -397,7 +490,14 @@ export async function getNavbar(preview: boolean = false) {
   const query = `*[_type == "navbar"][0] {
     navigationLinks[] {
       label,
-      href
+      href,
+      hasDropdown,
+      dropdownItems[] {
+        label,
+        description,
+        href,
+        icon
+      }
     },
     bookNowLabel,
     bookNowOptions[] {
@@ -606,6 +706,167 @@ export async function getPackagesPage(preview: boolean = false) {
   return await activeClient.fetch(query);
 }
 
+// Helper function to get complete tour page data
+export async function getCompleteTourPage(preview: boolean = false) {
+  const activeClient = getClient(preview);
+  const query = `*[_type == "completeTourPage"][0] {
+    seo {
+      title,
+      description,
+      keywords
+    },
+    hero {
+      badge,
+      headline {
+        line1,
+        line2,
+        line3
+      },
+      subheadline,
+      heroImage,
+      trustIndicators[] {
+        number,
+        label
+      }
+    },
+    pricingSection {
+      heading,
+      subheading,
+      seasonLabel,
+      seasonDateRanges,
+      seasonDescription,
+      midSeasonLabel,
+      midSeasonDateRanges,
+      midSeasonDescription,
+      offSeasonLabel,
+      offSeasonDateRanges,
+      offSeasonDescription,
+      carCategories[] {
+        name,
+        vehicles,
+        image,
+        seasonPrice,
+        midSeasonPrice,
+        offSeasonPrice,
+        isPopular,
+        order
+      } | order(order asc),
+      noteText
+    },
+    inclusionExclusionSection {
+      heading,
+      subheading,
+      included[] {
+        title,
+        description
+      },
+      excluded[] {
+        title,
+        description
+      }
+    },
+    packagesSection {
+      heading,
+      subheading,
+      package1 {
+        badge,
+        duration,
+        subtitle,
+        features[] {
+          text,
+          isBold
+        },
+        whatsappMessage,
+        isPopular,
+        isCustomPackage
+      },
+      package2 {
+        badge,
+        duration,
+        subtitle,
+        features[] {
+          text,
+          isBold
+        },
+        whatsappMessage,
+        isPopular,
+        isCustomPackage
+      },
+      package3 {
+        badge,
+        duration,
+        subtitle,
+        features[] {
+          text,
+          isBold
+        },
+        whatsappMessage,
+        isPopular,
+        isCustomPackage
+      },
+      package4 {
+        badge,
+        duration,
+        subtitle,
+        features[] {
+          text,
+          isBold
+        },
+        whatsappMessage,
+        isPopular,
+        isCustomPackage
+      }
+    },
+    popularItinerariesSection {
+      heading,
+      subheading,
+      featuredPackages[]-> {
+        _id,
+        name,
+        "slug": slug.current,
+        subtitle,
+        startingPrice,
+        duration,
+        highlights,
+        featuredHomepageImage,
+        heroSlides[0] {
+          image
+        }
+      }
+    },
+    safetySection-> {
+      sectionTitle,
+      emotionalTagline,
+      subDescription,
+      safetyBadges[] {
+        title,
+        description,
+        icon
+      },
+      familyImage,
+      ctaText,
+      ctaLink
+    },
+    faqSection {
+      heading,
+      subheading,
+      faqs[] {
+        question,
+        answer
+      }
+    },
+    ctaSection {
+      heading,
+      description,
+      features[] {
+        text
+      }
+    }
+  }`;
+
+  return await activeClient.fetch(query);
+}
+
 // ============================================
 // BOOKING SYSTEM FUNCTIONS
 // ============================================
@@ -737,27 +998,6 @@ export async function getBookingById(bookingId: string): Promise<Booking | null>
   return await client.fetch(query, { bookingId });
 }
 
-// Helper function to get bookings by phone number
-export async function getBookingsByPhone(phone: string): Promise<Booking[]> {
-  const query = `*[_type == "booking" && customerPhone == $phone] | order(createdAt desc) {
-    _id,
-    bookingId,
-    createdAt,
-    customerName,
-    customerPhone,
-    pickupLocation,
-    dropLocation,
-    travelDate,
-    pickupTime,
-    carType,
-    totalAmount,
-    paymentStatus,
-    status
-  }`;
-
-  return await client.fetch(query, { phone });
-}
-
 // Helper function to get all bookings (for admin)
 export async function getAllBookings(filters?: {
   status?: string;
@@ -766,18 +1006,23 @@ export async function getAllBookings(filters?: {
   toDate?: string;
 }): Promise<Booking[]> {
   let conditions = ['_type == "booking"'];
+  const params: Record<string, string> = {};
 
   if (filters?.status) {
-    conditions.push(`status == "${filters.status}"`);
+    conditions.push('status == $filterStatus');
+    params.filterStatus = filters.status;
   }
   if (filters?.paymentStatus) {
-    conditions.push(`paymentStatus == "${filters.paymentStatus}"`);
+    conditions.push('paymentStatus == $filterPaymentStatus');
+    params.filterPaymentStatus = filters.paymentStatus;
   }
   if (filters?.fromDate) {
-    conditions.push(`travelDate >= "${filters.fromDate}"`);
+    conditions.push('travelDate >= $filterFromDate');
+    params.filterFromDate = filters.fromDate;
   }
   if (filters?.toDate) {
-    conditions.push(`travelDate <= "${filters.toDate}"`);
+    conditions.push('travelDate <= $filterToDate');
+    params.filterToDate = filters.toDate;
   }
 
   const query = `*[${conditions.join(' && ')}] | order(createdAt desc) {
@@ -799,7 +1044,7 @@ export async function getAllBookings(filters?: {
     assignedVehicle->{_id, vehicleId, model}
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, params);
 }
 
 // Helper function to get bookings for a specific date (for availability check)
@@ -1029,6 +1274,17 @@ export async function getTempleBySlug(slug: string) {
     },
     pilgrimageTips,
     accommodationInfo,
+    carTypes[] {
+      name,
+      model,
+      capacity,
+      seasonPrice,
+      offSeasonPrice,
+      image,
+      features,
+      popular
+    },
+    exclusions,
     relatedRoutes[]-> {
       _id,
       from,

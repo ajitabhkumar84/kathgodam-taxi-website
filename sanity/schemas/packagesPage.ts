@@ -1,10 +1,22 @@
 import {defineField, defineType} from 'sanity'
+import {createStaticPageUrlInput} from '../components/StaticPageUrlInput'
 
 export default defineType({
   name: 'packagesPage',
   title: 'Packages Page',
   type: 'document',
   fields: [
+    // Page URL
+    defineField({
+      name: 'pageUrl',
+      title: '🌐 Page URL',
+      type: 'string',
+      description: 'The live URL of this page',
+      readOnly: true,
+      components: {
+        input: createStaticPageUrlInput('/packages', 'Packages Page')
+      }
+    }),
     // SEO Fields
     defineField({
       name: 'pageTitle',

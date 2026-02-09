@@ -3,10 +3,24 @@ import { createBooking, getBookingSettings } from '../../../lib/sanity';
 import { generateBookingId, isWithinLeadTime, isWithinBookingWindow, getPriceType, validatePhone, normalizePhone, validateEmail, checkAvailability, isDateBlocked, calculateAdvanceAmount } from '../../../lib/booking';
 import { sendBookingConfirmationEmail, sendAdminNewBookingNotification } from '../../../lib/notifications';
 import type { CarTypeValue } from '../../../types/vehicle';
+import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_PRESETS } from '../../../lib/rateLimit';
+import { requireCSRF } from '../../../lib/csrf';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
+  // Check rate limit (3 bookings per 5 minutes)
+  const rateLimitResult = checkRateLimit(request, RATE_LIMIT_PRESETS.BOOKING);
+  if (!rateLimitResult.allowed) {
+    return createRateLimitResponse(rateLimitResult);
+  }
+
+  // Validate CSRF token
+  const csrfError = await requireCSRF(request, cookies);
+  if (csrfError) {
+    return csrfError;
+  }
+
   try {
     const body = await request.json();
 
@@ -30,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
     } = body;
 
     // Validate required fields
-    if (!customerName || !customerPhone || !pickupLocation || !dropLocation || !travelDate || !pickupTime || !carType || !totalAmount) {
+    if (!customerName || !customerPhone || !customerEmail || !pickupLocation || !dropLocation || !travelDate || !pickupTime || !carType || !totalAmount) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Missing required fields'
@@ -51,8 +65,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Validate email if provided
-    if (customerEmail && !validateEmail(customerEmail)) {
+    // Validate email
+    if (!validateEmail(customerEmail)) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid email address'
@@ -148,11 +162,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     // Send confirmation email to customer (non-blocking)
-    if (customerEmail) {
-      sendBookingConfirmationEmail(booking).catch(err => {
-        console.error('Failed to send confirmation email:', err);
-      });
-    }
+    sendBookingConfirmationEmail(booking).catch(err => {
+      console.error('Failed to send confirmation email:', err);
+    });
 
     // Send notification email to admin (non-blocking)
     sendAdminNewBookingNotification(booking).catch(err => {

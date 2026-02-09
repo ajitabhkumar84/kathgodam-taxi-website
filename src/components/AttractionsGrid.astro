@@ -36,6 +36,9 @@ const { title, attractions } = Astro.props;
               src={attraction.image}
               alt={attraction.name}
               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+              width="400"
+              height="224"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 

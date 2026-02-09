@@ -25,9 +25,9 @@ export default defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Background Image',
+      title: 'Desktop Background Image',
       type: 'image',
-      description: 'Recommended: 1920x1080px (16:9 aspect ratio), Max 2MB, JPEG/WebP format for best performance. This is a full-width hero image.',
+      description: 'Desktop/Tablet hero image. Recommended: 1920x1080px (16:9 aspect ratio), Max 2MB, JPEG/WebP format for best performance. This is a full-width hero image.',
       options: {
         hotspot: true,
       },
@@ -40,6 +40,23 @@ export default defineType({
         }
       ],
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'mobileImage',
+      title: 'Mobile Background Image (Optional)',
+      type: 'image',
+      description: 'Mobile-optimized hero image shown on phones (portrait orientation works best). Recommended: 768x1024px or 750x1000px (3:4 aspect ratio), Max 1MB, JPEG/WebP format. If not provided, desktop image will be used.',
+      options: {
+        hotspot: true,
+      },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative text',
+          description: 'Alt text for mobile image. Leave empty to use desktop image alt text.',
+        }
+      ],
     }),
     defineField({
       name: 'ctaText',

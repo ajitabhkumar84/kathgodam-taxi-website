@@ -1,10 +1,22 @@
 import type { APIRoute } from 'astro';
 import { getBookingById } from '../../../lib/sanity';
+import { isAdminAuthenticated } from '../../../lib/admin-auth';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, cookies }) => {
   try {
+    // Require admin authentication to view booking details
+    if (!isAdminAuthenticated(cookies)) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Unauthorized'
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const { id } = params;
 
     if (!id) {

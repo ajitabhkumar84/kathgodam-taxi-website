@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {PreviewUrlInput} from '../components/PreviewUrlInput'
 
 export default defineType({
   name: 'route',
@@ -28,6 +29,16 @@ export default defineType({
         maxLength: 96,
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'previewUrl',
+      title: '🌐 Production URL',
+      type: 'string',
+      description: 'This is the live URL of this route page',
+      readOnly: true,
+      components: {
+        input: PreviewUrlInput
+      }
     }),
     defineField({
       name: 'distance',

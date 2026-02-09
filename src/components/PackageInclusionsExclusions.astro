@@ -1,0 +1,123 @@
+---
+interface InclusionItem {
+  title: string;
+  description: string;
+}
+
+interface ExclusionItem {
+  title: string;
+  description: string;
+}
+
+interface Props {
+  inclusions?: string[] | InclusionItem[];
+  exclusions?: string[] | ExclusionItem[];
+}
+
+const { inclusions, exclusions } = Astro.props;
+
+// Helper to check if item is an object with title/description
+const isDetailedItem = (item: any): item is { title: string; description: string } => {
+  return typeof item === 'object' && 'title' in item && 'description' in item;
+};
+
+// Default inclusions if none provided
+const defaultInclusions: InclusionItem[] = [
+  { title: 'Car Rental with Driver', description: 'Well-maintained vehicle for the entire journey' },
+  { title: 'All Fuel Charges', description: 'Complete fuel cost included' },
+  { title: 'Driver Allowance', description: 'All driver expenses covered' },
+  { title: 'Parking Charges', description: 'All temple parking fees' },
+  { title: 'All Taxes (GST)', description: 'Inclusive of all applicable taxes' },
+];
+
+// Default exclusions if none provided
+const defaultExclusions: ExclusionItem[] = [
+  { title: 'Food & Beverages', description: 'Meals not included (Langar available at temple)' },
+  { title: 'Entry Fees', description: 'Temples are free, but donations are welcome' },
+  { title: 'Personal Expenses', description: 'Shopping, tips, etc.' },
+  { title: 'Guide Services', description: 'Optional, can be arranged on request' },
+  { title: 'Travel Insurance', description: 'Recommended but not included' },
+];
+
+const processedInclusions = inclusions?.map(item =>
+  typeof item === 'string' ? { title: item, description: '' } : item
+) || defaultInclusions;
+
+const processedExclusions = exclusions?.map(item =>
+  typeof item === 'string' ? { title: item, description: '' } : item
+) || defaultExclusions;
+---
+
+<section class="py-16 lg:py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- What's Included -->
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border-2 border-green-200 shadow-lg">
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex-shrink-0 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900">What's Included</h2>
+        </div>
+
+        <!-- Items -->
+        <div class="space-y-4">
+          {processedInclusions.map((item) => (
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 mt-1">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="font-bold text-gray-900 mb-1">{item.title}</div>
+                {item.description && (
+                  <div class="text-sm text-gray-700">{item.description}</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- What's NOT Included -->
+      <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl p-8 border-2 border-orange-200 shadow-lg">
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex-shrink-0 w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900">What's NOT Included</h2>
+        </div>
+
+        <!-- Items -->
+        <div class="space-y-4">
+          {processedExclusions.map((item) => (
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 mt-1">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="font-bold text-gray-900 mb-1">{item.title}</div>
+                {item.description && (
+                  <div class="text-sm text-gray-700">{item.description}</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

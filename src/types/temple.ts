@@ -1,4 +1,4 @@
-import type { HeroSlide, FAQ, Attraction } from './route';
+import type { HeroSlide, FAQ, Attraction, CarType } from './route';
 import type { Package, RelatedRoute } from './package';
 
 export interface TempleTimings {
@@ -79,6 +79,8 @@ export interface Temple {
   seasonalEvents?: SeasonalEvent[];
   pilgrimageTips?: string[];
   accommodationInfo?: string;
+  carTypes?: CarType[];
+  exclusions?: string[];
   relatedRoutes?: RelatedRoute[];
   relatedPackages?: Package[];
   nearbyTemples?: RelatedTemple[];

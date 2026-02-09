@@ -1,10 +1,22 @@
 import {defineField, defineType} from 'sanity'
+import {createStaticPageUrlInput} from '../components/StaticPageUrlInput'
 
 export default defineType({
   name: 'templesPage',
   title: 'Temples Page',
   type: 'document',
   fields: [
+    // Page URL
+    defineField({
+      name: 'pageUrl',
+      title: '🌐 Page URL',
+      type: 'string',
+      description: 'The live URL of this page',
+      readOnly: true,
+      components: {
+        input: createStaticPageUrlInput('/temples', 'Temples Page')
+      }
+    }),
     // SEO Fields
     defineField({
       name: 'pageTitle',
@@ -59,7 +71,7 @@ export default defineType({
       name: 'heroImage',
       title: 'Hero Background Image',
       type: 'image',
-      description: 'Background image for hero section. Recommended: 1920x600px',
+      description: 'Background image for hero section. Recommended: 1920x1080px (16:9 aspect ratio), Max 2MB, JPEG/WebP format for optimal display across devices',
       options: {
         hotspot: true,
       },

@@ -6,7 +6,7 @@ interface Props {
 
 const {
   formTitle = 'Request a Free Quote',
-  formDescription = 'Fill out the form below and we\'ll get back to you within minutes',
+  formDescription = "Fill out the form below and we'll get back to you within minutes",
 } = Astro.props
 ---
 
@@ -23,31 +23,30 @@ const {
 
     <form
       id="contact-form"
-      action="https://api.web3forms.com/submit"
-      method="POST"
       class="bg-gray-50 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200"
     >
-      <!-- Web3Forms Access Key (you'll need to get this from web3forms.com) -->
-      <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
-      <input type="hidden" name="subject" value="New Taxi Booking Request from Kathgodam Taxi Website" />
-      <input type="hidden" name="from_name" value="Kathgodam Taxi Contact Form" />
-
-      <!-- Basic Information -->
+      <!-- Your Details Section -->
       <div class="mb-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <svg class="w-6 h-6 text-primary-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-primary-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            ></path>
           </svg>
-          Your Information
+          Your Details
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
           <div>
             <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-              Full Name <span class="text-red-500">*</span>
+              Name <span class="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -59,105 +58,141 @@ const {
             />
           </div>
           <div>
-            <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">
-              Phone Number <span class="text-red-500">*</span>
+            <label for="mobile" class="block text-sm font-semibold text-gray-700 mb-2">
+              Mobile <span class="text-red-500">*</span>
             </label>
             <input
               type="tel"
-              id="phone"
-              name="phone"
+              id="mobile"
+              name="mobile"
               required
               pattern="[0-9]{10}"
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               placeholder="10-digit mobile number"
             />
           </div>
-          <div class="md:col-span-2">
+          <div>
             <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
-              Email Address
+              Email <span class="text-red-500">*</span>
             </label>
             <input
               type="email"
               id="email"
               name="email"
+              required
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               placeholder="your.email@example.com"
             />
+            <p class="text-xs text-gray-500 mt-1">
+              A copy of your responses will be emailed to the address you provided
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Trip Details -->
+      <!-- Tour Details Section -->
       <div class="mb-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <svg class="w-6 h-6 text-primary-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-primary-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
             ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
-          Trip Details
+          Tour Details
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
           <div>
-            <label for="pickup" class="block text-sm font-semibold text-gray-700 mb-2">
-              Pickup Location <span class="text-red-500">*</span>
+            <label
+              for="pickupPoint"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Pickup Point <span class="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="pickup"
-              name="pickup"
+              id="pickupPoint"
+              name="pickupPoint"
               required
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              placeholder="e.g., Kathgodam Railway Station"
+              placeholder="e.g., Kathgodam, Pantnagar Airport, etc."
             />
           </div>
           <div>
-            <label for="drop" class="block text-sm font-semibold text-gray-700 mb-2">
-              Drop Location <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="drop"
-              name="drop"
-              required
-              class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              placeholder="e.g., Nainital"
-            />
-          </div>
-          <div>
-            <label for="date" class="block text-sm font-semibold text-gray-700 mb-2">
-              Travel Date <span class="text-red-500">*</span>
+            <label
+              for="startingDate"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Starting Date <span class="text-red-500">*</span>
             </label>
             <input
               type="date"
-              id="date"
-              name="date"
+              id="startingDate"
+              name="startingDate"
               required
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
+            <p class="text-xs text-gray-500 mt-1">
+              Please let us know the starting date when your tour starts
+            </p>
           </div>
           <div>
-            <label for="time" class="block text-sm font-semibold text-gray-700 mb-2">
-              Preferred Time
+            <label
+              for="pickupTime"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Pickup Time or Train Name
             </label>
             <input
-              type="time"
-              id="time"
-              name="time"
+              type="text"
+              id="pickupTime"
+              name="pickupTime"
+              class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              placeholder="e.g., 10:00 AM or Ranikhet Express"
+            />
+          </div>
+          <div>
+            <label
+              for="endingDate"
+              class="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Ending Date <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              id="endingDate"
+              name="endingDate"
+              required
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             />
+            <p class="text-xs text-gray-500 mt-1">
+              Please let us know when your tour would end
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Passenger & Vehicle Details -->
+      <!-- Your Car Category Section -->
       <div class="mb-6">
         <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <svg class="w-6 h-6 text-primary-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-primary-500 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -165,44 +200,47 @@ const {
               d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
             ></path>
           </svg>
-          Vehicle & Passengers
+          Your Car Category
+          <span class="text-red-500 ml-1">*</span>
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
           <div>
-            <label for="passengers" class="block text-sm font-semibold text-gray-700 mb-2">
-              Number of Passengers
+            <label for="carCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+              Select Car Category <span class="text-red-500">*</span>
             </label>
             <select
-              id="passengers"
-              name="passengers"
+              id="carCategory"
+              name="carCategory"
+              required
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             >
-              <option value="1-4">1-4 Passengers (Sedan)</option>
-              <option value="5-7">5-7 Passengers (SUV/Innova)</option>
-              <option value="8-12">8-12 Passengers (Tempo Traveller)</option>
-              <option value="12+">12+ Passengers (Mini Bus)</option>
+              <option value="">-- Select a car category --</option>
+              <option value="Sedan Car (Honda Amaze/Xcent)">Sedan Car → Honda Amaze/Xcent</option>
+              <option value="SUV Standard (Ertiga/Triber/Xylo/Tavera - 6 to 8 Pax)">SUV Standard (Ertiga/Triber/Xylo/Tavera - 6 to 8 Pax)</option>
+              <option value="SUV Deluxe Innova (7 Pax)">SUV Deluxe Innova (7 Pax)</option>
+              <option value="SUV Luxury Innova Crysta (7 Pax)">SUV Luxury Innova Crysta (7 Pax)</option>
+              <option value="Tempo Traveler (12 or 17 Pax)">Tempo Traveler (12 or 17 Pax)</option>
+              <option value="other">Other (Please specify)</option>
             </select>
           </div>
-          <div>
-            <label for="vehicle" class="block text-sm font-semibold text-gray-700 mb-2">
-              Preferred Vehicle Type
+
+          <!-- Other Car Category Input (hidden by default) -->
+          <div id="otherCarCategoryContainer" class="hidden">
+            <label for="otherCarCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+              Please specify your vehicle requirement <span class="text-red-500">*</span>
             </label>
-            <select
-              id="vehicle"
-              name="vehicle"
+            <input
+              type="text"
+              id="otherCarCategory"
+              name="otherCarCategory"
               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-            >
-              <option value="any">Any Available</option>
-              <option value="sedan">Sedan (Dzire/Etios)</option>
-              <option value="suv">SUV (Ertiga/XUV)</option>
-              <option value="innova">Innova Crysta</option>
-              <option value="tempo">Tempo Traveller</option>
-            </select>
+              placeholder="E.g., Mini Bus, Luxury Coach, etc."
+            />
           </div>
         </div>
       </div>
 
-      <!-- Message -->
+      <!-- Additional Requirements -->
       <div class="mb-6">
         <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">
           Additional Requirements or Message
@@ -210,19 +248,25 @@ const {
         <textarea
           id="message"
           name="message"
-          rows="4"
+          rows="5"
           class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
-          placeholder="Tell us about any special requirements, luggage, child seats, etc."
+          placeholder="Please let us know your tentative itinerary that would help us in providing you with accurate information."
         ></textarea>
       </div>
 
-      <!-- Submit Button -->
+      <!-- Submit Buttons -->
       <div class="flex flex-col sm:flex-row gap-3">
         <button
           type="submit"
-          class="flex-1 inline-flex items-center justify-center bg-primary-500 text-black px-8 py-4 rounded-lg font-bold hover:bg-primary-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+          id="submit-button"
+          class="flex-1 inline-flex items-center justify-center bg-primary-500 text-black px-8 py-4 rounded-lg font-bold hover:bg-primary-400 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -230,7 +274,7 @@ const {
               d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
             ></path>
           </svg>
-          Submit Request
+          <span id="submit-button-text">Submit Request (Email)</span>
         </button>
         <button
           type="button"
@@ -246,29 +290,22 @@ const {
         </button>
       </div>
 
-      <!-- Success Message -->
-      <div id="form-success" class="hidden mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-        <div class="flex items-center">
-          <svg class="w-6 h-6 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <p class="text-green-800 font-semibold">Thank you! We'll contact you shortly.</p>
-        </div>
-      </div>
-
       <!-- Error Message -->
       <div id="form-error" class="hidden mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
         <div class="flex items-center">
-          <svg class="w-6 h-6 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            class="w-6 h-6 text-red-500 mr-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
               clip-rule="evenodd"></path>
           </svg>
-          <p class="text-red-800 font-semibold">Something went wrong. Please try again.</p>
+          <p class="text-red-800 font-semibold" id="error-message">
+            Something went wrong. Please try again.
+          </p>
         </div>
       </div>
     </form>
@@ -276,39 +313,77 @@ const {
 </section>
 
 <script>
+  // Show/hide "Other" car category input
+  const carCategorySelect = document.getElementById('carCategory') as HTMLSelectElement
+  const otherCarCategoryContainer = document.getElementById('otherCarCategoryContainer')
+  const otherCarCategoryInput = document.getElementById('otherCarCategory') as HTMLInputElement
+
+  if (carCategorySelect) {
+    carCategorySelect.addEventListener('change', (e) => {
+      const target = e.target as HTMLSelectElement
+      if (target.value === 'other') {
+        otherCarCategoryContainer?.classList.remove('hidden')
+        otherCarCategoryInput?.setAttribute('required', 'required')
+      } else {
+        otherCarCategoryContainer?.classList.add('hidden')
+        otherCarCategoryInput?.removeAttribute('required')
+        otherCarCategoryInput.value = ''
+      }
+    })
+  }
+
   // Form submission handling
   const form = document.getElementById('contact-form') as HTMLFormElement
-  const successMessage = document.getElementById('form-success')
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement
+  const submitButtonText = document.getElementById('submit-button-text')
   const errorMessage = document.getElementById('form-error')
+  const errorMessageText = document.getElementById('error-message')
   const whatsappButton = document.getElementById('whatsapp-button')
 
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
 
+      // Disable submit button
+      submitButton.disabled = true
+      if (submitButtonText) {
+        submitButtonText.textContent = 'Sending...'
+      }
+
       try {
         const formData = new FormData(form)
-        const response = await fetch(form.action, {
+
+        const response = await fetch('/api/contact/submit', {
           method: 'POST',
           body: formData,
-          headers: {
-            Accept: 'application/json',
-          },
         })
 
-        if (response.ok) {
-          form.reset()
-          successMessage?.classList.remove('hidden')
-          errorMessage?.classList.add('hidden')
-          setTimeout(() => {
-            successMessage?.classList.add('hidden')
-          }, 5000)
+        const result = await response.json()
+
+        if (response.ok && result.success) {
+          // Redirect to thank you page
+          window.location.href = '/thank-you'
         } else {
-          throw new Error('Form submission failed')
+          throw new Error(result.error || 'Form submission failed')
         }
       } catch (error) {
+        console.error('Submission error:', error)
         errorMessage?.classList.remove('hidden')
-        successMessage?.classList.add('hidden')
+        if (errorMessageText) {
+          errorMessageText.textContent =
+            error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+        }
+
+        // Re-enable submit button
+        submitButton.disabled = false
+        if (submitButtonText) {
+          submitButtonText.textContent = 'Submit Request (Email)'
+        }
+
+        // Hide error after 5 seconds
+        setTimeout(() => {
+          errorMessage?.classList.add('hidden')
+        }, 5000)
       }
     })
   }
@@ -317,28 +392,44 @@ const {
   if (whatsappButton) {
     whatsappButton.addEventListener('click', () => {
       const form = document.getElementById('contact-form') as HTMLFormElement
+
+      // Validate form before sending to WhatsApp
+      if (!form.checkValidity()) {
+        form.reportValidity()
+        return
+      }
+
       const formData = new FormData(form)
 
       const name = formData.get('name')
-      const phone = formData.get('phone')
-      const pickup = formData.get('pickup')
-      const drop = formData.get('drop')
-      const date = formData.get('date')
-      const time = formData.get('time')
-      const passengers = formData.get('passengers')
-      const vehicle = formData.get('vehicle')
+      const mobile = formData.get('mobile')
+      const email = formData.get('email')
+      const pickupPoint = formData.get('pickupPoint')
+      const startingDate = formData.get('startingDate')
+      const pickupTime = formData.get('pickupTime')
+      const endingDate = formData.get('endingDate')
+      const carCategory = formData.get('carCategory')
+      const otherCarCategory = formData.get('otherCarCategory')
       const message = formData.get('message')
 
-      let whatsappMessage = `Hi, I would like to book a taxi:\n\n`
+      const finalCarCategory =
+        carCategory === 'other' && otherCarCategory
+          ? `Other: ${otherCarCategory}`
+          : carCategory
+
+      let whatsappMessage = `Hi, I would like to book a tour:\n\n`
+      whatsappMessage += `*Your Details*\n`
       whatsappMessage += `Name: ${name}\n`
-      whatsappMessage += `Phone: ${phone}\n`
-      whatsappMessage += `Pickup: ${pickup}\n`
-      whatsappMessage += `Drop: ${drop}\n`
-      whatsappMessage += `Date: ${date}\n`
-      if (time) whatsappMessage += `Time: ${time}\n`
-      whatsappMessage += `Passengers: ${passengers}\n`
-      whatsappMessage += `Vehicle: ${vehicle}\n`
-      if (message) whatsappMessage += `\nAdditional Info: ${message}`
+      whatsappMessage += `Mobile: ${mobile}\n`
+      whatsappMessage += `Email: ${email}\n\n`
+      whatsappMessage += `*Tour Details*\n`
+      whatsappMessage += `Pickup Point: ${pickupPoint}\n`
+      whatsappMessage += `Starting Date: ${startingDate}\n`
+      if (pickupTime) whatsappMessage += `Pickup Time/Train: ${pickupTime}\n`
+      whatsappMessage += `Ending Date: ${endingDate}\n\n`
+      whatsappMessage += `*Car Category*\n`
+      whatsappMessage += `${finalCarCategory}\n`
+      if (message) whatsappMessage += `\n*Additional Requirements*\n${message}`
 
       const whatsappUrl = `https://wa.me/917351721351?text=${encodeURIComponent(whatsappMessage)}`
       window.open(whatsappUrl, '_blank')

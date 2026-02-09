@@ -1,0 +1,90 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PreviewBanner from '../components/PreviewBanner.astro';
+import GlobalHeadScripts from '../components/GlobalHeadScripts.astro';
+import GlobalBodyScripts from '../components/GlobalBodyScripts.astro';
+import SearchModalContainer from '../components/SearchModalContainer';
+import { getAllSearchableContent } from '../lib/searchData';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  ogImage?: string;
+  showPreviewBanner?: boolean;
+}
+
+const { title, description, keywords, ogImage, showPreviewBanner = false } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://kathgodamtaxi.com').href;
+
+// Fetch all searchable content for the search modal
+const searchData = await getAllSearchableContent();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <GlobalHeadScripts />
+    <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalUrl} />
+    <title>{title}</title>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+  </head>
+  <body class="antialiased">
+    <GlobalBodyScripts />
+
+    <!-- Preview Banner (shown only in preview mode) -->
+    {showPreviewBanner && <PreviewBanner show={true} />}
+
+    <!-- Navbar -->
+    <Navbar />
+
+    <!-- Search Modal (globally available) -->
+    <SearchModalContainer searchData={searchData} client:idle />
+
+    <!-- Main Content -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+
+    <style>
+      /* Add spacing for fixed navbar */
+      main {
+        margin-top: 64px; /* Height of navbar on mobile */
+      }
+
+      @media (min-width: 768px) {
+        main {
+          margin-top: 80px; /* Height of navbar on desktop */
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -32,7 +32,9 @@ export default function CustomerInfoStep() {
       newErrors.customerPhone = 'Please enter a valid 10-digit mobile number';
     }
 
-    if (state.customerEmail && !validateEmail(state.customerEmail)) {
+    if (!state.customerEmail.trim()) {
+      newErrors.customerEmail = 'Email is required';
+    } else if (!validateEmail(state.customerEmail)) {
       newErrors.customerEmail = 'Please enter a valid email address';
     }
 
@@ -53,6 +55,23 @@ export default function CustomerInfoStep() {
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Information</h2>
+
+      {/* Payment Confirmation Notice */}
+      <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm font-semibold text-amber-800 mb-1">Booking Confirmation Process</p>
+            <p className="text-sm text-amber-700">
+              Your booking will be <strong>confirmed only after</strong> you pay the token advance amount and share the payment screenshot via WhatsApp or email. We will verify and confirm within a few hours.
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="space-y-6">
         {/* Full Name */}
@@ -101,10 +120,10 @@ export default function CustomerInfoStep() {
           </p>
         </div>
 
-        {/* Email (Optional) */}
+        {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email <span className="text-gray-400">(Optional)</span>
+            Email *
           </label>
           <input
             type="email"
@@ -118,6 +137,9 @@ export default function CustomerInfoStep() {
           {errors.customerEmail && (
             <p className="mt-1 text-sm text-red-500">{errors.customerEmail}</p>
           )}
+          <p className="mt-1 text-xs text-gray-500">
+            Booking confirmation will be sent to this email
+          </p>
         </div>
 
         {/* Special Requests */}
@@ -185,7 +207,8 @@ export default function CustomerInfoStep() {
             <a href="#" className="text-amber-600 hover:underline">booking terms</a>
             {' '}and{' '}
             <a href="#" className="text-amber-600 hover:underline">cancellation policy</a>.
-            I understand that booking confirmation is subject to payment verification.
+            I understand that my booking will be <strong>confirmed only after</strong> I pay the token advance,
+            share the payment screenshot via WhatsApp/email, and receive confirmation from Kathgodam Taxi.
           </label>
         </div>
         {errors.agreed && (

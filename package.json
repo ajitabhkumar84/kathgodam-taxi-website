@@ -9,6 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/node": "^9.5.2",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.6.0",
     "@portabletext/react": "^5.0.0",
@@ -18,12 +20,13 @@
     "@sanity/vision": "^4.15.0",
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.15.3",
+    "fuse.js": "^7.1.0",
     "groq": "^4.15.0",
     "html-to-image": "^1.11.13",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "resend": "^6.6.0",
     "sanity": "^4.15.0",
-    "styled-components": "^6.1.19",
     "tailwindcss": "^4.1.17"
   }
 }

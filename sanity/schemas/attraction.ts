@@ -9,14 +9,14 @@ export default defineType({
       name: 'name',
       title: 'Attraction Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Attraction Name is required'),
     }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 4,
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Attraction Description is required'),
     }),
     defineField({
       name: 'image',
@@ -34,14 +34,17 @@ export default defineType({
           description: 'Important for SEO and accessibility. Describe the attraction shown.',
         }
       ],
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('Attraction Image is required'),
     }),
     defineField({
       name: 'highlights',
       title: 'Highlights',
       type: 'array',
       of: [{type: 'string'}],
-      validation: (Rule) => Rule.required().min(2).max(6),
+      validation: (Rule) =>
+        Rule.required().error('Highlights are required')
+            .min(2).error('At least 2 highlights are required')
+            .max(6).warning('Maximum 6 highlights recommended'),
     }),
   ],
   preview: {

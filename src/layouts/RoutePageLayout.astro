@@ -7,7 +7,13 @@ import AttractionsGrid from '../components/AttractionsGrid.astro';
 import RouteFAQ from '../components/RouteFAQ.astro';
 import StickyBookingSidebar from '../components/StickyBookingSidebar.astro';
 import Footer from '../components/Footer.astro';
+import WhatsAppFAB from '../components/WhatsAppFAB.astro';
 import BookingModalContainer from '../components/booking/BookingModalContainer';
+import GlobalHeadScripts from '../components/GlobalHeadScripts.astro';
+import GlobalBodyScripts from '../components/GlobalBodyScripts.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import ShareToastContainer from '../components/ShareToastContainer';
+import { generateShareMessage } from '../lib/shareUtils';
 import '../styles/global.css';
 
 interface Props {
@@ -125,6 +131,14 @@ const weatherCoords = routeData.destinationLatitude && routeData.destinationLong
 // Default Google Maps embed URL (fallback)
 const defaultMapsUrl = "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d55449.89534378469!2d79.41936284863281!3d29.32368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x39a09addbd0c86f1%3A0xbb3534201a6826a5!2sKathgodam%20Railway%20Station%2C%20Haldwani%2C%20Uttarakhand!3m2!1d29.2721774!2d79.53823699999999!4m5!1s0x39a0a0a2a7e0a7e7%3A0x2e9d0c0c0c0c0c0c!2sNainital%2C%20Uttarakhand!3m2!1d29.3803039!2d79.4636042!5e0!3m2!1sen!2sin!4v1234567890";
 const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
+
+// Generate share URL and message
+const pageUrl = `${Astro.site || 'https://kathgodamtaxi.com'}${routeData.slug}`;
+const shareMessage = generateShareMessage('route', {
+  from: routeData.from,
+  to: routeData.to,
+  startingPrice: routeData.startingPrice
+});
 ---
 
 <!DOCTYPE html>
@@ -132,21 +146,59 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <GlobalHeadScripts />
   <title>{pageContent.title}</title>
   <meta name="description" content={pageContent.metaDescription} />
   <meta name="keywords" content={pageContent.keywords} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={pageUrl} />
 
   <!-- Open Graph -->
   <meta property="og:title" content={pageContent.title} />
   <meta property="og:description" content={pageContent.metaDescription} />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={pageUrl} />
+  {heroSlides?.[0]?.image && <meta property="og:image" content={heroSlides[0].image} />}
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageContent.title} />
+  <meta name="twitter:description" content={pageContent.metaDescription} />
+  {heroSlides?.[0]?.image && <meta name="twitter:image" content={heroSlides[0].image} />}
+
+  <!-- Structured Data: FAQPage -->
+  {faqs && faqs.length > 0 && (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    })} />
+  )}
+
+  <!-- Structured Data: BreadcrumbList -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.com/" },
+      { "@type": "ListItem", "position": 2, "name": `${routeData.from} to ${routeData.to} Taxi`, "item": pageUrl }
+    ]
+  })} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
 </head>
 
 <body class="antialiased">
+  <GlobalBodyScripts />
   <!-- Navbar -->
   <Navbar />
 
@@ -216,6 +268,14 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
                 <p class="text-sm text-gray-600">Starting Price</p>
               </div>
             </div>
+
+            <!-- Share Buttons -->
+            <ShareButtons
+              pageUrl={pageUrl}
+              shareTitle={`${routeData.from} to ${routeData.to} Taxi`}
+              shareMessage={shareMessage}
+              layout="horizontal"
+            />
           </div>
 
           <!-- Sticky Sidebar Column -->
@@ -293,7 +353,7 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
     </section>
 
     <!-- Taxi Packages from Destination (Conditional) -->
-    {packages?.tourPackages && packages.tourPackages.length > 0 && (
+    {packages?.tourPackages && Array.isArray(packages.tourPackages) && packages.tourPackages.length > 0 && (
       <section class="py-12 bg-gradient-to-br from-gray-50 to-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="text-center mb-10">
@@ -373,7 +433,7 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
     )}
 
     <!-- Places Worth Seeing (Attractions Grid) -->
-    {attractions && attractions.length > 0 && (
+    {attractions && Array.isArray(attractions) && attractions.length > 0 && (
       <AttractionsGrid
         title={pageContent.attractionsTitle || `Places Worth Seeing in ${routeData.to}`}
         attractions={attractions}
@@ -460,7 +520,7 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
           <!-- FAQs -->
           <div>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            {faqs && faqs.length > 0 ? (
+            {faqs && Array.isArray(faqs) && faqs.length > 0 ? (
               <div class="space-y-4">
                 {faqs.map((faq, index) => (
                   <details class="group bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -599,13 +659,19 @@ const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
 
   <!-- Booking Modal -->
   <BookingModalContainer
-    client:only="react"
+    client:idle
     routeData={modalRouteData}
     bookingSettings={modalBookingSettings}
   />
 
   <!-- Footer -->
   <Footer />
+
+  <!-- WhatsApp FAB -->
+  <WhatsAppFAB />
+
+  <!-- Share Toast -->
+  <ShareToastContainer client:idle />
 
   <style>
     html {

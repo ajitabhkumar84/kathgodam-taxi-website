@@ -10,7 +10,6 @@ export default defineType({
       title: 'Car Name',
       type: 'string',
       description: 'Car category name (Hatchback, Sedan, SUV Standard, SUV Deluxe, SUV Luxury)',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'model',
@@ -28,15 +27,13 @@ export default defineType({
       name: 'seasonPrice',
       title: 'Season Price',
       type: 'string',
-      description: 'Price during peak season (e.g., ₹1,300)',
-      validation: (Rule) => Rule.required(),
+      description: 'Price during peak season (e.g., ₹1,300) - Optional',
     }),
     defineField({
       name: 'offSeasonPrice',
       title: 'Off-Season Price',
       type: 'string',
-      description: 'Price during off-season (e.g., ₹1,100)',
-      validation: (Rule) => Rule.required(),
+      description: 'Price during off-season (e.g., ₹1,100) - Optional',
     }),
     defineField({
       name: 'image',

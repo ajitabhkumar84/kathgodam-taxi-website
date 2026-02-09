@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {PreviewUrlInput} from '../components/PreviewUrlInput'
 
 export default defineType({
   name: 'temple',
@@ -36,6 +37,17 @@ export default defineType({
         maxLength: 96,
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'previewUrl',
+      title: '🌐 Production URL',
+      type: 'string',
+      group: 'basic',
+      description: 'This is the live URL of this temple page',
+      readOnly: true,
+      components: {
+        input: PreviewUrlInput
+      }
     }),
     defineField({
       name: 'subtitle',
@@ -414,6 +426,22 @@ export default defineType({
     // ============================================
     // TAXI INTEGRATION
     // ============================================
+    defineField({
+      name: 'carTypes',
+      title: 'Car Pricing Table (Optional)',
+      type: 'array',
+      group: 'taxi',
+      of: [{type: 'carType'}],
+      description: 'Optional: Add car types and pricing specific to this temple. This will display a pricing table on the temple page.',
+    }),
+    defineField({
+      name: 'exclusions',
+      title: 'Pricing Exclusions (Optional)',
+      type: 'array',
+      group: 'taxi',
+      of: [{type: 'string'}],
+      description: 'Optional: What is NOT included in the pricing (e.g., "Toll and parking charges"). Leave empty to show defaults.',
+    }),
     defineField({
       name: 'relatedRoutes',
       title: 'Related Taxi Routes',

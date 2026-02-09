@@ -1,0 +1,38 @@
+---
+import { getSiteSettings } from '../lib/sanity';
+
+// Fetch site settings for tracking codes
+const siteSettings = await getSiteSettings();
+
+const gtmId = siteSettings?.gtmId;
+const googleSiteVerification = siteSettings?.googleSiteVerification;
+const facebookDomainVerification = siteSettings?.facebookDomainVerification;
+const customHeadScripts = siteSettings?.customHeadScripts;
+---
+
+{gtmId && (
+  <!-- Google Tag Manager -->
+  <script is:inline define:vars={{ gtmId }}>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer',gtmId);
+  </script>
+  <!-- End Google Tag Manager -->
+)}
+
+{googleSiteVerification && (
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content={googleSiteVerification} />
+)}
+
+{facebookDomainVerification && (
+  <!-- Facebook Domain Verification -->
+  <meta name="facebook-domain-verification" content={facebookDomainVerification} />
+)}
+
+{customHeadScripts && (
+  <!-- Custom Head Scripts -->
+  <Fragment set:html={customHeadScripts} />
+)}

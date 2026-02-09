@@ -9,10 +9,10 @@ import {getRatesPage, getSiteSettings, urlFor} from '../lib/sanity'
 import '../styles/global.css'
 
 // Mark as server-rendered for preview support
-export const prerender = false
+export const prerender = true
 
-// Check preview mode
-const isPreview = Astro.cookies.get('preview-mode')?.value === 'true'
+// Prerendered pages always show published content (no preview mode)
+const isPreview = false
 
 // Fetch rates page data
 const ratesPage = await getRatesPage(isPreview)

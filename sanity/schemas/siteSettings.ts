@@ -73,6 +73,50 @@ export default defineType({
         },
       ],
     }),
+    defineField({
+      name: 'gtmId',
+      title: 'Google Tag Manager ID',
+      type: 'string',
+      description: 'Your GTM container ID (e.g., GTM-XXXXXXX). GTM can manage all your other tracking tags.',
+      placeholder: 'GTM-XXXXXXX',
+      validation: (Rule) => Rule.regex(/^GTM-[A-Z0-9]+$/).error('Must be a valid GTM ID (e.g., GTM-XXXXXXX)'),
+      fieldset: 'tracking',
+    }),
+    defineField({
+      name: 'googleSiteVerification',
+      title: 'Google Search Console Verification Code',
+      type: 'string',
+      description: 'Verification code from Google Search Console (meta tag content value only)',
+      placeholder: 'AbCdEfGhIjKlMnOpQrStUvWxYz1234567890',
+      fieldset: 'tracking',
+    }),
+    defineField({
+      name: 'facebookDomainVerification',
+      title: 'Facebook Domain Verification Code',
+      type: 'string',
+      description: 'Facebook domain verification meta tag content value',
+      placeholder: 'abcdefghijklmnopqrstuvwxyz123456',
+      fieldset: 'tracking',
+    }),
+    defineField({
+      name: 'customHeadScripts',
+      title: 'Custom Head Scripts',
+      type: 'text',
+      rows: 6,
+      description: 'Additional scripts to inject in <head> section. Paste complete script tags here. For advanced users only.',
+      fieldset: 'tracking',
+    }),
+  ],
+  fieldsets: [
+    {
+      name: 'tracking',
+      title: 'Tracking & Analytics',
+      description: 'Configure tracking scripts and verification codes for your website',
+      options: {
+        collapsible: true,
+        collapsed: false,
+      },
+    },
   ],
   preview: {
     prepare() {

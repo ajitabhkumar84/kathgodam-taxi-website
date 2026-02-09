@@ -2,6 +2,41 @@
 
 import type { Booking } from '../types/booking'
 
+// HTML-escape user-supplied values to prevent XSS in email clients
+function escapeHtml(str: string | undefined | null): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Create a sanitized booking object for use in email templates
+// Uses `any` return type since we add escaped string versions of all fields
+function sanitizeBookingForEmail(booking: Booking): any {
+  const b = booking as any;
+  return {
+    ...booking,
+    customerName: escapeHtml(booking.customerName),
+    customerPhone: escapeHtml(booking.customerPhone),
+    customerEmail: escapeHtml(booking.customerEmail),
+    pickupLocation: escapeHtml(booking.pickupLocation),
+    dropLocation: escapeHtml(booking.dropLocation),
+    hotelLocationDetail: escapeHtml(booking.hotelLocationDetail),
+    customerNotes: escapeHtml(booking.customerNotes),
+    adminNotes: escapeHtml(booking.adminNotes),
+    carType: escapeHtml(booking.carType),
+    carModel: escapeHtml(booking.carModel),
+    bookingId: escapeHtml(booking.bookingId),
+    travelDate: escapeHtml(booking.travelDate),
+    pickupTime: escapeHtml(booking.pickupTime),
+    returnDate: escapeHtml(b.returnDate),
+    transactionId: escapeHtml(b.transactionId),
+  };
+}
+
 // Resend API for sending emails
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY
 const FROM_EMAIL = import.meta.env.FROM_EMAIL || 'bookings@kathgodamtaxi.com'
@@ -57,7 +92,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 /**
  * Generate booking confirmation email HTML
  */
-export function generateBookingConfirmationEmail(booking: Booking): string {
+export function generateBookingConfirmationEmail(rawBooking: Booking): string {
+  const booking: any = sanitizeBookingForEmail(rawBooking);
   return `
 <!DOCTYPE html>
 <html>
@@ -82,8 +118,18 @@ export function generateBookingConfirmationEmail(booking: Booking): string {
     </p>
 
     <p style="margin-bottom: 20px;">
-      Thank you for booking with Kathgodam Taxi! Your booking has been received and is being processed.
+      Thank you for booking with Kathgodam Taxi! Your booking request has been received.
     </p>
+
+    <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+      <p style="margin: 0; color: #92400e; font-weight: 600;">⚠️ Important: Booking Confirmation Process</p>
+      <p style="margin: 8px 0 0 0; color: #78350f; font-size: 14px;">
+        Your booking will be <strong>CONFIRMED</strong> only after:<br/>
+        1️⃣ You pay the token advance amount<br/>
+        2️⃣ Share payment screenshot via WhatsApp or Email<br/>
+        3️⃣ We verify and confirm the payment
+      </p>
+    </div>
 
     <!-- Booking ID -->
     <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 25px;">
@@ -137,23 +183,31 @@ export function generateBookingConfirmationEmail(booking: Booking): string {
 
     <!-- Payment Status -->
     <div style="background: ${booking.paymentStatus === 'verified' ? '#ecfdf5' : '#fef9c3'}; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
-      <p style="margin: 0; text-align: center; color: ${booking.paymentStatus === 'verified' ? '#065f46' : '#854d0e'};">
+      <p style="margin: 0; text-align: center; color: ${booking.paymentStatus === 'verified' ? '#065f46' : '#854d0e'}; font-size: 16px; font-weight: 600;">
         ${booking.paymentStatus === 'verified'
-          ? '✅ Payment Verified - Your booking is confirmed!'
-          : '⏳ Complete payment to confirm your booking'}
+          ? '✅ Payment Verified - Booking CONFIRMED!'
+          : '⏳ Awaiting Payment - Booking NOT YET Confirmed'}
       </p>
+      ${booking.paymentStatus !== 'verified' ? `
+      <p style="margin: 10px 0 0 0; text-align: center; color: #854d0e; font-size: 13px;">
+        Pay ₹${booking.advanceAmount?.toLocaleString('en-IN')} advance and share screenshot to confirm
+      </p>
+      ` : ''}
     </div>
 
     <!-- Next Steps -->
     <div style="margin-bottom: 25px;">
-      <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 16px;">What's Next?</h3>
+      <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 16px;">Next Steps to Confirm Your Booking</h3>
       <ol style="margin: 0; padding-left: 20px; color: #4b5563;">
         ${booking.paymentStatus !== 'verified' ? `
-        <li style="margin-bottom: 8px;">Complete your payment using UPI</li>
-        <li style="margin-bottom: 8px;">Share payment screenshot via WhatsApp</li>
-        ` : ''}
-        <li style="margin-bottom: 8px;">You'll receive a confirmation once payment is verified</li>
-        <li style="margin-bottom: 8px;">Our driver will contact you before pickup</li>
+        <li style="margin-bottom: 8px;"><strong>Pay the token advance amount</strong> (₹${booking.advanceAmount?.toLocaleString('en-IN')}) using UPI</li>
+        <li style="margin-bottom: 8px;"><strong>Share payment screenshot</strong> via WhatsApp or reply to this email</li>
+        <li style="margin-bottom: 8px;"><strong>Wait for our confirmation</strong> - We'll verify and confirm within a few hours</li>
+        ` : `
+        <li style="margin-bottom: 8px;">Your payment has been verified ✅</li>
+        `}
+        <li style="margin-bottom: 8px;">Our driver will contact you 1 day before pickup</li>
+        <li style="margin-bottom: 8px;">Be ready at the pickup location on time</li>
       </ol>
     </div>
 
@@ -195,7 +249,8 @@ export function generateBookingConfirmationEmail(booking: Booking): string {
 /**
  * Generate payment verified email HTML
  */
-export function generatePaymentVerifiedEmail(booking: Booking): string {
+export function generatePaymentVerifiedEmail(rawBooking: Booking): string {
+  const booking: any = sanitizeBookingForEmail(rawBooking);
   return `
 <!DOCTYPE html>
 <html>
@@ -381,10 +436,11 @@ Have a safe and pleasant journey! 🚕`
 /**
  * Generate admin notification email HTML for new booking
  */
-export function generateAdminNewBookingEmail(booking: Booking): string {
-  const whatsappUrl = `https://wa.me/91${booking.customerPhone}`
-  const phoneUrl = `tel:+91${booking.customerPhone}`
-  const studioUrl = `${SANITY_STUDIO_URL}/structure/booking;${booking._id}`
+export function generateAdminNewBookingEmail(rawBooking: Booking): string {
+  const booking: any = sanitizeBookingForEmail(rawBooking);
+  const whatsappUrl = `https://wa.me/91${rawBooking.customerPhone}`
+  const phoneUrl = `tel:+91${rawBooking.customerPhone}`
+  const studioUrl = `${SANITY_STUDIO_URL}/structure/booking;${rawBooking._id}`
 
   return `
 <!DOCTYPE html>

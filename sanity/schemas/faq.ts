@@ -9,7 +9,7 @@ export default defineType({
       name: 'question',
       title: 'Question',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('FAQ Question is required'),
     }),
     defineField({
       name: 'answer',
@@ -17,7 +17,7 @@ export default defineType({
       type: 'text',
       rows: 4,
       description: 'Supports HTML tags like <strong>, <br>, etc.',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().error('FAQ Answer is required'),
     }),
   ],
   preview: {

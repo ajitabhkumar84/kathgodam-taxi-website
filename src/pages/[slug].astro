@@ -3,9 +3,18 @@ import RoutePageLayout from '../layouts/RoutePageLayout.astro';
 import TemplePageLayout from '../layouts/TemplePageLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import WhatsAppFAB from '../components/WhatsAppFAB.astro';
 import PackagePricingTable from '../components/PackagePricingTable.astro';
+import PackageDayWiseItinerary from '../components/PackageDayWiseItinerary.astro';
+import PackageFeatureBox from '../components/PackageFeatureBox.astro';
+import PackageInclusionsExclusions from '../components/PackageInclusionsExclusions.astro';
+import PackageHowToBook from '../components/PackageHowToBook.astro';
+import PackageBookingModalContainer from '../components/booking/PackageBookingModalContainer';
 import SafetyBanner from '../components/SafetyBanner.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import ShareToastContainer from '../components/ShareToastContainer';
 import { getAllRouteSlugs, getAllPackageSlugs, getAllTempleSlugs, getRouteBySlug, getPackageBySlug, getTempleBySlug, urlFor, getBookingSettings, getSafetyBanner } from '../lib/sanity';
+import { generateShareMessage } from '../lib/shareUtils';
 import type { Route } from '../types/route';
 import type { Package } from '../types/package';
 import type { Temple } from '../types/temple';
@@ -88,7 +97,11 @@ if (route) {
   };
 
   heroSlides = route.heroSlides?.map((slide) => ({
-    image: slide.image ? urlFor(slide.image).width(2070).height(1380).url() : '',
+    image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
+    mobileImage: slide.mobileImage
+      ? urlFor(slide.mobileImage).width(768).height(1024).url()
+      : (slide.image ? urlFor(slide.image).width(768).height(1024).url() : undefined),
+    imageAlt: slide.image?.alt || slide.title,
     title: slide.title,
     description: slide.description,
   })) || undefined;
@@ -174,10 +187,18 @@ if (route) {
 // For packages
 const whatsappNumber = '917351721351';
 const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
+
+// Generate share URL and message for packages
+const packagePageUrl = packageData ? `${Astro.site || 'https://kathgodamtaxi.com'}${packageData.slug}` : '';
+const packageShareMessage = packageData ? generateShareMessage('package', {
+  packageName: packageData.name,
+  duration: packageData.duration,
+  startingPrice: packageData.startingPrice
+}) : '';
 ---
 
 {isTemple && templeData ? (
-  <TemplePageLayout temple={templeData} />
+  <TemplePageLayout templeData={templeData} />
 ) : !isPackage && route ? (
   <RoutePageLayout
     routeData={routeData}
@@ -200,9 +221,16 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
       <meta name="description" content={packageData.metaDescription} />
       {packageData.keywords && <meta name="keywords" content={packageData.keywords} />}
       <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="canonical" href={packagePageUrl} />
       <meta property="og:title" content={packageData.pageTitle} />
       <meta property="og:description" content={packageData.metaDescription} />
       <meta property="og:type" content="website" />
+      <meta property="og:url" content={packagePageUrl} />
+      {packageData.heroSlides?.[0]?.image && <meta property="og:image" content={urlFor(packageData.heroSlides[0].image).width(1200).height(630).url()} />}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={packageData.pageTitle} />
+      <meta name="twitter:description" content={packageData.metaDescription} />
+      {packageData.heroSlides?.[0]?.image && <meta name="twitter:image" content={urlFor(packageData.heroSlides[0].image).width(1200).height(630).url()} />}
     </head>
     <body class="antialiased">
       <Navbar />
@@ -252,7 +280,7 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
                 </div>
               </div>
 
-              {packageData.heroSlides && packageData.heroSlides.length > 0 && (
+              {packageData.heroSlides && Array.isArray(packageData.heroSlides) && packageData.heroSlides.length > 0 && (
                 <div class="hidden lg:block">
                   <img
                     src={urlFor(packageData.heroSlides[0].image).width(700).height(450).url()}
@@ -275,11 +303,11 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
               <div set:html={packageData.introText} class="text-gray-700 leading-relaxed"></div>
             </div>
 
-            {packageData.highlights && packageData.highlights.length > 0 && (
+            {packageData.highlights && Array.isArray(packageData.highlights) && packageData.highlights.length > 0 && (
               <div class="mt-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Highlights</h2>
                 <ul class="grid md:grid-cols-2 gap-3">
-                  {packageData.highlights.filter((highlight) => highlight !== null).map((highlight) => (
+                  {packageData.highlights.filter((highlight) => highlight !== null && highlight !== undefined).map((highlight) => (
                     <li class="flex items-start gap-2">
                       <svg class="w-6 h-6 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -290,142 +318,57 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
                 </ul>
               </div>
             )}
+
+            <!-- Share Buttons -->
+            <div class="mt-8">
+              <ShareButtons
+                pageUrl={packagePageUrl}
+                shareTitle={packageData.name}
+                shareMessage={packageShareMessage}
+                layout="horizontal"
+              />
+            </div>
           </div>
         </section>
 
-        <!-- Itinerary Section -->
-        {packageData.itinerary && packageData.itinerary.length > 0 && (
-          <section class="py-12 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-8">Day-wise Itinerary</h2>
-              <div class="space-y-8">
-                {packageData.itinerary.filter((day) => day !== null).map((day) => (
-                  <div class="grid lg:grid-cols-5 gap-6 bg-gray-50 rounded-xl overflow-hidden border-l-4 border-primary-500 shadow-sm hover:shadow-md transition-shadow">
-                    {/* Day Content */}
-                    <div class={`${day.image ? 'lg:col-span-3' : 'lg:col-span-5'} p-6`}>
-                      <h3 class="text-2xl font-bold text-gray-900 mb-3">{day.day}: {day.title}</h3>
-                      <ul class="space-y-2">
-                        {(day.activities || []).filter((activity) => activity !== null).map((activity) => (
-                          <li class="flex items-start gap-2 text-gray-700">
-                            <svg class="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                            <span>{activity}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Day Image */}
-                    {day.image && (
-                      <div class="lg:col-span-2 order-first lg:order-last">
-                        <img
-                          src={urlFor(day.image).width(800).height(600).url()}
-                          alt={`${day.day} - ${day.title}`}
-                          class="w-full h-full object-cover min-h-[250px] lg:min-h-full"
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        <!-- Pricing Section -->
-        {(packageData.carTypes && packageData.carTypes.length > 0) && (
-          <PackagePricingTable
-            carTypes={packageData.carTypes}
-            hotelAddon={packageData.hotelAddon}
-            exclusions={packageData.exclusions}
-          />
-        )}
-
-        <!-- Legacy Pricing Options (for backward compatibility) -->
-        {(!packageData.carTypes || packageData.carTypes.length === 0) && packageData.pricingOptions && packageData.pricingOptions.length > 0 && (
-          <section id="pricing" class="py-12 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Pricing Options</h2>
-              <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.pricingOptions.filter((option) => option !== null).map((option) => (
-                  <div class={`bg-white rounded-xl shadow-lg p-6 ${option.popular ? 'ring-2 ring-primary-500 relative' : ''}`}>
-                    {option.popular && (
-                      <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-                        Popular
-                      </div>
-                    )}
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{option.name}</h3>
-                    {option.description && <p class="text-gray-600 mb-4">{option.description}</p>}
-                    <div class="text-3xl font-bold text-primary-600 mb-6">{option.price}</div>
-                    {option.features && option.features.length > 0 && (
-                      <ul class="space-y-2 mb-6">
-                        {option.features.filter((feature) => feature !== null).map((feature) => (
-                          <li class="flex items-start gap-2 text-gray-700">
-                            <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <a href={`${baseWhatsappUrl}?text=${encodeURIComponent(`Hi, I want to book ${option.name} - ${packageData.name}`)}`} target="_blank" rel="noopener noreferrer" class="block w-full text-center bg-primary-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-600 transition-colors">
-                      Book Now
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+        <!-- Day-Wise Itinerary -->
+        {packageData.itinerary && Array.isArray(packageData.itinerary) && packageData.itinerary.length > 0 && (
+          <PackageDayWiseItinerary itinerary={packageData.itinerary} />
         )}
 
         <!-- Inclusions & Exclusions -->
-        {packageData.inclusions && packageData.inclusions.length > 0 && (
-          <section class="py-12 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div class={`${packageData.exclusions && packageData.exclusions.length > 0 && (!packageData.carTypes || packageData.carTypes.length === 0) ? 'grid md:grid-cols-2 gap-8' : ''}`}>
-                <div>
-                  <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Included</h2>
-                  <ul class="space-y-2">
-                    {packageData.inclusions.filter((item) => item !== null).map((item) => (
-                      <li class="flex items-start gap-2 text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                {/* Show exclusions here only if not using new car types pricing (which already shows them) */}
-                {packageData.exclusions && packageData.exclusions.length > 0 && (!packageData.carTypes || packageData.carTypes.length === 0) && (
-                  <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What's Excluded</h2>
-                    <ul class="space-y-2">
-                      {packageData.exclusions.filter((item) => item !== null).map((item) => (
-                        <li class="flex items-start gap-2 text-gray-700">
-                          <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
+        <PackageInclusionsExclusions
+          inclusions={packageData.inclusions || undefined}
+          exclusions={packageData.exclusions || undefined}
+        />
+
+        <!-- Feature Box (e.g., Complete Spiritual Circuit) -->
+        <PackageFeatureBox featureBox={packageData.featureBox} />
+
+        <!-- Pricing Section -->
+        {(packageData.carTypes && Array.isArray(packageData.carTypes) && packageData.carTypes.length > 0) && (
+          <PackagePricingTable
+            carTypes={packageData.carTypes}
+            hotelAddon={packageData.hotelAddon}
+            exclusions={packageData.exclusions || []}
+          />
         )}
 
+        <!-- How to Book Section -->
+        <PackageHowToBook
+          packageName={packageData.name}
+          showOnlineBooking={packageData.onlineBooking?.enabled || false}
+          phoneNumber={packageData.onlineBooking?.helpPhone || '7351721351'}
+          whatsappNumber={packageData.onlineBooking?.helpWhatsapp || '917351721351'}
+        />
+
         <!-- Attractions -->
-        {packageData.attractions && packageData.attractions.length > 0 && (
+        {packageData.attractions && Array.isArray(packageData.attractions) && packageData.attractions.length > 0 && (
           <section class="py-12 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8">Places to Visit</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.attractions.filter((attraction) => attraction !== null).map((attraction) => (
+                {packageData.attractions.filter((attraction) => attraction !== null && attraction !== undefined).map((attraction) => (
                   <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     {attraction.image && (
                       <img
@@ -437,9 +380,9 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
                     <div class="p-6">
                       <h3 class="text-xl font-bold text-gray-900 mb-2">{attraction.name}</h3>
                       <p class="text-gray-600 mb-4">{attraction.description}</p>
-                      {attraction.highlights && attraction.highlights.length > 0 && (
+                      {attraction.highlights && Array.isArray(attraction.highlights) && attraction.highlights.length > 0 && (
                         <ul class="space-y-1">
-                          {attraction.highlights.filter((highlight) => highlight !== null).map((highlight) => (
+                          {attraction.highlights.filter((highlight) => highlight !== null && highlight !== undefined).map((highlight) => (
                             <li class="text-sm text-gray-700 flex items-start gap-1">
                               <span class="text-primary-500">•</span>
                               <span>{highlight}</span>
@@ -456,12 +399,12 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
         )}
 
         <!-- FAQs -->
-        {packageData.faqs && packageData.faqs.length > 0 && (
+        {packageData.faqs && Array.isArray(packageData.faqs) && packageData.faqs.length > 0 && (
           <section class="py-12 bg-white">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
               <div class="space-y-4">
-                {packageData.faqs.filter((faq) => faq !== null).map((faq) => (
+                {packageData.faqs.filter((faq) => faq !== null && faq !== undefined).map((faq) => (
                   <details class="bg-gray-50 rounded-lg p-6 group">
                     <summary class="font-bold text-gray-900 cursor-pointer list-none flex items-center justify-between">
                       <span>{faq.question}</span>
@@ -478,12 +421,12 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
         )}
 
         <!-- Related Routes -->
-        {packageData.relatedRoutes && packageData.relatedRoutes.length > 0 && (
+        {packageData.relatedRoutes && Array.isArray(packageData.relatedRoutes) && packageData.relatedRoutes.length > 0 && (
           <section class="py-12 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-gray-900 mb-8">Related Routes</h2>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {packageData.relatedRoutes.filter((relatedRoute) => relatedRoute !== null).map((relatedRoute) => (
+                {packageData.relatedRoutes.filter((relatedRoute) => relatedRoute !== null && relatedRoute !== undefined).map((relatedRoute) => (
                   <a href={`/${relatedRoute.slug}`} class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">{relatedRoute.from} → {relatedRoute.to}</h3>
                     <div class="space-y-1 text-sm text-gray-600">
@@ -502,6 +445,42 @@ const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
         )}
       </main>
       <Footer />
+
+      <!-- WhatsApp FAB -->
+      <WhatsAppFAB />
+
+      <!-- Share Toast -->
+      <ShareToastContainer client:idle />
+
+      <!-- Booking Modal -->
+      {packageData.onlineBooking?.enabled && packageData.carTypes && Array.isArray(packageData.carTypes) && packageData.carTypes.length > 0 && (
+        <PackageBookingModalContainer
+          client:idle
+          packageData={{
+            name: packageData.name,
+            slug: packageData.slug,
+            _id: packageData._id,
+            carTypes: packageData.carTypes.map(car => ({
+              name: car.name,
+              model: car.model,
+              capacity: car.capacity,
+              seasonPrice: car.seasonPrice,
+              offSeasonPrice: car.offSeasonPrice,
+              image: car.image ? urlFor(car.image).url() : undefined,
+              features: car.features && Array.isArray(car.features) ? car.features : []
+            }))
+          }}
+          bookingSettings={{
+            upiQrCodeUrl: packageData.onlineBooking.upiQrCodeUrl,
+            upiId: packageData.onlineBooking.upiId,
+            payeeName: packageData.onlineBooking.payeeName,
+            bookingTerms: packageData.onlineBooking.bookingTerms,
+            cancellationPolicy: packageData.onlineBooking.cancellationPolicy,
+            helpPhone: packageData.onlineBooking.helpPhone,
+            helpWhatsapp: packageData.onlineBooking.helpWhatsapp
+          }}
+        />
+      )}
     </body>
   </html>
 ) : null}

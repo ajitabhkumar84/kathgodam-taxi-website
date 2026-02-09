@@ -3,7 +3,14 @@ import Navbar from '../components/Navbar.astro';
 import RouteHeroSlider from '../components/RouteHeroSlider.astro';
 import Footer from '../components/Footer.astro';
 import AttractionsGrid from '../components/AttractionsGrid.astro';
+import RoutePricingTable from '../components/RoutePricingTable.astro';
+import WhatsAppFAB from '../components/WhatsAppFAB.astro';
+import GlobalHeadScripts from '../components/GlobalHeadScripts.astro';
+import GlobalBodyScripts from '../components/GlobalBodyScripts.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import ShareToastContainer from '../components/ShareToastContainer';
 import { urlFor, getSiteSettings } from '../lib/sanity';
+import { generateShareMessage } from '../lib/shareUtils';
 import '../styles/global.css';
 
 interface Props {
@@ -19,6 +26,7 @@ interface Props {
     keywords?: string;
     heroSlides?: Array<{
       image: any;
+      mobileImage?: any;
       title: string;
       description: string;
     }>;
@@ -63,6 +71,17 @@ interface Props {
     }>;
     pilgrimageTips?: string[];
     accommodationInfo?: string;
+    carTypes?: Array<{
+      name: string;
+      model: string;
+      capacity: string;
+      seasonPrice: string;
+      offSeasonPrice: string;
+      image: any;
+      features: string[];
+      popular?: boolean;
+    }>;
+    exclusions?: string[];
     relatedRoutes?: Array<{
       _id: string;
       from: string;
@@ -125,9 +144,18 @@ const phone = siteSettings?.phone || '7351721351';
 const whatsappMessage = `Hi, I'd like to book a taxi to ${templeData.name}`;
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
+// Generate share URL and message
+const pageUrl = `${Astro.site || 'https://kathgodamtaxi.com'}${templeData.slug}`;
+const shareMessage = generateShareMessage('temple', {
+  templeName: templeData.name,
+  district: templeData.district
+});
+
 // Prepare hero slides
 const heroSlides = templeData.heroSlides?.map(slide => ({
   image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
+  mobileImage: slide.mobileImage ? urlFor(slide.mobileImage).width(768).height(1024).url() : undefined,
+  imageAlt: slide.image?.alt || slide.title,
   title: slide.title,
   description: slide.description,
 })) || [];
@@ -157,6 +185,18 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
   (templeData.location?.latitude && templeData.location?.longitude
     ? `https://maps.google.com/maps?q=${templeData.location.latitude},${templeData.location.longitude}&z=15&output=embed`
     : null);
+
+// Helper function to get default car image based on car name
+const getDefaultCarImage = (carName: string): string => {
+  const imageMap: Record<string, string> = {
+    'Hatchback': '/images/cars/alto.jfif',
+    'Sedan': '/images/cars/dzire.jpg',
+    'SUV Standard': '/images/cars/tavera.jpg',
+    'SUV Deluxe': '/images/cars/innova.jpg',
+    'SUV Luxury': '/images/cars/innova-crysta.jpg',
+  };
+  return imageMap[carName] || '/images/cars/dzire.jpg'; // Default to dzire if not found
+};
 ---
 
 <!DOCTYPE html>
@@ -164,28 +204,66 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <GlobalHeadScripts />
   <title>{templeData.pageTitle}</title>
   <meta name="description" content={templeData.metaDescription} />
   {templeData.keywords && <meta name="keywords" content={templeData.keywords} />}
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={pageUrl} />
 
   <!-- Open Graph -->
   <meta property="og:title" content={templeData.pageTitle} />
   <meta property="og:description" content={templeData.metaDescription} />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={pageUrl} />
+  {heroSlides?.[0]?.image && <meta property="og:image" content={heroSlides[0].image} />}
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={templeData.pageTitle} />
+  <meta name="twitter:description" content={templeData.metaDescription} />
+  {heroSlides?.[0]?.image && <meta name="twitter:image" content={heroSlides[0].image} />}
+
+  <!-- Structured Data: FAQPage -->
+  {templeData.faqs && templeData.faqs.length > 0 && (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": templeData.faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    })} />
+  )}
+
+  <!-- Structured Data: BreadcrumbList -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.com/" },
+      { "@type": "ListItem", "position": 2, "name": templeData.name, "item": pageUrl }
+    ]
+  })} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
 </head>
 
 <body class="antialiased">
+  <GlobalBodyScripts />
   <!-- Navbar -->
   <Navbar />
 
   <!-- Main Content -->
   <main>
     <!-- Hero Section -->
-    {heroSlides.length > 0 ? (
+    {heroSlides && Array.isArray(heroSlides) && heroSlides.length > 0 ? (
       <RouteHeroSlider
         from=""
         to={templeData.name}
@@ -219,7 +297,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-3 gap-8">
           <!-- Main Content Column -->
-          <div class="lg:col-span-2 space-y-8">
+          <div class="lg:col-span-2 space-y-8 min-w-0">
             <!-- Temple Introduction -->
             <div>
               <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -228,11 +306,11 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
               {templeData.subtitle && (
                 <p class="text-xl text-primary-600 italic mb-4">{templeData.subtitle}</p>
               )}
-              <div class="prose prose-lg max-w-none text-gray-700" set:html={templeData.introText} />
+              <div class="prose prose-lg max-w-none text-gray-700 overflow-hidden" set:html={templeData.introText} />
             </div>
 
             <!-- Key Highlights -->
-            {templeData.highlights && templeData.highlights.length > 0 && (
+            {templeData.highlights && Array.isArray(templeData.highlights) && templeData.highlights.length > 0 && (
               <div class="bg-gradient-to-br from-primary-50 to-yellow-50 p-6 rounded-xl border border-primary-200">
                 <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <svg class="w-6 h-6 text-primary-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -291,13 +369,22 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
                 </div>
               )}
             </div>
+
+            <!-- Share Buttons -->
+            <ShareButtons
+              pageUrl={pageUrl}
+              shareTitle={templeData.name}
+              shareMessage={shareMessage}
+              layout="horizontal"
+            />
           </div>
 
           <!-- Sidebar Column -->
-          <div class="lg:col-span-1 space-y-6">
-            <!-- Temple Timings Card -->
-            {templeData.timings && (templeData.timings.openTime || templeData.timings.poojaTimings) && (
-              <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden sticky top-24">
+          <div class="lg:col-span-1">
+            <div class="lg:sticky lg:top-24 space-y-6">
+              <!-- Temple Timings Card -->
+              {templeData.timings && (templeData.timings.openTime || templeData.timings.poojaTimings) && (
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-primary-500 to-yellow-500 p-4">
                   <h3 class="text-lg font-bold text-black flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,6 +465,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
                 </a>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -399,7 +487,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Custom Sections -->
-    {templeData.customSections && templeData.customSections.length > 0 && templeData.customSections.map((section, index) => (
+    {templeData.customSections && Array.isArray(templeData.customSections) && templeData.customSections.length > 0 && templeData.customSections.map((section, index) => (
       <section class={`py-12 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class={`grid ${section.sectionImage ? 'lg:grid-cols-2 gap-8 items-center' : ''}`}>
@@ -440,7 +528,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Festivals & Events -->
-    {templeData.seasonalEvents && templeData.seasonalEvents.length > 0 && (
+    {templeData.seasonalEvents && Array.isArray(templeData.seasonalEvents) && templeData.seasonalEvents.length > 0 && (
       <section class="py-12 bg-gradient-to-br from-primary-50 to-yellow-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Festivals & Events</h2>
@@ -539,7 +627,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Pilgrimage Tips -->
-    {templeData.pilgrimageTips && templeData.pilgrimageTips.length > 0 && (
+    {templeData.pilgrimageTips && Array.isArray(templeData.pilgrimageTips) && templeData.pilgrimageTips.length > 0 && (
       <section class="py-12 bg-gray-50">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center">
@@ -574,8 +662,27 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
       </section>
     )}
 
+    <!-- Optional Pricing Table -->
+    {templeData.carTypes && Array.isArray(templeData.carTypes) && templeData.carTypes.length > 0 && (
+      <RoutePricingTable
+        carTypes={templeData.carTypes.map(car => ({
+          name: car.name,
+          model: car.model,
+          capacity: car.capacity,
+          seasonPrice: car.seasonPrice,
+          offSeasonPrice: car.offSeasonPrice,
+          image: car.image
+            ? (typeof car.image === 'string' ? car.image : urlFor(car.image).width(400).height(300).url())
+            : getDefaultCarImage(car.name),
+          features: car.features && Array.isArray(car.features) ? car.features : [],
+          popular: car.popular || false
+        }))}
+        exclusions={templeData.exclusions}
+      />
+    )}
+
     <!-- Related Routes (Taxi CTA) -->
-    {templeData.relatedRoutes && templeData.relatedRoutes.length > 0 && (
+    {templeData.relatedRoutes && Array.isArray(templeData.relatedRoutes) && templeData.relatedRoutes.length > 0 && (
       <section class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Taxi Routes to {templeData.name}</h2>
@@ -612,7 +719,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Related Packages -->
-    {templeData.relatedPackages && templeData.relatedPackages.length > 0 && (
+    {templeData.relatedPackages && Array.isArray(templeData.relatedPackages) && templeData.relatedPackages.length > 0 && (
       <section class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Tour Packages Including {templeData.name}</h2>
@@ -644,7 +751,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Nearby Temples -->
-    {templeData.nearbyTemples && templeData.nearbyTemples.length > 0 && (
+    {templeData.nearbyTemples && Array.isArray(templeData.nearbyTemples) && templeData.nearbyTemples.length > 0 && (
       <section class="py-12 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Nearby Temples</h2>
@@ -673,7 +780,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
     )}
 
     <!-- Nearby Attractions -->
-    {templeData.nearbyAttractions && templeData.nearbyAttractions.length > 0 && (
+    {templeData.nearbyAttractions && Array.isArray(templeData.nearbyAttractions) && templeData.nearbyAttractions.length > 0 && (
       <AttractionsGrid
         title={`Places to Visit Near ${templeData.name}`}
         attractions={templeData.nearbyAttractions.map(attr => ({
@@ -714,7 +821,7 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
           )}
 
           <!-- FAQs -->
-          {templeData.faqs && templeData.faqs.length > 0 && (
+          {templeData.faqs && Array.isArray(templeData.faqs) && templeData.faqs.length > 0 && (
             <div>
               <h2 class="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
               <div class="space-y-4">
@@ -791,6 +898,12 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
   <!-- Footer -->
   <Footer />
 
+  <!-- WhatsApp FAB -->
+  <WhatsAppFAB />
+
+  <!-- Share Toast -->
+  <ShareToastContainer client:idle />
+
   <style>
     html {
       scroll-behavior: smooth;
@@ -804,6 +917,34 @@ const mapsEmbedUrl = templeData.location?.googleMapsEmbedUrl ||
       main {
         margin-top: 80px;
       }
+    }
+
+    /* Ensure prose content doesn't break grid layout */
+    .prose img,
+    .prose table,
+    .prose pre,
+    .prose iframe,
+    .prose video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .prose table {
+      display: block;
+      overflow-x: auto;
+    }
+
+    /* Ensure custom content divs don't break layout */
+    .prose .temple-history,
+    .prose > div {
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+
+    .prose hr {
+      max-width: 100%;
+      margin: 2rem 0;
     }
   </style>
 </body>

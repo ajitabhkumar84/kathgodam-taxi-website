@@ -29,6 +29,11 @@ import safetyBanner from './safetyBanner'
 import temple from './temple'
 import templeCategory from './templeCategory'
 import templesPage from './templesPage'
+// Complete tour page schemas
+import completeTourPage from './completeTourPage'
+import multiDayCarCategory from './multiDayCarCategory'
+import tourDurationPackage from './tourDurationPackage'
+import inclusionExclusionItem from './inclusionExclusionItem'
 
 export const schemaTypes = [
   // Document types
@@ -53,6 +58,8 @@ export const schemaTypes = [
   // Temple system documents
   temple,
   templesPage,
+  // Complete tour page document
+  completeTourPage,
 
   // Object types (used within documents)
   heroSlide,
@@ -65,4 +72,7 @@ export const schemaTypes = [
   faq,
   stayPackage,
   tourPackage,
+  multiDayCarCategory,
+  tourDurationPackage,
+  inclusionExclusionItem,
 ]

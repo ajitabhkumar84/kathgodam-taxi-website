@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { updateBookingStatus, addBookingCommunication, getBookingById } from '../../../lib/sanity';
 import { isAdminAuthenticated } from '../../../lib/admin-auth';
 import { sendPaymentVerifiedEmail } from '../../../lib/notifications';
+import { requireCSRF } from '../../../lib/csrf';
 
 export const prerender = false;
 
@@ -17,6 +18,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    // CSRF validation
+    const csrfError = await requireCSRF(request, cookies);
+    if (csrfError) return csrfError;
 
     const body = await request.json();
     const { bookingId, action, transactionId, adminNotes } = body;

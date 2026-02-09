@@ -23,14 +23,80 @@ export default defineType({
               name: 'href',
               title: 'Link',
               type: 'string',
-              description: 'Internal link (e.g., /contact) or anchor (e.g., #tours)',
-              validation: (Rule) => Rule.required(),
+              description: 'Internal link (e.g., /contact) or anchor (e.g., #tours). Leave empty if using dropdown.',
+            },
+            {
+              name: 'hasDropdown',
+              title: 'Has Dropdown?',
+              type: 'boolean',
+              description: 'Enable dropdown menu for this link',
+              initialValue: false,
+            },
+            {
+              name: 'dropdownItems',
+              title: 'Dropdown Items',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'label',
+                      title: 'Label',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'description',
+                      title: 'Description',
+                      type: 'string',
+                      description: 'Short description shown below label (optional)',
+                    },
+                    {
+                      name: 'href',
+                      title: 'Link',
+                      type: 'string',
+                      description: 'Internal link (e.g., /rates) or anchor (e.g., #routes)',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'icon',
+                      title: 'Icon',
+                      type: 'string',
+                      description: 'Icon name (optional): taxi, map, list, location',
+                      options: {
+                        list: [
+                          {title: 'Taxi', value: 'taxi'},
+                          {title: 'Map', value: 'map'},
+                          {title: 'List', value: 'list'},
+                          {title: 'Location Pin', value: 'location'},
+                        ],
+                      },
+                    },
+                  ],
+                  preview: {
+                    select: {
+                      title: 'label',
+                      subtitle: 'href',
+                    },
+                  },
+                },
+              ],
+              hidden: ({parent}) => !parent?.hasDropdown,
+              description: 'Items shown in dropdown menu',
             },
           ],
           preview: {
             select: {
               title: 'label',
               subtitle: 'href',
+              hasDropdown: 'hasDropdown',
+            },
+            prepare({title, subtitle, hasDropdown}) {
+              return {
+                title,
+                subtitle: hasDropdown ? '↓ Dropdown Menu' : subtitle,
+              }
             },
           },
         },
@@ -38,12 +104,30 @@ export default defineType({
       description: 'Main navigation menu items. Drag to reorder.',
       validation: (Rule) => Rule.required().min(1),
       initialValue: [
-        {label: 'Home', href: '/'},
-        {label: 'Pickup & Drop', href: '#routes'},
-        {label: 'Car Rental for Tour', href: '/taxi-for-complete-tour'},
-        {label: 'Tour Packages', href: '#tours'},
-        {label: 'Temples in Kumaon', href: '#temples'},
-        {label: 'Contact', href: '/contact'},
+        {label: 'Home', href: '/', hasDropdown: false},
+        {
+          label: 'Pickup & Drop',
+          href: '#routes',
+          hasDropdown: true,
+          dropdownItems: [
+            {
+              label: 'All Routes & Rates',
+              description: 'View all destinations with pricing',
+              href: '/rates',
+              icon: 'list',
+            },
+            {
+              label: 'Popular Routes',
+              description: 'Most requested taxi routes',
+              href: '#routes',
+              icon: 'taxi',
+            },
+          ],
+        },
+        {label: 'Car Rental for Tour', href: '/taxi-for-complete-tour', hasDropdown: false},
+        {label: 'Tour Packages', href: '#tours', hasDropdown: false},
+        {label: 'Temples in Kumaon', href: '#temples', hasDropdown: false},
+        {label: 'Contact', href: '/contact', hasDropdown: false},
       ],
     }),
     defineField({

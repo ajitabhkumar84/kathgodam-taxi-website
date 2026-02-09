@@ -53,14 +53,76 @@ const showSearch = navbarConfig?.showSearch !== false;
 
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex items-center space-x-6">
-        {navLinks.map((link: any) => (
-          <a
-            href={link.href}
-            class="text-gray-300 hover:text-primary-500 font-medium transition-colors text-sm"
-          >
-            {link.label}
-          </a>
-        ))}
+        {navLinks.map((link: any) => {
+          if (link.hasDropdown && link.dropdownItems?.length > 0) {
+            // Render dropdown menu (desktop: hover to show, click to go to /rates)
+            return (
+              <div class="relative nav-dropdown-container">
+                <a
+                  href="/rates"
+                  class="nav-dropdown-trigger text-gray-300 hover:text-primary-500 font-medium transition-colors text-sm flex items-center"
+                  aria-label={link.label}
+                >
+                  {link.label}
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </a>
+
+                <!-- Dropdown Menu -->
+                <div class="nav-dropdown-menu hidden absolute left-0 top-full pt-2 w-64 z-50">
+                  <div class="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+                  {link.dropdownItems.map((item: any) => {
+                    const iconSvg = item.icon === 'taxi' ? (
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/>
+                        <circle cx="7.5" cy="14.5" r="1.5"/>
+                        <circle cx="16.5" cy="14.5" r="1.5"/>
+                      </svg>
+                    ) : item.icon === 'list' ? (
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                      </svg>
+                    ) : item.icon === 'map' ? (
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                      </svg>
+                    ) : item.icon === 'location' ? (
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      </svg>
+                    ) : null;
+
+                    return (
+                      <a
+                        href={item.href}
+                        class="flex items-center px-4 py-3 hover:bg-primary-50 transition-colors border-b border-gray-100 last:border-b-0"
+                      >
+                        {iconSvg && <div class="text-primary-600 mr-3">{iconSvg}</div>}
+                        <div>
+                          <p class="font-semibold text-gray-900 text-sm">{item.label}</p>
+                          {item.description && <p class="text-xs text-gray-500">{item.description}</p>}
+                        </div>
+                      </a>
+                    );
+                  })}
+                  </div>
+                </div>
+              </div>
+            );
+          } else {
+            // Render regular link
+            return (
+              <a
+                href={link.href}
+                class="text-gray-300 hover:text-primary-500 font-medium transition-colors text-sm"
+              >
+                {link.label}
+              </a>
+            );
+          }
+        })}
 
         {showSearch && (
           <button
@@ -89,8 +151,9 @@ const showSearch = navbarConfig?.showSearch !== false;
           <!-- Dropdown Menu -->
           <div
             id="book-now-dropdown"
-            class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50"
+            class="hidden absolute right-0 top-full pt-2 w-56 z-50"
           >
+            <div class="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
             {bookNowOptions.map((option: any, index: number) => {
               const isLast = index === bookNowOptions.length - 1;
               let href = '#';
@@ -140,6 +203,7 @@ const showSearch = navbarConfig?.showSearch !== false;
                 </a>
               );
             })}
+            </div>
           </div>
         </div>
       </div>
@@ -160,14 +224,40 @@ const showSearch = navbarConfig?.showSearch !== false;
   <!-- Mobile Menu -->
   <div id="mobile-menu" class="hidden lg:hidden bg-secondary-800 border-t border-primary-500">
     <div class="px-4 py-4 space-y-3">
-      {navLinks.map((link: any) => (
-        <a
-          href={link.href}
-          class="block px-4 py-2 text-gray-300 hover:bg-secondary-700 hover:text-primary-500 rounded-lg transition-colors"
-        >
-          {link.label}
-        </a>
-      ))}
+      {navLinks.map((link: any) => {
+        if (link.hasDropdown && link.dropdownItems?.length > 0) {
+          // Mobile dropdown
+          return (
+            <div class="mobile-nav-dropdown">
+              <button class="mobile-nav-dropdown-trigger w-full flex items-center justify-between px-4 py-2 text-gray-300 hover:bg-secondary-700 hover:text-primary-500 rounded-lg transition-colors">
+                <span>{link.label}</span>
+                <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <div class="mobile-nav-dropdown-content hidden pl-4 mt-2 space-y-2">
+                {link.dropdownItems.map((item: any) => (
+                  <a
+                    href={item.href}
+                    class="block px-4 py-2 text-sm text-gray-400 hover:bg-secondary-700 hover:text-primary-500 rounded-lg transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        } else {
+          return (
+            <a
+              href={link.href}
+              class="block px-4 py-2 text-gray-300 hover:bg-secondary-700 hover:text-primary-500 rounded-lg transition-colors"
+            >
+              {link.label}
+            </a>
+          );
+        }
+      })}
 
       {showSearch && (
         <button
@@ -226,19 +316,73 @@ const showSearch = navbarConfig?.showSearch !== false;
     }
   });
 
-  // Search functionality
+  // Search functionality - triggers the search modal
   const searchButton = document.getElementById('search-button');
   const mobileSearchButton = document.getElementById('mobile-search-button');
 
   const handleSearch = () => {
-    const searchTerm = prompt('What are you looking for?');
-    if (searchTerm) {
-      // Simple search implementation - you can enhance this later
-      console.log('Searching for:', searchTerm);
-      alert(`Search functionality will be implemented soon. You searched for: ${searchTerm}`);
-    }
+    // Dispatch custom event to open search modal
+    window.dispatchEvent(new CustomEvent('openSearch'));
   };
 
   searchButton?.addEventListener('click', handleSearch);
   mobileSearchButton?.addEventListener('click', handleSearch);
+
+  // Desktop Navigation Dropdowns (hover to show, click to navigate)
+  const navDropdownContainers = document.querySelectorAll('.nav-dropdown-container');
+
+  navDropdownContainers.forEach(container => {
+    const trigger = container.querySelector('.nav-dropdown-trigger');
+    const menu = container.querySelector('.nav-dropdown-menu');
+
+    if (trigger && menu) {
+      // Show dropdown on hover
+      container.addEventListener('mouseenter', () => {
+        // Close other dropdowns
+        navDropdownContainers.forEach(otherContainer => {
+          if (otherContainer !== container) {
+            const otherMenu = otherContainer.querySelector('.nav-dropdown-menu');
+            otherMenu?.classList.add('hidden');
+          }
+        });
+
+        // Show current dropdown
+        menu.classList.remove('hidden');
+      });
+
+      // Hide dropdown when mouse leaves the entire container (link + menu)
+      container.addEventListener('mouseleave', () => {
+        menu.classList.add('hidden');
+      });
+
+      // Keep dropdown open when hovering over the menu itself
+      menu.addEventListener('mouseenter', () => {
+        menu.classList.remove('hidden');
+      });
+    }
+  });
+
+  // Mobile Navigation Dropdowns
+  const mobileDropdowns = document.querySelectorAll('.mobile-nav-dropdown');
+
+  mobileDropdowns.forEach(dropdown => {
+    const trigger = dropdown.querySelector('.mobile-nav-dropdown-trigger');
+    const content = dropdown.querySelector('.mobile-nav-dropdown-content');
+    const arrow = trigger?.querySelector('svg');
+
+    if (trigger && content) {
+      trigger.addEventListener('click', () => {
+        content.classList.toggle('hidden');
+        arrow?.classList.toggle('rotate-180');
+      });
+    }
+  });
+
+  // Close mobile dropdowns when clicking a link
+  const mobileDropdownLinks = document.querySelectorAll('.mobile-nav-dropdown-content a');
+  mobileDropdownLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu?.classList.add('hidden');
+    });
+  });
 </script>

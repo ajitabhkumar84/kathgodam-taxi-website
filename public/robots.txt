@@ -1,0 +1,21 @@
+# robots.txt for Kathgodam Taxi
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /studio/
+Disallow: /api/
+
+# Allow search engines to crawl all public pages
+Allow: /
+Allow: /rates
+Allow: /packages
+Allow: /temples
+Allow: /contact
+Allow: /book
+
+# Sitemap location (update with your actual domain)
+Sitemap: https://kathgodamtaxi.com/sitemap-index.xml
