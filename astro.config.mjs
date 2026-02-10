@@ -33,6 +33,16 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      resolve: {
+        conditions: ['workerd', 'worker', 'browser'],
+      },
+    },
+    resolve: {
+      alias: {
+        'react-dom/server': 'react-dom/server.edge',
+      },
+    },
   }
 });
