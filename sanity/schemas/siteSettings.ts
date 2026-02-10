@@ -106,12 +106,30 @@ export default defineType({
       description: 'Additional scripts to inject in <head> section. Paste complete script tags here. For advanced users only.',
       fieldset: 'tracking',
     }),
+    defineField({
+      name: 'cancellationPolicy',
+      title: 'Cancellation Policy',
+      type: 'text',
+      rows: 4,
+      description: 'Website-wide cancellation policy shown on booking pages and footer',
+      initialValue: 'Complete refund if done 5 days before arrival date. From 5 days to 24 hours before arrival, the advance would be adjusted for any future booking done with us. Less than 24 hours - no refund, but might adjust in future bookings in exceptional cases based on availability.',
+      fieldset: 'policies',
+    }),
   ],
   fieldsets: [
     {
       name: 'tracking',
       title: 'Tracking & Analytics',
       description: 'Configure tracking scripts and verification codes for your website',
+      options: {
+        collapsible: true,
+        collapsed: false,
+      },
+    },
+    {
+      name: 'policies',
+      title: 'Policies & Terms',
+      description: 'Cancellation policy and other legal information',
       options: {
         collapsible: true,
         collapsed: false,

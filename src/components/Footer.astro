@@ -12,6 +12,7 @@ const phoneNumber = siteSettings?.phone || '7351721351';
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351';
 const email = siteSettings?.email || 'kathgodamtaxi@gmail.com';
 const whatsappMessage = siteSettings?.whatsappMessage || 'Hi, I would like to book a taxi from Kathgodam.';
+const cancellationPolicy = siteSettings?.cancellationPolicy || 'Complete refund if done 5 days before arrival date. From 5 days to 24 hours before arrival, the advance would be adjusted for any future booking done with us. Less than 24 hours - no refund, but might adjust in future bookings in exceptional cases based on availability.';
 
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
@@ -129,6 +130,16 @@ const displayCopyright = copyrightText.replace('{year}', currentYear.toString())
         </a>
       </div>
     </div>
+
+    <!-- Cancellation Policy -->
+    {cancellationPolicy && (
+      <div class="mt-8 pt-8 border-t border-gray-800">
+        <h3 class="text-white font-semibold text-lg mb-3 text-center">Cancellation Policy</h3>
+        <p class="text-gray-400 text-sm leading-relaxed text-center max-w-3xl mx-auto">
+          {cancellationPolicy}
+        </p>
+      </div>
+    )}
 
     <!-- Bottom Bar -->
     <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">

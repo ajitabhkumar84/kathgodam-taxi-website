@@ -60,7 +60,8 @@ const whatsappNumber = '917351721351';
               src={slide.image}
               alt={slide.imageAlt || slide.title}
               class="w-full h-full object-cover object-center"
-              loading="eager"
+              loading={index === 0 ? "eager" : "lazy"}
+              fetchpriority={index === 0 ? "high" : undefined}
             />
           </picture>
           <!-- Dark Overlay with Mustard Gradient -->

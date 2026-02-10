@@ -43,8 +43,8 @@ const keywords = homePage?.keywords || 'Kathgodam taxi, Nainital taxi, Kumaon ta
 
 // Transform hero slides - convert Sanity images to URLs
 const heroSlides = homePage?.heroSlides?.map((slide: any) => ({
-  image: slide.image ? urlFor(slide.image).width(1920).height(1080).url() : '',
-  mobileImage: slide.mobileImage ? urlFor(slide.mobileImage).width(768).height(1024).url() : undefined,
+  image: slide.image ? urlFor(slide.image).width(1920).height(1080).auto('format').quality(75).url() : '',
+  mobileImage: slide.mobileImage ? urlFor(slide.mobileImage).width(768).height(1024).auto('format').quality(75).url() : (slide.image ? urlFor(slide.image).width(768).height(512).auto('format').quality(75).url() : undefined),
   imageAlt: slide.image?.alt || slide.title,
   title: slide.title,
   subtitle: slide.subtitle,
@@ -68,9 +68,9 @@ const routes = homePage?.featuredRoutes?.map((route: any) => ({
   description: route.introText1?.substring(0, 150) + '...' || '',
   // Use featuredHomepageImage if available, otherwise fallback to first hero slide
   image: route.featuredHomepageImage
-    ? urlFor(route.featuredHomepageImage).width(800).height(600).url()
+    ? urlFor(route.featuredHomepageImage).width(800).height(600).auto('format').quality(75).url()
     : route.heroSlides?.[0]?.image
-      ? urlFor(route.heroSlides[0].image).width(800).height(600).url()
+      ? urlFor(route.heroSlides[0].image).width(800).height(600).auto('format').quality(75).url()
       : '',
 })) || [];
 
@@ -83,9 +83,9 @@ const packages = homePage?.featuredPackages?.map((pkg: any) => ({
   duration: pkg.duration || '',
   // Use featuredHomepageImage if available, otherwise fallback to first hero slide
   image: pkg.featuredHomepageImage
-    ? urlFor(pkg.featuredHomepageImage).width(800).height(600).url()
+    ? urlFor(pkg.featuredHomepageImage).width(800).height(600).auto('format').quality(75).url()
     : pkg.heroSlides?.[0]?.image
-      ? urlFor(pkg.heroSlides[0].image).width(800).height(600).url()
+      ? urlFor(pkg.heroSlides[0].image).width(800).height(600).auto('format').quality(75).url()
       : '',
 })) || [];
 
@@ -129,8 +129,11 @@ const searchData = await getAllSearchableContent();
     <!-- Preconnect to external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
+    {heroSlides?.[0]?.mobileImage && <link rel="preload" as="image" href={heroSlides[0].mobileImage} media="(max-width: 767px)" fetchpriority="high" />}
+    {heroSlides?.[0]?.image && <link rel="preload" as="image" href={heroSlides[0].image} media="(min-width: 768px)" fetchpriority="high" />}
 
     <!-- Structured Data: TaxiService -->
     <script type="application/ld+json" set:html={JSON.stringify({

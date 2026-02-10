@@ -67,6 +67,7 @@ const slides = customSlides && customSlides.length > 0 ? customSlides : [
             alt={slide.imageAlt || slide.title}
             class="absolute inset-0 w-full h-full object-cover object-center"
             loading="eager"
+            fetchpriority="high"
           />
         </picture>
 
