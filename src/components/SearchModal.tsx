@@ -30,10 +30,27 @@ export default function SearchModal({ searchData, isOpen, onClose }: SearchModal
     })
   );
 
-  // Focus input when modal opens
+  const historyPushedRef = useRef(false);
+
+  // Focus input when modal opens + handle mobile back button
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (isOpen) {
+      inputRef.current?.focus();
+      window.history.pushState({ searchModal: true }, '');
+      historyPushedRef.current = true;
+      const handlePopState = () => {
+        historyPushedRef.current = false;
+        onClose();
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+        // Clean up history entry if modal closed by ESC/backdrop/button
+        if (historyPushedRef.current) {
+          window.history.back();
+          historyPushedRef.current = false;
+        }
+      };
     }
   }, [isOpen]);
 
@@ -46,7 +63,12 @@ export default function SearchModal({ searchData, isOpen, onClose }: SearchModal
     }
 
     const searchResults = fuse.current.search(query);
-    const filteredResults = searchResults.slice(0, 8).map((result) => result.item);
+    // Sort by type priority: routes first, then packages, then others
+    const typePriority: Record<string, number> = { route: 0, package: 1, temple: 2, attraction: 3 };
+    const sortedResults = searchResults
+      .map((result) => result.item)
+      .sort((a, b) => (typePriority[a.type] ?? 99) - (typePriority[b.type] ?? 99));
+    const filteredResults = sortedResults.slice(0, 8);
     setResults(filteredResults);
     setSelectedIndex(0);
   }, [query]);
@@ -180,6 +202,15 @@ export default function SearchModal({ searchData, isOpen, onClose }: SearchModal
           <kbd className="hidden sm:inline-block px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded border border-gray-300">
             ESC
           </kbd>
+          <button
+            onClick={onClose}
+            className="ml-2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Close search"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         {/* Results */}
