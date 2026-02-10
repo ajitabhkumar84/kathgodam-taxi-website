@@ -9,16 +9,19 @@ interface RateLimitEntry {
 }
 
 const rateLimitStore = new Map<string, RateLimitEntry>();
+let lastCleanup = Date.now();
 
-// Clean up old entries every 5 minutes
-setInterval(() => {
+// Clean up old entries inline (no setInterval - incompatible with Cloudflare Workers)
+function cleanupExpired() {
   const now = Date.now();
+  if (now - lastCleanup < 5 * 60 * 1000) return;
+  lastCleanup = now;
   for (const [key, value] of rateLimitStore.entries()) {
     if (now > value.resetTime) {
       rateLimitStore.delete(key);
     }
   }
-}, 5 * 60 * 1000);
+}
 
 export interface RateLimitConfig {
   /** Maximum number of requests allowed within the window */
@@ -47,6 +50,9 @@ export function checkRateLimit(
   config: RateLimitConfig
 ): RateLimitResult {
   const { maxRequests, windowSeconds, identifier } = config;
+
+  // Clean up expired entries periodically
+  cleanupExpired();
 
   // Get identifier (custom identifier or IP address)
   const key = identifier || getClientIP(request);

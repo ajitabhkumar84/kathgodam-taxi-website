@@ -7,7 +7,7 @@ export const prerender = false;
 export const GET: APIRoute = async ({ params, cookies }) => {
   try {
     // Require admin authentication to view booking details
-    if (!isAdminAuthenticated(cookies)) {
+    if (!(await isAdminAuthenticated(cookies))) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Unauthorized'

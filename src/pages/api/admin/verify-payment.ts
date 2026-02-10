@@ -9,7 +9,7 @@ export const prerender = false;
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     // Check admin authentication (cookie-based from admin session)
-    if (!isAdminAuthenticated(cookies)) {
+    if (!(await isAdminAuthenticated(cookies))) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Unauthorized'

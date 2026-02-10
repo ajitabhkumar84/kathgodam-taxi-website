@@ -1,6 +1,4 @@
-// Admin authentication utilities with HMAC-SHA256 session signing
-
-import { createHmac, timingSafeEqual } from 'node:crypto';
+// Admin authentication utilities with Web Crypto API session signing
 
 const ADMIN_COOKIE_NAME = 'admin-session';
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -13,13 +11,42 @@ function getSessionSecret(): string {
   return secret;
 }
 
-// Sign a payload with HMAC-SHA256
-function signPayload(payload: string): string {
-  return createHmac('sha256', getSessionSecret()).update(payload).digest('hex');
+// Import the key for HMAC-SHA256
+async function getHmacKey(): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(getSessionSecret());
+  return crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign', 'verify']
+  );
+}
+
+// Sign a payload with HMAC-SHA256 using Web Crypto API
+async function signPayload(payload: string): Promise<string> {
+  const key = await getHmacKey();
+  const encoder = new TextEncoder();
+  const data = encoder.encode(payload);
+  const signature = await crypto.subtle.sign('HMAC', key, data);
+  return Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Constant-time comparison for strings
+function timingSafeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 // Check if request has valid admin session
-export function isAdminAuthenticated(cookies: any): boolean {
+export async function isAdminAuthenticated(cookies: any): Promise<boolean> {
   const session = cookies.get(ADMIN_COOKIE_NAME)?.value;
   if (!session) return false;
 
@@ -32,12 +59,8 @@ export function isAdminAuthenticated(cookies: any): boolean {
     const signature = session.substring(dotIndex + 1);
 
     // Verify signature using constant-time comparison
-    const expectedSignature = signPayload(payload);
-    const sigBuffer = Buffer.from(signature, 'hex');
-    const expectedBuffer = Buffer.from(expectedSignature, 'hex');
-
-    if (sigBuffer.length !== expectedBuffer.length) return false;
-    if (!timingSafeEqual(sigBuffer, expectedBuffer)) return false;
+    const expectedSignature = await signPayload(payload);
+    if (!timingSafeCompare(signature, expectedSignature)) return false;
 
     // Decode and check expiry
     const decoded = JSON.parse(atob(payload));
@@ -48,14 +71,14 @@ export function isAdminAuthenticated(cookies: any): boolean {
 }
 
 // Create admin session cookie value (signed)
-export function createAdminSession(): string {
+export async function createAdminSession(): Promise<string> {
   const session = {
     authenticated: true,
     expires: Date.now() + SESSION_DURATION,
     createdAt: Date.now()
   };
   const payload = btoa(JSON.stringify(session));
-  const signature = signPayload(payload);
+  const signature = await signPayload(payload);
   return `${payload}.${signature}`;
 }
 
@@ -66,12 +89,7 @@ export function validateAdminPassword(password: string): boolean {
     console.warn('ADMIN_PASSWORD not set in environment variables');
     return false;
   }
-
-  const passwordBuffer = Buffer.from(password);
-  const adminBuffer = Buffer.from(adminPassword);
-
-  if (passwordBuffer.length !== adminBuffer.length) return false;
-  return timingSafeEqual(passwordBuffer, adminBuffer);
+  return timingSafeCompare(password, adminPassword);
 }
 
 // Get cookie options for admin session

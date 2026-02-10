@@ -6,7 +6,7 @@ import '../../../styles/global.css'
 export const prerender = false
 
 // Check authentication
-if (!isAdminAuthenticated(Astro.cookies)) {
+if (!(await isAdminAuthenticated(Astro.cookies))) {
   return Astro.redirect('/admin/login')
 }
 
