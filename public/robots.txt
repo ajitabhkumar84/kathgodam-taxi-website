@@ -17,5 +17,5 @@ Allow: /temples
 Allow: /contact
 Allow: /book
 
-# Sitemap location (update with your actual domain)
-Sitemap: https://kathgodamtaxi.com/sitemap-index.xml
+# Sitemap location
+Sitemap: https://kathgodamtaxi.in/sitemap-index.xml
