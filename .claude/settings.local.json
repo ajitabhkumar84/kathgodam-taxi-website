@@ -20,7 +20,8 @@
       "Bash(node migrate-pricing.js:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx astro check:*)"
     ],
     "deny": [],
     "ask": []

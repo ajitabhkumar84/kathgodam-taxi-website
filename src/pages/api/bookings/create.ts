@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createBooking, getBookingSettings } from '../../../lib/sanity';
+import { createBooking, getBookingSettings, urlFor } from '../../../lib/sanity';
 import { generateBookingId, isWithinLeadTime, isWithinBookingWindow, getPriceType, validatePhone, normalizePhone, validateEmail, checkAvailability, isDateBlocked, calculateAdvanceAmount } from '../../../lib/booking';
 import { sendBookingConfirmationEmail, sendAdminNewBookingNotification } from '../../../lib/notifications';
 import type { CarTypeValue } from '../../../types/vehicle';
@@ -43,8 +43,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       customerNotes
     } = body;
 
-    // Validate required fields
-    if (!customerName || !customerPhone || !customerEmail || !pickupLocation || !dropLocation || !travelDate || !pickupTime || !carType || !totalAmount) {
+    // Validate required fields (email is optional)
+    if (!customerName || !customerPhone || !pickupLocation || !dropLocation || !travelDate || !pickupTime || !carType || !totalAmount) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Missing required fields'
@@ -65,8 +65,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       });
     }
 
-    // Validate email
-    if (!validateEmail(customerEmail)) {
+    // Validate email (only if provided)
+    if (customerEmail && !validateEmail(customerEmail)) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid email address'
@@ -164,8 +164,13 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       customerNotes
     }, runtimeEnv);
 
+    // Build QR code URL for email if available
+    const upiQrCodeUrl = settings?.upiQrCode
+      ? urlFor(settings.upiQrCode).width(400).url()
+      : undefined;
+
     // Send confirmation email to customer (non-blocking)
-    sendBookingConfirmationEmail(booking).catch(err => {
+    sendBookingConfirmationEmail(booking, upiQrCodeUrl).catch(err => {
       console.error('Failed to send confirmation email:', err);
     });
 

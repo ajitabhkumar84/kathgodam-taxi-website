@@ -50,6 +50,7 @@ interface EmailOptions {
   to: string
   subject: string
   html: string
+  reply_to?: string
 }
 
 /**
@@ -72,7 +73,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
         from: `${BUSINESS_NAME} <${FROM_EMAIL}>`,
         to: options.to,
         subject: options.subject,
-        html: options.html
+        html: options.html,
+        ...(options.reply_to && { reply_to: options.reply_to })
       })
     })
 
@@ -92,7 +94,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 /**
  * Generate booking confirmation email HTML
  */
-export function generateBookingConfirmationEmail(rawBooking: Booking): string {
+export function generateBookingConfirmationEmail(rawBooking: Booking, upiQrCodeUrl?: string): string {
   const booking: any = sanitizeBookingForEmail(rawBooking);
   return `
 <!DOCTYPE html>
@@ -195,14 +197,29 @@ export function generateBookingConfirmationEmail(rawBooking: Booking): string {
       ` : ''}
     </div>
 
+    ${booking.paymentStatus !== 'verified' && upiQrCodeUrl ? `
+    <!-- UPI QR Code Payment Section -->
+    <div style="background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 12px; padding: 25px; margin-bottom: 25px; text-align: center;">
+      <h3 style="margin: 0 0 5px 0; color: #0c4a6e; font-size: 18px; font-weight: 700;">Pay Token Advance</h3>
+      <p style="margin: 0 0 20px 0; font-size: 36px; font-weight: 800; color: #0369a1;">₹${booking.advanceAmount?.toLocaleString('en-IN')}</p>
+      <p style="margin: 0 0 15px 0; color: #0c4a6e; font-size: 14px;">Scan this QR code to pay via UPI</p>
+      <div style="background: white; display: inline-block; padding: 12px; border-radius: 8px; border: 1px solid #e0e7ff;">
+        <img src="${upiQrCodeUrl}" alt="UPI QR Code for Payment" style="width: 200px; height: 200px; display: block;" />
+      </div>
+      <p style="margin: 15px 0 0 0; color: #64748b; font-size: 12px;">
+        Open any UPI app (Google Pay, PhonePe, Paytm, etc.) and scan this QR code
+      </p>
+    </div>
+    ` : ''}
+
     <!-- Next Steps -->
     <div style="margin-bottom: 25px;">
       <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 16px;">Next Steps to Confirm Your Booking</h3>
       <ol style="margin: 0; padding-left: 20px; color: #4b5563;">
         ${booking.paymentStatus !== 'verified' ? `
-        <li style="margin-bottom: 8px;"><strong>Pay the token advance amount</strong> (₹${booking.advanceAmount?.toLocaleString('en-IN')}) using UPI</li>
-        <li style="margin-bottom: 8px;"><strong>Share payment screenshot</strong> via WhatsApp or reply to this email</li>
-        <li style="margin-bottom: 8px;"><strong>Wait for our confirmation</strong> - We'll verify and confirm within a few hours</li>
+        <li style="margin-bottom: 8px;"><strong>Pay the token advance amount</strong> (₹${booking.advanceAmount?.toLocaleString('en-IN')}) using the UPI QR code above</li>
+        <li style="margin-bottom: 8px;"><strong>Share payment screenshot</strong> — reply to this email with the screenshot, or send it on WhatsApp</li>
+        <li style="margin-bottom: 8px;"><strong>Wait for our confirmation</strong> — We'll verify and confirm within a few hours</li>
         ` : `
         <li style="margin-bottom: 8px;">Your payment has been verified ✅</li>
         `}
@@ -210,6 +227,25 @@ export function generateBookingConfirmationEmail(rawBooking: Booking): string {
         <li style="margin-bottom: 8px;">Be ready at the pickup location on time</li>
       </ol>
     </div>
+
+    ${booking.paymentStatus !== 'verified' ? `
+    <!-- Share Payment Screenshot -->
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 25px; text-align: center;">
+      <p style="margin: 0 0 15px 0; color: #166534; font-size: 15px; font-weight: 600;">Share Payment Screenshot</p>
+      <p style="margin: 0 0 15px 0; color: #4b5563; font-size: 13px;">
+        After making the payment, share the screenshot using one of these options:
+      </p>
+      <div style="margin-bottom: 10px;">
+        <a href="https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(`Hi, I have made the advance payment for booking ${rawBooking.bookingId}. Attaching the screenshot.`)}"
+           style="display: inline-block; background: #25d366; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+          💬 WhatsApp: +91 ${BUSINESS_PHONE}
+        </a>
+      </div>
+      <p style="margin: 0; color: #6b7280; font-size: 13px;">
+        OR simply <strong>reply to this email</strong> with the payment screenshot attached
+      </p>
+    </div>
+    ` : ''}
 
     <!-- Track Booking Button -->
     <div style="text-align: center; margin-bottom: 25px;">
@@ -354,7 +390,7 @@ export function generatePaymentVerifiedEmail(rawBooking: Booking): string {
 /**
  * Send booking confirmation email
  */
-export async function sendBookingConfirmationEmail(booking: Booking): Promise<boolean> {
+export async function sendBookingConfirmationEmail(booking: Booking, upiQrCodeUrl?: string): Promise<boolean> {
   if (!booking.customerEmail) {
     console.log('No customer email, skipping email notification')
     return false
@@ -362,8 +398,9 @@ export async function sendBookingConfirmationEmail(booking: Booking): Promise<bo
 
   return sendEmail({
     to: booking.customerEmail,
-    subject: `Booking Confirmed - ${booking.bookingId} | Kathgodam Taxi`,
-    html: generateBookingConfirmationEmail(booking)
+    subject: `Booking Received - Payment Pending - ${booking.bookingId} | Kathgodam Taxi`,
+    html: generateBookingConfirmationEmail(booking, upiQrCodeUrl),
+    reply_to: ADMIN_EMAIL
   })
 }
 

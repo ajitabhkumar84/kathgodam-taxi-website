@@ -32,9 +32,7 @@ export default function CustomerInfoStep() {
       newErrors.customerPhone = 'Please enter a valid 10-digit mobile number';
     }
 
-    if (!state.customerEmail.trim()) {
-      newErrors.customerEmail = 'Email is required';
-    } else if (!validateEmail(state.customerEmail)) {
+    if (state.customerEmail.trim() && !validateEmail(state.customerEmail)) {
       newErrors.customerEmail = 'Please enter a valid email address';
     }
 
@@ -123,7 +121,7 @@ export default function CustomerInfoStep() {
         {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email *
+            Email <span className="text-gray-400 font-normal">(Optional)</span>
           </label>
           <input
             type="email"
@@ -138,7 +136,7 @@ export default function CustomerInfoStep() {
             <p className="mt-1 text-sm text-red-500">{errors.customerEmail}</p>
           )}
           <p className="mt-1 text-xs text-gray-500">
-            Booking confirmation will be sent to this email
+            If provided, booking details and payment QR code will be sent to this email
           </p>
         </div>
 
