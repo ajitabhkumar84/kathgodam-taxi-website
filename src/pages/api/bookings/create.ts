@@ -8,7 +8,7 @@ import { requireCSRF } from '../../../lib/csrf';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   // Check rate limit (3 bookings per 5 minutes)
   const rateLimitResult = checkRateLimit(request, RATE_LIMIT_PRESETS.BOOKING);
   if (!rateLimitResult.allowed) {
@@ -138,6 +138,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Calculate advance amount (25% of total, minimum ₹500)
     const advanceAmount = calculateAdvanceAmount(totalAmount);
 
+    // Get Cloudflare runtime env for Secret env vars
+    const runtimeEnv = (locals as any).runtime?.env;
+
     // Create booking
     const booking = await createBooking({
       bookingId,
@@ -159,7 +162,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       sourceRouteId,
       sourcePackageId,
       customerNotes
-    });
+    }, runtimeEnv);
 
     // Send confirmation email to customer (non-blocking)
     sendBookingConfirmationEmail(booking).catch(err => {

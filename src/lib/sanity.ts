@@ -23,6 +23,7 @@ export const previewClient = createClient({
 });
 
 // Write client for creating/updating documents (bookings, etc.)
+// Uses import.meta.env token by default (works for local dev and Plaintext env vars)
 export const writeClient = createClient({
   projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID || '',
   dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
@@ -30,6 +31,22 @@ export const writeClient = createClient({
   useCdn: false,
   token: import.meta.env.SANITY_API_TOKEN || '', // Required for write operations
 });
+
+// Get write client with Cloudflare runtime env support
+// Use this in API routes where SANITY_API_TOKEN may be a Secret env var
+export function getWriteClient(runtimeEnv?: Record<string, string>) {
+  const runtimeToken = runtimeEnv?.SANITY_API_TOKEN;
+  if (runtimeToken) {
+    return createClient({
+      projectId: import.meta.env.PUBLIC_SANITY_PROJECT_ID || '',
+      dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
+      apiVersion: import.meta.env.PUBLIC_SANITY_API_VERSION || '2024-01-01',
+      useCdn: false,
+      token: runtimeToken,
+    });
+  }
+  return writeClient;
+}
 
 // Helper to get the correct client based on preview mode
 export function getClient(preview: boolean = false) {
@@ -1086,7 +1103,7 @@ export async function createBooking(bookingData: {
   sourceRouteId?: string;
   sourcePackageId?: string;
   customerNotes?: string;
-}): Promise<Booking> {
+}, runtimeEnv?: Record<string, string>): Promise<Booking> {
   const doc = {
     _type: 'booking',
     bookingId: bookingData.bookingId,
@@ -1120,7 +1137,8 @@ export async function createBooking(bookingData: {
     }]
   };
 
-  return await writeClient.create(doc);
+  const client_ = getWriteClient(runtimeEnv);
+  return await client_.create(doc);
 }
 
 // Helper function to update booking status
