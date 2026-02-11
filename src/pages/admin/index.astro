@@ -5,8 +5,11 @@ import '../../styles/global.css'
 
 export const prerender = false
 
+// Get Cloudflare runtime env for Secret-type variables
+const runtimeEnv = (Astro.locals as any).runtime?.env
+
 // Check authentication
-if (!(await isAdminAuthenticated(Astro.cookies))) {
+if (!(await isAdminAuthenticated(Astro.cookies, runtimeEnv))) {
   return Astro.redirect('/admin/login')
 }
 

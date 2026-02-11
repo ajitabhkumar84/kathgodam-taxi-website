@@ -6,10 +6,11 @@ import { requireCSRF } from '../../../lib/csrf';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
+    const runtimeEnv = (locals as any).runtime?.env;
     // Check admin authentication (cookie-based from admin session)
-    if (!(await isAdminAuthenticated(cookies))) {
+    if (!(await isAdminAuthenticated(cookies, runtimeEnv))) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Unauthorized'

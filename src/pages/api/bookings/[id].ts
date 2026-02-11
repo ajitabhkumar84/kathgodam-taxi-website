@@ -4,10 +4,11 @@ import { isAdminAuthenticated } from '../../../lib/admin-auth';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ params, cookies }) => {
+export const GET: APIRoute = async ({ params, cookies, locals }) => {
   try {
+    const runtimeEnv = (locals as any).runtime?.env;
     // Require admin authentication to view booking details
-    if (!(await isAdminAuthenticated(cookies))) {
+    if (!(await isAdminAuthenticated(cookies, runtimeEnv))) {
       return new Response(JSON.stringify({
         success: false,
         error: 'Unauthorized'

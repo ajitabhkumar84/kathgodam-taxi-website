@@ -3,8 +3,18 @@
 const ADMIN_COOKIE_NAME = 'admin-session';
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-function getSessionSecret(): string {
-  const secret = import.meta.env.SESSION_SECRET;
+// Environment access helper - tries Cloudflare runtime env first, then import.meta.env
+function getEnvVar(name: string, runtimeEnv?: Record<string, string>): string | undefined {
+  // Try Cloudflare runtime env (for Secret-type variables)
+  if (runtimeEnv && runtimeEnv[name]) {
+    return runtimeEnv[name];
+  }
+  // Fallback to import.meta.env (for Plaintext variables / local dev)
+  return (import.meta.env as any)[name];
+}
+
+function getSessionSecret(runtimeEnv?: Record<string, string>): string {
+  const secret = getEnvVar('SESSION_SECRET', runtimeEnv);
   if (!secret) {
     throw new Error('SESSION_SECRET not set in environment variables');
   }
@@ -12,9 +22,9 @@ function getSessionSecret(): string {
 }
 
 // Import the key for HMAC-SHA256
-async function getHmacKey(): Promise<CryptoKey> {
+async function getHmacKey(runtimeEnv?: Record<string, string>): Promise<CryptoKey> {
   const encoder = new TextEncoder();
-  const keyData = encoder.encode(getSessionSecret());
+  const keyData = encoder.encode(getSessionSecret(runtimeEnv));
   return crypto.subtle.importKey(
     'raw',
     keyData,
@@ -25,8 +35,8 @@ async function getHmacKey(): Promise<CryptoKey> {
 }
 
 // Sign a payload with HMAC-SHA256 using Web Crypto API
-async function signPayload(payload: string): Promise<string> {
-  const key = await getHmacKey();
+async function signPayload(payload: string, runtimeEnv?: Record<string, string>): Promise<string> {
+  const key = await getHmacKey(runtimeEnv);
   const encoder = new TextEncoder();
   const data = encoder.encode(payload);
   const signature = await crypto.subtle.sign('HMAC', key, data);
@@ -46,7 +56,7 @@ function timingSafeCompare(a: string, b: string): boolean {
 }
 
 // Check if request has valid admin session
-export async function isAdminAuthenticated(cookies: any): Promise<boolean> {
+export async function isAdminAuthenticated(cookies: any, runtimeEnv?: Record<string, string>): Promise<boolean> {
   const session = cookies.get(ADMIN_COOKIE_NAME)?.value;
   if (!session) return false;
 
@@ -59,7 +69,7 @@ export async function isAdminAuthenticated(cookies: any): Promise<boolean> {
     const signature = session.substring(dotIndex + 1);
 
     // Verify signature using constant-time comparison
-    const expectedSignature = await signPayload(payload);
+    const expectedSignature = await signPayload(payload, runtimeEnv);
     if (!timingSafeCompare(signature, expectedSignature)) return false;
 
     // Decode and check expiry
@@ -71,20 +81,20 @@ export async function isAdminAuthenticated(cookies: any): Promise<boolean> {
 }
 
 // Create admin session cookie value (signed)
-export async function createAdminSession(): Promise<string> {
+export async function createAdminSession(runtimeEnv?: Record<string, string>): Promise<string> {
   const session = {
     authenticated: true,
     expires: Date.now() + SESSION_DURATION,
     createdAt: Date.now()
   };
   const payload = btoa(JSON.stringify(session));
-  const signature = await signPayload(payload);
+  const signature = await signPayload(payload, runtimeEnv);
   return `${payload}.${signature}`;
 }
 
 // Validate admin password using constant-time comparison
-export function validateAdminPassword(password: string): boolean {
-  const adminPassword = import.meta.env.ADMIN_PASSWORD;
+export function validateAdminPassword(password: string, runtimeEnv?: Record<string, string>): boolean {
+  const adminPassword = getEnvVar('ADMIN_PASSWORD', runtimeEnv);
   if (!adminPassword) {
     console.warn('ADMIN_PASSWORD not set in environment variables');
     return false;

@@ -6,8 +6,11 @@ import '../../styles/global.css'
 
 export const prerender = false
 
+// Get Cloudflare runtime env for Secret-type variables
+const runtimeEnv = (Astro.locals as any).runtime?.env
+
 // Check if already authenticated
-if (await isAdminAuthenticated(Astro.cookies)) {
+if (await isAdminAuthenticated(Astro.cookies, runtimeEnv)) {
   return Astro.redirect('/admin')
 }
 
@@ -31,9 +34,9 @@ if (Astro.request.method === 'POST') {
     const formData = await Astro.request.formData()
     const password = formData.get('password') as string
 
-    if (validateAdminPassword(password)) {
+    if (validateAdminPassword(password, runtimeEnv)) {
       // Set session cookie
-      Astro.cookies.set(ADMIN_COOKIE_NAME, await createAdminSession(), getSessionCookieOptions())
+      Astro.cookies.set(ADMIN_COOKIE_NAME, await createAdminSession(runtimeEnv), getSessionCookieOptions())
       return Astro.redirect('/admin')
     } else {
       error = 'Invalid password'
