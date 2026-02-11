@@ -30,6 +30,7 @@ interface BookingWizardProps {
   bookingTerms?: string;
   helpPhone?: string;
   helpWhatsapp?: string;
+  csrfToken?: string;
 }
 
 function BookingWizardContent({
@@ -124,7 +125,8 @@ export default function BookingWizard(props: BookingWizardProps) {
     dropLocation: props.dropLocation || '',
     sourceType: props.sourceType || 'custom',
     sourceSlug: props.sourceSlug || '',
-    sourceId: props.sourceId || ''
+    sourceId: props.sourceId || '',
+    csrfToken: props.csrfToken || ''
   };
 
   return (

@@ -5,6 +5,7 @@ import PreviewBanner from '../components/PreviewBanner.astro'
 import BookingWizard from '../components/booking/BookingWizard'
 import { getSiteSettings, getBookingSettings, getAllRoutes } from '../lib/sanity'
 import { urlFor } from '../lib/sanity'
+import { getCSRFToken } from '../lib/csrf'
 import '../styles/global.css'
 
 // Mark as server-rendered for dynamic content
@@ -46,6 +47,9 @@ const metaDescription = 'Book your taxi online with Kathgodam Taxi. Simple booki
 const keywords = 'book taxi Kathgodam, online taxi booking Nainital, Kumaon taxi reservation, book cab online'
 
 // Contact details
+// Generate CSRF token for booking form
+const csrfToken = getCSRFToken(Astro.cookies)
+
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351'
 const phoneNumber = bookingSettings?.bookingHelpPhone || '7351721351'
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I would like to book a taxi.')}`
@@ -109,6 +113,7 @@ const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('
             bookingTerms={bookingSettings?.bookingTerms}
             helpPhone={phoneNumber}
             helpWhatsapp={whatsappNumber}
+            csrfToken={csrfToken}
           />
         </div>
       </section>

@@ -36,6 +36,9 @@ export interface BookingState {
   sourceSlug: string;
   sourceId: string;
 
+  // CSRF
+  csrfToken: string;
+
   // Result
   bookingId: string;
   isSubmitting: boolean;
@@ -74,6 +77,7 @@ const initialState: BookingState = {
   sourceType: 'custom',
   sourceSlug: '',
   sourceId: '',
+  csrfToken: '',
   bookingId: '',
   isSubmitting: false,
   error: ''
@@ -191,12 +195,21 @@ export function BookingProvider({ children, initialData }: { children: ReactNode
     dispatch({ type: 'SET_ERROR', error: '' });
 
     try {
+      // Fetch CSRF token if not already available
+      let csrfToken = state.csrfToken;
+      if (!csrfToken) {
+        const csrfRes = await fetch('/api/csrf-token');
+        const csrfData = await csrfRes.json();
+        csrfToken = csrfData.csrfToken;
+      }
+
       const response = await fetch('/api/bookings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          csrfToken,
           customerName: state.customerName,
           customerPhone: state.customerPhone,
           customerEmail: state.customerEmail || undefined,
