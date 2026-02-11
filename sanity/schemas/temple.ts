@@ -131,6 +131,33 @@ export default defineType({
       validation: (Rule) => Rule.min(1).max(5),
     }),
     defineField({
+      name: 'heroInfo',
+      title: 'Hero Info Boxes',
+      type: 'object',
+      group: 'media',
+      description: 'Information displayed on the hero slider (distance, time, price)',
+      fields: [
+        {
+          name: 'distance',
+          type: 'string',
+          title: 'Distance',
+          description: 'e.g., "35 km"',
+        },
+        {
+          name: 'duration',
+          type: 'string',
+          title: 'Travel Duration',
+          description: 'e.g., "1.5 hours" or "1 hour 30 mins"',
+        },
+        {
+          name: 'startingPrice',
+          type: 'string',
+          title: 'Starting Price',
+          description: 'e.g., "₹2,000" or "₹1,500/-"',
+        },
+      ],
+    }),
+    defineField({
       name: 'featuredImage',
       title: 'Featured Listing Image',
       type: 'image',

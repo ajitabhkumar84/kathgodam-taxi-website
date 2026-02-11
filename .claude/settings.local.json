@@ -21,7 +21,8 @@
       "Bash(npm run build:*)",
       "Bash(ls:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx astro check:*)"
+      "Bash(npx astro check:*)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []

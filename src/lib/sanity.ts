@@ -1251,6 +1251,11 @@ export async function getTempleBySlug(slug: string) {
       title,
       description
     },
+    heroInfo {
+      distance,
+      duration,
+      startingPrice
+    },
     featuredImage,
     videoEmbed,
     introText,

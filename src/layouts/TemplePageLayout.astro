@@ -30,6 +30,11 @@ interface Props {
       title: string;
       description: string;
     }>;
+    heroInfo?: {
+      distance?: string;
+      duration?: string;
+      startingPrice?: string;
+    };
     featuredImage?: any;
     videoEmbed?: string;
     introText: string;
@@ -268,9 +273,9 @@ const getDefaultCarImage = (carName: string): string => {
       <RouteHeroSlider
         from=""
         to={templeData.name}
-        distance={templeData.howToReach?.distanceFromKathgodam || ''}
-        duration=""
-        startingPrice=""
+        distance={templeData.heroInfo?.distance || templeData.howToReach?.distanceFromKathgodam || ''}
+        duration={templeData.heroInfo?.duration || ''}
+        startingPrice={templeData.heroInfo?.startingPrice || ''}
         slides={heroSlides}
       />
     ) : (
