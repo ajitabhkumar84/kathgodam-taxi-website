@@ -22,6 +22,21 @@ function escapeHtml(str: string): string {
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    // Check if Resend API key is configured
+    if (!import.meta.env.RESEND_API_KEY) {
+      console.error('RESEND_API_KEY is not configured');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Email service is not configured. Please contact the administrator.',
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     // Rate limiting
     const rateLimitResult = checkRateLimit(request, RATE_LIMIT_PRESETS.CONTACT);
     if (!rateLimitResult.allowed) {
@@ -50,7 +65,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     if (!name || !mobile || !email || !pickupPoint || !startingDate) {
       return new Response(
         JSON.stringify({ success: false, error: 'Required fields are missing' }),
-        { status: 400 }
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
       )
     }
 
@@ -60,7 +78,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     if (!emailRegex.test(rawEmail)) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid email address' }),
-        { status: 400 }
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
       )
     }
 
@@ -251,7 +272,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           success: false,
           error: `Email error: ${resendError?.message || 'Unknown error'}`,
         }),
-        { status: 500 }
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
       )
     }
 
@@ -260,7 +284,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         success: true,
         message: 'Form submitted successfully',
       }),
-      { status: 200 }
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }
     )
   } catch (error) {
     console.error('API error:', error)
@@ -269,7 +296,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         success: false,
         error: 'Internal server error',
       }),
-      { status: 500 }
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
     )
   }
 }
