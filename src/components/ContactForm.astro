@@ -351,10 +351,16 @@ const {
       }
 
       try {
+        // Fetch CSRF token
+        const csrfRes = await fetch('/api/csrf-token')
+        const csrfData = await csrfRes.json()
+        const csrfToken = csrfData.csrfToken
+
         const formData = new FormData(form)
 
         const response = await fetch('/api/contact/submit', {
           method: 'POST',
+          headers: { 'x-csrf-token': csrfToken },
           body: formData,
         })
 

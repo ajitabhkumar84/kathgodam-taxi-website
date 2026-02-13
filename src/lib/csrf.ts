@@ -59,8 +59,9 @@ export async function validateCSRFToken(
   // Check header first
   let requestToken = request.headers.get(CSRF_HEADER_NAME);
 
-  // If not in header, check form data
-  if (!requestToken && request.headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
+  // If not in header, check form data (supports both urlencoded and multipart)
+  const contentType = request.headers.get('content-type') || '';
+  if (!requestToken && (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data'))) {
     try {
       const formData = await request.clone().formData();
       requestToken = formData.get('csrf-token') as string;
