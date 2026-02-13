@@ -5,6 +5,9 @@ import WhatsAppFAB from '../components/WhatsAppFAB.astro';
 import { getSiteSettings } from '../lib/sanity';
 import '../styles/global.css';
 
+// Set proper 404 status code
+Astro.response.status = 404;
+
 const siteSettings = await getSiteSettings();
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351';
 const whatsappMessage = 'Hi, I need help finding a page on your website.';

@@ -22,7 +22,10 @@
       "Bash(ls:*)",
       "Bash(npx tsc:*)",
       "Bash(npx astro check:*)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix contact form 500 error: Add Content-Type headers and env validation\n\n- Add Content-Type: application/json to all API responses\n- Add RESEND_API_KEY validation at function start\n- Provide clear error message when email service is not configured\n- Fixes \"unexpected end of JSON input\" error in production\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
