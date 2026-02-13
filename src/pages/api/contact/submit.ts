@@ -1,9 +1,6 @@
 import type { APIRoute } from 'astro'
-import { Resend } from 'resend'
 import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_PRESETS } from '../../../lib/rateLimit'
 import { requireCSRF } from '../../../lib/csrf'
-
-const resend = new Resend(import.meta.env.RESEND_API_KEY)
 
 // Email configuration from environment variables
 const FROM_EMAIL = import.meta.env.FROM_EMAIL || 'noreply@mail.kathgodamtaxi.in'
@@ -247,30 +244,46 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       </html>
     `
 
+    // Use Resend HTTP API directly (compatible with Cloudflare Workers)
+    const RESEND_API_URL = 'https://api.resend.com/emails';
+    const resendHeaders = {
+      'Authorization': `Bearer ${import.meta.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    };
+
     // Send email to admin
-    const adminEmail = await resend.emails.send({
-      from: `Kathgodam Taxi <${FROM_EMAIL}>`,
-      to: ADMIN_EMAIL,
-      replyTo: rawEmail,
-      subject: `New Tour Booking Request from ${name}`,
-      html: adminEmailHtml,
-    })
+    const adminEmailRes = await fetch(RESEND_API_URL, {
+      method: 'POST',
+      headers: resendHeaders,
+      body: JSON.stringify({
+        from: `Kathgodam Taxi <${FROM_EMAIL}>`,
+        to: [ADMIN_EMAIL],
+        reply_to: rawEmail,
+        subject: `New Tour Booking Request from ${name}`,
+        html: adminEmailHtml,
+      }),
+    });
 
     // Send confirmation email to customer
-    const customerEmailResult = await resend.emails.send({
-      from: `Kathgodam Taxi <${FROM_EMAIL}>`,
-      to: rawEmail,
-      subject: 'Your Tour Booking Request - Kathgodam Taxi',
-      html: customerEmailHtml,
-    })
+    const customerEmailRes = await fetch(RESEND_API_URL, {
+      method: 'POST',
+      headers: resendHeaders,
+      body: JSON.stringify({
+        from: `Kathgodam Taxi <${FROM_EMAIL}>`,
+        to: [rawEmail],
+        subject: 'Your Tour Booking Request - Kathgodam Taxi',
+        html: customerEmailHtml,
+      }),
+    });
 
-    if (adminEmail.error || customerEmailResult.error) {
-      const resendError = adminEmail.error || customerEmailResult.error
-      console.error('Resend API error:', resendError)
+    if (!adminEmailRes.ok || !customerEmailRes.ok) {
+      const failedRes = !adminEmailRes.ok ? adminEmailRes : customerEmailRes;
+      const errorBody = await failedRes.text();
+      console.error('Resend API error:', failedRes.status, errorBody);
       return new Response(
         JSON.stringify({
           success: false,
-          error: `Email error: ${resendError?.message || 'Unknown error'}`,
+          error: `Email error: ${failedRes.status} - Failed to send email`,
         }),
         {
           status: 500,

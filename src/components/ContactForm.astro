@@ -353,6 +353,9 @@ const {
       try {
         // Fetch CSRF token
         const csrfRes = await fetch('/api/csrf-token')
+        if (!csrfRes.ok) {
+          throw new Error(`Failed to get CSRF token: ${csrfRes.status}`)
+        }
         const csrfData = await csrfRes.json()
         const csrfToken = csrfData.csrfToken
 
@@ -364,13 +367,28 @@ const {
           body: formData,
         })
 
-        const result = await response.json()
+        // Log response details for debugging
+        console.log('Response status:', response.status)
+        console.log('Response headers:', response.headers)
+
+        // Check if response has content
+        const responseText = await response.text()
+        console.log('Response body:', responseText)
+
+        // Try to parse as JSON
+        let result
+        try {
+          result = JSON.parse(responseText)
+        } catch (parseError) {
+          console.error('Failed to parse response as JSON:', parseError)
+          throw new Error(`Server returned invalid response (${response.status}): ${responseText.substring(0, 100)}`)
+        }
 
         if (response.ok && result.success) {
           // Redirect to thank you page
           window.location.href = '/thank-you'
         } else {
-          throw new Error(result.error || 'Form submission failed')
+          throw new Error(result.error || result.message || 'Form submission failed')
         }
       } catch (error) {
         console.error('Submission error:', error)
