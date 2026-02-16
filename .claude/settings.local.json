@@ -32,7 +32,8 @@
       "Bash(npx astro dev:*)",
       "Bash(python:*)",
       "WebFetch(domain:kathgodamtaxi.in)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
