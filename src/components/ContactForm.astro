@@ -352,12 +352,19 @@ const {
 
       try {
         // Fetch CSRF token
-        const csrfRes = await fetch('/api/csrf-token')
-        if (!csrfRes.ok) {
-          throw new Error(`Failed to get CSRF token: ${csrfRes.status}`)
+        let csrfToken = ''
+        try {
+          const csrfRes = await fetch('/api/csrf-token')
+          const csrfText = await csrfRes.text()
+          if (!csrfRes.ok) {
+            throw new Error(`CSRF token request failed (${csrfRes.status}): ${csrfText.substring(0, 100)}`)
+          }
+          const csrfData = JSON.parse(csrfText)
+          csrfToken = csrfData.csrfToken
+        } catch (csrfError) {
+          console.error('CSRF token error:', csrfError)
+          throw new Error('Could not initialize form security. Please refresh the page and try again.')
         }
-        const csrfData = await csrfRes.json()
-        const csrfToken = csrfData.csrfToken
 
         const formData = new FormData(form)
 
@@ -367,21 +374,20 @@ const {
           body: formData,
         })
 
-        // Log response details for debugging
-        console.log('Response status:', response.status)
-        console.log('Response headers:', response.headers)
-
-        // Check if response has content
+        // Read response as text first to handle empty/invalid responses
         const responseText = await response.text()
-        console.log('Response body:', responseText)
 
         // Try to parse as JSON
         let result
         try {
           result = JSON.parse(responseText)
         } catch (parseError) {
-          console.error('Failed to parse response as JSON:', parseError)
-          throw new Error(`Server returned invalid response (${response.status}): ${responseText.substring(0, 100)}`)
+          console.error('Failed to parse response:', response.status, responseText.substring(0, 200))
+          throw new Error(
+            response.status === 500
+              ? 'Server error. Please try again or contact us via WhatsApp.'
+              : `Unexpected server response (${response.status}). Please try again.`
+          )
         }
 
         if (response.ok && result.success) {

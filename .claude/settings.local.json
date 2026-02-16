@@ -30,7 +30,9 @@
       "Bash(findstr:*)",
       "Bash(timeout 5 tail:*)",
       "Bash(npx astro dev:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "WebFetch(domain:kathgodamtaxi.in)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []
