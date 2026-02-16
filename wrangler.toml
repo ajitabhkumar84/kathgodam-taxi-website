@@ -1,0 +1,3 @@
+# Cloudflare Pages Worker configuration
+# Required for React SSR (MessageChannel) and other Node.js APIs
+compatibility_flags = ["nodejs_compat"]
