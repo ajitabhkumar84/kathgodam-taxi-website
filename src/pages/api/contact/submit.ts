@@ -2,10 +2,6 @@ import type { APIRoute } from 'astro'
 import { checkRateLimit, createRateLimitResponse, RATE_LIMIT_PRESETS } from '../../../lib/rateLimit'
 import { requireCSRF } from '../../../lib/csrf'
 
-// Email configuration from environment variables
-const FROM_EMAIL = import.meta.env.FROM_EMAIL || 'noreply@mail.kathgodamtaxi.in'
-const ADMIN_EMAIL = import.meta.env.ADMIN_EMAIL || 'kathgodamtaxi@gmail.com'
-
 // HTML-escape user input to prevent XSS in email clients
 function escapeHtml(str: string): string {
   if (!str) return '';
@@ -17,10 +13,16 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
+    // Get env vars from Cloudflare runtime (preferred) or build-time env (fallback for local dev)
+    const runtimeEnv = (locals as any).runtime?.env || {};
+    const RESEND_API_KEY = runtimeEnv.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
+    const FROM_EMAIL = runtimeEnv.FROM_EMAIL || import.meta.env.FROM_EMAIL || 'noreply@mail.kathgodamtaxi.in';
+    const ADMIN_EMAIL = runtimeEnv.ADMIN_EMAIL || import.meta.env.ADMIN_EMAIL || 'kathgodamtaxi@gmail.com';
+
     // Check if Resend API key is configured
-    if (!import.meta.env.RESEND_API_KEY) {
+    if (!RESEND_API_KEY) {
       console.error('RESEND_API_KEY is not configured');
       return new Response(
         JSON.stringify({
@@ -247,7 +249,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Use Resend HTTP API directly (compatible with Cloudflare Workers)
     const RESEND_API_URL = 'https://api.resend.com/emails';
     const resendHeaders = {
-      'Authorization': `Bearer ${import.meta.env.RESEND_API_KEY}`,
+      'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json',
     };
 
