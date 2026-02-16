@@ -1,3 +1,4 @@
 # Cloudflare Pages Worker configuration
 # Required for React SSR (MessageChannel) and other Node.js APIs
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
