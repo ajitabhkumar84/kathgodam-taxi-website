@@ -52,7 +52,7 @@ const categories = templesPage?.templeCategories?.map((category: any) => ({
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351'
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I need a taxi for a temple tour.')}`
 const phoneNumber = siteSettings?.phone || '7351721351'
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/$/, '') + '/', Astro.site).href
 ---
 
 <!doctype html>

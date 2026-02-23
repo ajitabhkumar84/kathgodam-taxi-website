@@ -60,7 +60,7 @@ const categories =
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351'
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I need a quote for a custom destination.')}`
 const phoneNumber = siteSettings?.phone || '7351721351'
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/$/, '') + '/', Astro.site).href
 ---
 
 <!doctype html>

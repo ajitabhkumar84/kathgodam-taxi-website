@@ -34,7 +34,7 @@ const address =
 // WhatsApp URL for floating button
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I would like to inquire about your taxi services.')}`
 
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/$/, '') + '/', Astro.site).href
 
 // Google Maps embed URL
 const mapUrl = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3480.5197678926456!2d79.54214307498057!3d29.26706465498476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39a09a13e63b48a5%3A0xb77fbd4a785198ed!2sKathgodam%20Taxi%20Service!5e0!3m2!1sen!2sin!4v1767598150718!5m2!1sen!2sin'

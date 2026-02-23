@@ -150,7 +150,7 @@ const whatsappMessage = `Hi, I'd like to book a taxi to ${templeData.name}`;
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
 // Generate share URL and message
-const pageUrl = `${Astro.site || 'https://kathgodamtaxi.com'}${templeData.slug}`;
+const pageUrl = `${Astro.site || 'https://kathgodamtaxi.in'}${templeData.slug}/`;
 const shareMessage = generateShareMessage('temple', {
   templeName: templeData.name,
   district: templeData.district
@@ -250,7 +250,7 @@ const getDefaultCarImage = (carName: string): string => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.com/" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.in/" },
       { "@type": "ListItem", "position": 2, "name": templeData.name, "item": pageUrl }
     ]
   })} />

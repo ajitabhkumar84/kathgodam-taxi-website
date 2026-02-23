@@ -27,7 +27,7 @@ const { seo, hero, pricingSection, inclusionExclusionSection, packagesSection, p
 
 // Get testimonials from homepage data
 const testimonials = homePage?.testimonials || [];
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/$/, '') + '/', Astro.site).href;
 ---
 
 <!DOCTYPE html>

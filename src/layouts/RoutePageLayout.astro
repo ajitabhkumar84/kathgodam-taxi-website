@@ -133,7 +133,7 @@ const defaultMapsUrl = "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d55
 const mapsEmbedUrl = routeData.googleMapsEmbedUrl || defaultMapsUrl;
 
 // Generate share URL and message
-const pageUrl = `${Astro.site || 'https://kathgodamtaxi.com'}${routeData.slug}`;
+const pageUrl = `${Astro.site || 'https://kathgodamtaxi.in'}${routeData.slug}/`;
 const shareMessage = generateShareMessage('route', {
   from: routeData.from,
   to: routeData.to,
@@ -187,7 +187,7 @@ const shareMessage = generateShareMessage('route', {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.com/" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://kathgodamtaxi.in/" },
       { "@type": "ListItem", "position": 2, "name": `${routeData.from} to ${routeData.to} Taxi`, "item": pageUrl }
     ]
   })} />

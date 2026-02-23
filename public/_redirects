@@ -72,9 +72,3 @@
 # =============================================================================
 /sitemap.xml /sitemap-index.xml 301
 
-# =============================================================================
-# TRAILING SLASH REMOVAL (fixes "Alternate page with proper canonical tag" in GSC)
-# =============================================================================
-# Redirects /:slug/ → /:slug for all single-segment paths (routes, packages, temples, etc.)
-# Specific rules above take priority via first-match; root / is unaffected by this rule.
-/:slug/ /:slug 301

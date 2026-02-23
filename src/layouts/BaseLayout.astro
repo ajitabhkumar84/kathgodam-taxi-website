@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { title, description, keywords, ogImage, showPreviewBanner = false } = Astro.props;
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://kathgodamtaxi.com').href;
+const canonicalUrl = new URL(Astro.url.pathname.replace(/\/$/, '') + '/', Astro.site || 'https://kathgodamtaxi.in').href;
 
 // Fetch all searchable content for the search modal
 const searchData = await getAllSearchableContent();

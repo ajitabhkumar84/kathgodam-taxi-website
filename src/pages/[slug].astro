@@ -189,7 +189,7 @@ const whatsappNumber = '917351721351';
 const baseWhatsappUrl = `https://wa.me/${whatsappNumber}`;
 
 // Generate share URL and message for packages
-const packagePageUrl = packageData ? `${Astro.site || 'https://kathgodamtaxi.com'}${packageData.slug}` : '';
+const packagePageUrl = packageData ? `${Astro.site || 'https://kathgodamtaxi.in'}${packageData.slug}/` : '';
 const packageShareMessage = packageData ? generateShareMessage('package', {
   packageName: packageData.name,
   duration: packageData.duration,
