@@ -27,6 +27,7 @@ const { seo, hero, pricingSection, inclusionExclusionSection, packagesSection, p
 
 // Get testimonials from homepage data
 const testimonials = homePage?.testimonials || [];
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <!DOCTYPE html>
@@ -38,11 +39,13 @@ const testimonials = homePage?.testimonials || [];
     <meta name="description" content={seo.description}>
     {seo.keywords && <meta name="keywords" content={seo.keywords}>}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="canonical" href={canonicalUrl}>
 
     <!-- Open Graph -->
     <meta property="og:title" content={seo.title}>
     <meta property="og:description" content={seo.description}>
     <meta property="og:type" content="website">
+    <meta property="og:url" content={canonicalUrl}>
 </head>
 <body class="antialiased">
     <Navbar />

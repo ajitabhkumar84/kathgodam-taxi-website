@@ -66,3 +66,15 @@
 # - Wildcard (*) catches query parameters and subpaths
 # - Route URLs (kathgodam-nainital, etc.) remain unchanged - no redirects needed
 # - Package "kolkatan-special-kumaon-tour-package" has same slug - no redirect needed
+
+# =============================================================================
+# SITEMAP REDIRECT
+# =============================================================================
+/sitemap.xml /sitemap-index.xml 301
+
+# =============================================================================
+# TRAILING SLASH REMOVAL (fixes "Alternate page with proper canonical tag" in GSC)
+# =============================================================================
+# Redirects /:slug/ → /:slug for all single-segment paths (routes, packages, temples, etc.)
+# Specific rules above take priority via first-match; root / is unaffected by this rule.
+/:slug/ /:slug 301

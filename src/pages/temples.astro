@@ -52,6 +52,7 @@ const categories = templesPage?.templeCategories?.map((category: any) => ({
 const whatsappNumber = siteSettings?.whatsappNumber || '917351721351'
 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I need a taxi for a temple tour.')}`
 const phoneNumber = siteSettings?.phone || '7351721351'
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href
 ---
 
 <!doctype html>
@@ -62,12 +63,14 @@ const phoneNumber = siteSettings?.phone || '7351721351'
     <meta name="description" content={metaDescription} />
     {keywords && <meta name="keywords" content={keywords} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{pageTitle}</title>
 
     <!-- Open Graph -->
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
 
     <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
