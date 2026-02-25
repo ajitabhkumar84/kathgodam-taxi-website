@@ -34,10 +34,12 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      alias: {
-        'react-dom/server': 'react-dom/server.edge',
-      },
+    ssr: {
+      // Let Node.js handle react-dom natively in dev (it's CJS with require()).
+      // For production builds, Rollup converts CJS via its CommonJS plugin,
+      // and the "workerd" export condition in react-dom/server already maps
+      // to the edge build automatically.
+      external: ['react-dom'],
     },
   }
 });

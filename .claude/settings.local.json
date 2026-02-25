@@ -33,7 +33,9 @@
       "Bash(python:*)",
       "WebFetch(domain:kathgodamtaxi.in)",
       "Bash(npm uninstall:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm ls:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
