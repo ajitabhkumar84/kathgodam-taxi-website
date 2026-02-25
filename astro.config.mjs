@@ -39,5 +39,10 @@ export default defineConfig({
         'react-dom/server': 'react-dom/server.edge',
       },
     },
+    ssr: {
+      // @sanity/image-url is CJS and uses require() — bundle it so Vite
+      // converts it to ESM for the SSR module runner (Vite 6 requirement)
+      noExternal: ['@sanity/image-url'],
+    },
   }
 });
