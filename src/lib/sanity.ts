@@ -1,6 +1,4 @@
 import { createClient } from '@sanity/client';
-import imageUrlBuilder from '@sanity/image-url';
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import type { Booking, BookingSettings, BookingFormData } from '../types/booking';
 import type { Vehicle, CarTypeValue } from '../types/vehicle';
 
@@ -53,11 +51,47 @@ export function getClient(preview: boolean = false) {
   return preview ? previewClient : client;
 }
 
-// Image URL builder
-const builder = imageUrlBuilder(client);
+// Pure ESM image URL builder — replaces @sanity/image-url (CJS package incompatible
+// with Vite 6 SSR module runner). Builds Sanity CDN URLs without require().
+const CDN_BASE = `https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID || '2o6xnbku'}/${import.meta.env.PUBLIC_SANITY_DATASET || 'production'}`;
 
-export function urlFor(source: SanityImageSource) {
-  return builder.image(source).auto('format');
+interface ImageBuilder {
+  width(w: number): ImageBuilder;
+  height(h: number): ImageBuilder;
+  auto(mode: string): ImageBuilder;
+  quality(q: number): ImageBuilder;
+  fit(mode: string): ImageBuilder;
+  url(): string;
+}
+
+export function urlFor(source: any): ImageBuilder {
+  const ref: string =
+    typeof source === 'string' ? source :
+    (source?._ref || source?.asset?._ref || '');
+
+  // Parse Sanity image reference: image-{hex_id}-{WxH}-{ext}
+  const match = ref.match(/^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/);
+  const assetId = match?.[1] ?? '';
+  const dimensions = match?.[2] ?? '';
+  const ext = match?.[3] ?? 'jpg';
+
+  const params: Record<string, string> = { auto: 'format' };
+
+  const builder: ImageBuilder = {
+    width(w) { params.w = String(w); return builder; },
+    height(h) { params.h = String(h); return builder; },
+    auto(mode) { params.auto = mode; return builder; },
+    quality(q) { params.q = String(q); return builder; },
+    fit(mode) { params.fit = mode; return builder; },
+    url() {
+      if (!assetId) return '';
+      const base = `${CDN_BASE}/${assetId}-${dimensions}.${ext}`;
+      const qs = new URLSearchParams(params).toString();
+      return qs ? `${base}?${qs}` : base;
+    },
+  };
+
+  return builder;
 }
 
 // Helper function to get all published routes
